@@ -11,5 +11,6 @@ def index(request):
     # example query using modelmssql
     myMssqlResult = queryDBall('SELECT * FROM Taxes')
     myMssqlResultSingle = myMssqlResult[0]['Tax1']
-
-    return HttpResponse(f"Hello, the Tax1 is {myMssqlResultSingle}")
+    context = {'test': '123 test'}
+    # return HttpResponse(f"Hello, the Tax1 is {myMssqlResultSingle}")
+    return render(request, 'updateuser/sample.html', context)
