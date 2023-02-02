@@ -1,10 +1,55 @@
 {% load static %}
-<html>
-<head>
-    <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-    {% block content %}{% endblock %}
-    TESTING BASE HTML
-</body>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+        {% static bootstrap.css %}
+        <style>
+            pre {
+                background: #ddd;
+                padding: 10px;
+            }
+            h2 {
+                margin-top: 20px;
+            }
+            footer {
+                margin: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="text-white font-weight-bold bg-danger">Internet</div>
+        include 'topmenu.html'
+        <main class="container-fluid">
+<div class="row">
+    <!-- left column -->
+    <div class="d-none d-lg-block col-lg-1 border-right" style="background-color: #ffffed;">
+    </div>
+    <!-- end left column -->
+    <!-- center column -->
+    <div class="col-12 col-lg-10">
+            render_messages(container=False, dismissible=True, dismiss_animate=True)
+            {% block content %}{% endblock %}
+    </div>
+    <!-- end center column -->
+    <!-- right column -->
+    <div class="d-none d-lg-block col-lg-1 border-left" style="background-color: #ffffed;">
+    </div>
+    <!-- end right column -->
+</div>
+        </main>
+        <footer class="text-center">
+            {% block footer %}
+            {% endblock %}
+                <small> &copy; 1995–<script>
+    document.write(new Date().getFullYear())
+</script>
+                </small>
+        </footer>
+        {% static bootstrap.js %}
+    </body>
 </html>
