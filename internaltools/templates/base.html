@@ -1,13 +1,14 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>{% block title %}{% endblock %}</title>
-        <link rel="icon" href="{% static 'favicon.ico' %}">
-        {% static bootstrap.css %}
+        <link rel="icon" href="{% static 'internaltools/favicon.ico' %}">
+        <link href="{% static 'internaltools/bootstrap.min.css' %}" rel="stylesheet">
+
+        
         <style>
             pre {
                 background: #ddd;
@@ -50,6 +51,7 @@
 </script>
                 </small>
         </footer>
-        {% static bootstrap.js %}
+    <script src="{% static 'internaltools/bootstrap.bundle.min.js' %}"></script>
+
     </body>
 </html>
