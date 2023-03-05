@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+import os
 
 # load .env file containing environemnt variables
 load_dotenv()
@@ -24,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w$bz8a98$e32_6(z28xnl@w+$eu^6jw!ice)^0icxdcgg8o-sp'
+SECRET_KEY = os.urandom(12)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
