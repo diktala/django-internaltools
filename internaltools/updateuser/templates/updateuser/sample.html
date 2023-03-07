@@ -1,9 +1,48 @@
 {% extends "internaltools/base.html" %}
-{% block title %}
-updateuser
-{% endblock %}
+{% block title %}updateuser{% endblock %}
+
+{% if isUserExist %}
+    {%    with buttonStyle="success" isValid="is-valid" isDisabled="" %}
+    {% endwith %}
+{% else %}
+    {%    with buttonStyle="secondary" isValid="is-invalid" isDisabled="disabled" %}
+    {% endwith %}
+{% endif %}
 {% block content %}
 <p>TESTING BASE HTML</p>
 <p>Test: {{ test }}</p>
 <p>myTax: {{ myTax }}</p>
+    <!-- form search users -->
+    <form id="SearchLoginForm" action="" novalidate="" method="GET">
+        <div class="row g-3">
+            <fieldset class="form-group border">
+                <legend>
+                    Update User
+                </legend>
+                {# {{ formSearchLogin.csrf_token }} #}
+                <label for="labelLoginName" class="form-label">loginName</label>
+                <input type="text" class="form-control" id="labelLoginName" placeholder="enter loginaname">
+                <button type="submit" class="btn btn-primary mb-3">Search</button>
+            </fieldset>
+        </div>
+    </form>
+    <!-- end form search users -->
+    <!-- form update users -->
+    <form id="UserInfoForm" action="" novalidate="" method="POST">
+    {% csrf_token %}
+        <div class="row g-3">
+            <fieldset class="form-group border" {{ isDisabled }}>
+                <legend>
+                    User Info
+                </legend>
+                <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+                </button>
+                <label for="labelFirstName" class="form-label">firstName</label>
+                <input type="text" class="form-control" id="labelFirstName" placeholder="enter firstname ...">
+                <button type="submit" class="btn btn-secondary mb-3">Update User</button>
+            </fieldset>
+        </div>
+    </form>
+    <!-- end form update users -->
 {% endblock %}
