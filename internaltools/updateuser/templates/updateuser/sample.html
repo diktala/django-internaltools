@@ -38,8 +38,11 @@
                 <button disabled style="display:none;">
                 <!-- this hidden button to disable submit on Enter key -->
                 </button>
-                <label for="labelFirstName" class="form-label">firstName</label>
-                <input type="text" class="form-control" id="labelFirstName" placeholder="enter firstname ...">
+
+                {{ form.loginName.errors }}
+                <label for="{{ form.loginName.id_for_label }}" class="form-label">{{ form.loginName.label }}</label>
+                {{ form.loginName }}
+
                 <button type="submit" class="btn btn-secondary mb-3">Update User</button>
             </fieldset>
         </div>
