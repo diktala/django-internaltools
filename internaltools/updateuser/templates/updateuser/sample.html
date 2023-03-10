@@ -30,6 +30,14 @@
     <!-- form update users -->
     <form id="UserInfoForm" action="" novalidate="" method="POST">
     {% csrf_token %}
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class=" {{ message.tags }} " {% endif %}>
+             {{ message }} </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
         <div class="row g-3">
             <fieldset class="form-group border" {{ isDisabled }}>
                 <legend>
