@@ -3,32 +3,84 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
 from django.core.validators import RegexValidator
+import re
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 
-class SearchLoginForm(forms.Form):
+class FormSearchLogin(forms.Form):
     loginName = forms.CharField(
         label='Login Name',
-        max_length=16,
         widget=forms.TextInput(attrs={
-            'placeholder': 'enter login name ...',
+            'placeholder': 'Customer username ...',
             'class': 'form-control',
         }),
-        validators=[RegexValidator('^[0-9]+$', message='only numbers are allowed')],
+        required=True,
+        min_length=1,
+        max_length=20,
+        validators=[
+            RegexValidator(
+                regex='^[a-z0-9][a-z0-9.-]*$',
+                message='invalid characters',
+                flags=re.IGNORECASE,
+            )
+        ],
     )
 
+class FormUserDetail(forms.Form):
+    loginName = forms.CharField(
+        disabled=True,
+    )
+    firstName = forms.CharField(
+        label='First Name',
+        widget=forms.TextInput(attrs={
+            'placeholder': ' ...',
+            'class': 'form-control',
+        }),
+        required=True,
+        min_length=1,
+        max_length=30,
+        validators=[
+            RegexValidator(
+                regex="^[\w. &'-]*[\w]$",
+                message='invalid characters',
+            )
+        ],
+    )
+    lastName = forms.CharField(
+        label='Last Name',
+        widget=forms.TextInput(attrs={
+            'placeholder': ' ...',
+            'class': 'form-control',
+        }),
+        required=True,
+        min_length=1,
+        max_length=30,
+        validators=[
+            RegexValidator(
+                regex="^[\w. &'-]*[\w]$",
+                message='invalid characters',
+            )
+        ],
+    )
+
+
 def index(request):
+    defaultData = {'loginName': '',}
+    formSearchLogin = FormSearchLogin(defaultData)
+    formUserDetail = FormUserDetail(defaultData)
+
+    if request.GET.get("loginName"):
+        print (F"DEBUG MESSAGE: method GET {request.GET.get('loginName')} ")
+        formSearchLogin = FormSearchLogin(request.GET)
+
     if request.method == 'POST':
         print ('DEBUG MESSAGE: method POST')
-        form = SearchLoginForm(request.POST)
-        if form.is_valid():
+        formUserDetail = FormUserDetail(request.POST)
+        if formSearchLogin.is_valid():
             print ('DEBUG MESSAGE: form is valid')
             # return HttpResponse('thanks')
         else:
             print ('DEBUG MESSAGE: form is NOT valid')
             # return HttpResponse('form is invalid')
-    else:
-        defaultData = {'loginName': 'some default id',}
-        form = SearchLoginForm(defaultData)
 
     # example query using django models
     # add this: from .models import UsersId
@@ -46,7 +98,8 @@ def index(request):
                'myTax': myMssqlResultSingle,
                'domain': DOMAIN,
                'urlQuery': urlQuery,
-               'form': form,
+               'formSearchLogin': formSearchLogin,
+               'formUserDetail': formUserDetail,
     }
     # return HttpResponse(f"Hello, the Tax1 is {myMssqlResultSingle}")
     return render(request, 'updateuser/sample.html', context)

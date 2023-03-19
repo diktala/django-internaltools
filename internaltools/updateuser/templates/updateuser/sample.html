@@ -20,8 +20,9 @@
                     Update User
                 </legend>
                 {# {{ formSearchLogin.csrf_token }} #}
-                <label for="labelLoginName" class="form-label">loginName</label>
-                <input type="text" class="form-control" id="labelLoginName" placeholder="enter loginaname">
+                {{ formSearchLogin.loginName.errors }}
+                <label for="{{ formSearchLogin.loginName.id_for_label }}" class="form-label">{{ formSearchLogin.loginName.label }}</label>
+                {{ formSearchLogin.loginName }}
                 <button type="submit" class="btn btn-primary mb-3">Search</button>
             </fieldset>
         </div>
@@ -47,9 +48,9 @@
                 <!-- this hidden button to disable submit on Enter key -->
                 </button>
 
-                {{ form.loginName.errors }}
-                <label for="{{ form.loginName.id_for_label }}" class="form-label">{{ form.loginName.label }}</label>
-                {{ form.loginName }}
+                {{ formUserDetail.firstName.errors }}
+                <label for="{{ formUserDetail.firstName.id_for_label }}" class="form-label">{{ formUserDetail.firstName.label }}</label>
+                {{ formUserDetail.firstName }}
 
                 <button type="submit" class="btn btn-secondary mb-3">Update User</button>
             </fieldset>
