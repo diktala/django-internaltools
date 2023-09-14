@@ -30,7 +30,7 @@ SECRET_KEY = os.urandom(12)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sardaukar.vif.com']
 
 
 # Application definition
