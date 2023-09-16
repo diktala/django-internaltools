@@ -197,17 +197,19 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
-    language = forms.CharField(
+    language = forms.ChoiceField(
         label="Language",
-        widget=forms.TextInput(
+        choices=[
+            ("", "FR"),
+            ("EN", "EN"),
+        ],
+        initial="",
+        widget=forms.Select(
             attrs={
-                "placeholder": " ...",
                 "class": "form-control",
             }
         ),
         required=False,
-        min_length=1,
-        max_length=30,
         validators=[
             RegexValidator(
                 regex="^EN$",
@@ -459,7 +461,6 @@ class FormUserDetail(forms.Form):
                 msg = "Must put 'help' in login"
                 self.add_error("firstName", msg)
 
-
 def getTaxes():
     myMssqlResult = queryDBall("SELECT * FROM Taxes")
     return myMssqlResult
@@ -469,7 +470,7 @@ def index(request):
         "loginName": "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
-    formUserDetail = FormUserDetail(defaultData)
+    formUserDetail = FormUserDetail()
 
     if request.GET.get("loginName"):
         print(f"DEBUG MESSAGE: method GET {request.GET.get('loginName')} ")
