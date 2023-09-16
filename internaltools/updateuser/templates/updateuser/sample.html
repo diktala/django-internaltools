@@ -1,13 +1,7 @@
 {% extends "internaltools/base.html" %}
 {% block title %}updateuser{% endblock %}
-{% if isUserExist %}
-    {% with buttonStyle="success" isValid="is-valid" isDisabled="" %}{% endwith %}
-{% else %}
-    {% with buttonStyle="secondary" isValid="is-invalid" isDisabled="disabled" %}{% endwith %}
-{% endif %}
 {% block content %}
-    <p>A TESTING BASE HTML</p>
-    <p>Test: {{ test }}</p>
+    <p>BASE HTML {{ loginName }}</p>
     <p>myTax: {{ myTax }}</p>
     <!-- form search users -->
     <form id="SearchLoginForm" action="" novalidate="" method="GET">

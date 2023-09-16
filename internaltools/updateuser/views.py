@@ -161,6 +161,19 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
+    addressSelect = forms.ChoiceField(
+        label="Select Address",
+        choices=[
+            ("", "<<< Lookup"),
+        ],
+        initial="",
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        required=False,
+    )
     homePhone = forms.CharField(
         label="Home Phone",
         widget=forms.TextInput(
@@ -461,8 +474,13 @@ class FormUserDetail(forms.Form):
                 msg = "Must put 'help' in login"
                 self.add_error("firstName", msg)
 
-def getTaxes():
-    myMssqlResult = queryDBall("SELECT * FROM Taxes")
+def sanitizeLogin(loginName):
+    loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
+    return loginSanitized
+
+def getConfirmedLoginName(loginToCheck):
+    loginToCheckSanitized = sanitizeLogin(loginToCheck)
+    myMssqlResult = queryDBscalar(f"SELECT LoginName FROM UsersId where LoginName = '{loginToCheckSanitized}'")
     return myMssqlResult
 
 def index(request):
@@ -472,9 +490,18 @@ def index(request):
     formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail()
 
+    isUserExist = False
     if request.GET.get("loginName"):
         print(f"DEBUG MESSAGE: method GET {request.GET.get('loginName')} ")
         formSearchLogin = FormSearchLogin(request.GET)
+        if formSearchLogin.is_valid():
+            print("DEBUG MESSAGE: form is valid")
+            loginName = request.GET.get("loginName")
+            print(f"DEBUG MESSAGE: checking if login {loginName} is found")
+            loginChecked = getConfirmedLoginName(loginName)
+            print(f"DEBUG MESSAGE: after checking, the loginName = {loginChecked}")
+            isUserExist = True if ( request.GET.get('loginName') == loginChecked ) else False
+
 
     if request.method == "POST":
         print("DEBUG MESSAGE: method POST")
@@ -495,13 +522,15 @@ def index(request):
     myMssqlResult = queryDBall("SELECT * FROM Taxes")
     myMssqlResultSingle = myMssqlResult[0]["Tax1"]
 
-    DOMAIN = os.environ.get("DOMAIN")
-    loginName = "test123"
+    loginName = request.GET.get('loginName')
     urlQuery = f"LoginName={loginName}"
     context = {
-        "test": "123 test",
+        "loginName": loginName,
+        "buttonStyle": "success" if isUserExist else "secondary",
+        "isValid": "isValid" if isUserExist else "is-invalid",
+        "isDisabled": "" if isUserExist else "disabled",
         "myTax": myMssqlResultSingle,
-        "domain": DOMAIN,
+        "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "formUserDetail": formUserDetail,
