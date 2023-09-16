@@ -2,6 +2,7 @@ import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 import re
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
@@ -78,7 +79,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -204,7 +205,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -222,7 +223,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -240,7 +241,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -258,7 +259,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -276,7 +277,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -294,7 +295,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -312,7 +313,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -330,7 +331,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -348,7 +349,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -366,7 +367,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -376,17 +377,18 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
-    operator = forms.CharField(
+    OPERATORS = os.environ.get("OPERATORS")
+    operatorNames = OPERATORS or "Other"
+    operator = forms.ChoiceField(
+        choices=[(op, op) for op in operatorNames.split(" ")],
+        initial="Other",
         label="operator",
-        widget=forms.TextInput(
+        widget=forms.Select(
             attrs={
-                "placeholder": " ...",
                 "class": "form-control",
             }
         ),
-        required=True,
-        min_length=1,
-        max_length=30,
+        required=False,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -402,7 +404,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=30,
         validators=[
@@ -420,7 +422,7 @@ class FormUserDetail(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=250,
         validators=[
@@ -443,7 +445,24 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
+    def clean_lastName(self):
+        data = self.cleaned_data["lastName"]
+        if "some-word" not in data:
+            raise ValidationError("You have forgotten about some-word!")
+        return data
 
+    def clean(self):
+        cleaned_data = super().clean()
+        firstName = cleaned_data.get("firstName")
+        lastName = cleaned_data.get("lastName")
+        if firstName and lastName and "help" not in firstName:
+                msg = "Must put 'help' in login"
+                self.add_error("firstName", msg)
+
+
+def getTaxes():
+    myMssqlResult = queryDBall("SELECT * FROM Taxes")
+    return myMssqlResult
 
 def index(request):
     defaultData = {
