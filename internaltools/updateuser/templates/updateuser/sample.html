@@ -72,8 +72,21 @@
                     </div>
                     <label for="{{ formUserDetail.postalCode.id_for_label }}"
                            class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.postalCode.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.postalCode }}<small class="form-text text-muted">{{ formUserDetail.postalCode.errors }}</small>
+		    <div class="col-sm-10">
+			    <div class="row">
+				    <div class="col-auto">
+				    {{ formUserDetail.postalCode }}<small class="form-text text-muted">{{ formUserDetail.postalCode.errors }}</small>
+				    </div>
+				    <div class="col-auto">
+                                    <button name="lookupAddress" value="1" type="submit" class="btn btn-secondary mb-2">Lookup</button>
+			            </div>
+				    <div class="col-auto">
+                                    {{ formUserDetail.addressSelect }}
+			            </div>
+				    <div class="col-auto">
+                                    <button name="applyAddress" value="1" type="submit" class="btn btn-secondary mb-3">Apply</button>
+			            </div>
+			    </div>
                     </div>
                     <label for="{{ formUserDetail.country.id_for_label }}"
                            class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.country.label }}</label>

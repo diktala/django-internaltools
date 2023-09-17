@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 import re
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
+from canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 
 class FormSearchLogin(forms.Form):
@@ -164,7 +165,7 @@ class FormUserDetail(forms.Form):
     addressSelect = forms.ChoiceField(
         label="Select Address",
         choices=[
-            ("", "<<< Lookup"),
+            ("", "<<< press Lookup"),
         ],
         initial="",
         widget=forms.Select(
@@ -503,9 +504,41 @@ def index(request):
             isUserExist = True if ( request.GET.get('loginName') == loginChecked ) else False
 
 
+    """ --- """
+    """ Button Pressed LOOKUP postal code """
+    if (
+        request.method == "POST"
+        and request.POST.get('postalCode')
+        and request.POST.get('lookupAddress')
+    ):
+        print("DEBUG MESSAGE: FOUND POST + postalCode + lookupAddress")
+        indexID = getIndexFromPostal(request.POST.get('postalCode'))
+        listOfAddresses = getIDsFromIndex(indexID)
+        myChoices = [
+            ("", "Refine address ..."),
+        ]
+        myChoices += [(k, v) for k, v in listOfAddresses.items()]
+        formUserDetail.fields['addressSelect'].choices = myChoices
+        formUserDetail.fields['postalCode'].initial = request.POST.get('postalCode')
+    """ --- """
+    """ Button Pressed APPLY postal code """
+    if (
+        request.method == "POST"
+        and request.POST.get('addressSelect')
+        and request.POST.get('applyAddress')
+    ):
+        print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
+        postalAddress = getAddressFromID(request.POST.get('addressSelect'))
+        if len(postalAddress) >= 5:
+            formUserDetail.fields['address'].initial = postalAddress["Line1"]
+            formUserDetail.fields['city'].initial = postalAddress["City"]
+            formUserDetail.fields['state'].initial = postalAddress["ProvinceCode"]
+            formUserDetail.fields['postalCode'].initial = postalAddress["PostalCode"]
+    """ --- """
+
     if request.method == "POST":
         print("DEBUG MESSAGE: method POST")
-        formUserDetail = FormUserDetail(request.POST)
+        # formUserDetail = FormUserDetail(request.POST)
         if formSearchLogin.is_valid():
             print("DEBUG MESSAGE: form is valid")
             # return HttpResponse('thanks')
