@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.contrib import messages
 import re
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
@@ -128,6 +129,24 @@ class FormUserDetail(forms.Form):
     )
     state = forms.CharField(
         label="State",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": " ...",
+                "class": "form-control",
+            }
+        ),
+        required=True,
+        min_length=1,
+        max_length=30,
+        validators=[
+            RegexValidator(
+                regex="^[\w. &'-]*[\w.]$",
+                message="invalid characters",
+            )
+        ],
+    )
+    country = forms.CharField(
+        label="Country",
         widget=forms.TextInput(
             attrs={
                 "placeholder": " ...",
@@ -461,6 +480,7 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
+
     def clean_lastName(self):
         data = self.cleaned_data["lastName"]
         if "some-word" not in data:
@@ -472,17 +492,59 @@ class FormUserDetail(forms.Form):
         firstName = cleaned_data.get("firstName")
         lastName = cleaned_data.get("lastName")
         if firstName and lastName and "help" not in firstName:
-                msg = "Must put 'help' in login"
-                self.add_error("firstName", msg)
+            msg = "Must put 'help' in login"
+            self.add_error("firstName", msg)
+
 
 def sanitizeLogin(loginName):
     loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
     return loginSanitized
 
+
 def getConfirmedLoginName(loginToCheck):
     loginToCheckSanitized = sanitizeLogin(loginToCheck)
-    myMssqlResult = queryDBscalar(f"SELECT LoginName FROM UsersId where LoginName = '{loginToCheckSanitized}'")
-    return myMssqlResult
+    loginFound = queryDBscalar(
+        f"SELECT count(*) FROM UsersId where LoginName = lower('{loginToCheckSanitized}')"
+    )
+    return loginFound
+
+
+def getUserInfo(loginName):
+    usersDict = queryDBrow(
+        """SELECT
+          FirstName as 'firstName',
+          LastName as 'lastName',
+          OrganizationName as 'organizationName',
+          Address as 'address',
+          City as 'city',
+          State as 'state',
+          PostalCode as 'postalCode',
+          Country as 'country',
+          HomePhone as 'homePhone',
+          AccountNumber as 'accountNumber',
+          isnull(Language, '') as 'language',
+          isnull(PaymentMethod, '') as 'paymentMethod',
+          CreditCardNumber as 'creditCardNumber',
+          CreditCardExpiry as 'creditCardExpiry',
+          BankName as 'bankName',
+          CheckNumber as 'checkNumber',
+          BankAccount as 'bankAccount',
+          IdentificationCard as 'identificationCard',
+          AuthorizationCode as 'authorizationCode',
+          OperatingSystem as 'operatingSystem',
+          Operator as 'operator',
+          ReferredBy as 'referredBy',
+          Notes as 'notes',
+          replace(convert(varchar,DateJoined,102),'.','-') as "dateJoined"
+      FROM
+          UsersId
+      WHERE
+          LoginName = %s
+      """,
+        loginName,
+    )
+    return usersDict
+
 
 def index(request):
     defaultData = {
@@ -490,59 +552,76 @@ def index(request):
     }
     formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail()
+    isUserExist = True
 
-    isUserExist = False
-    if request.GET.get("loginName"):
-        print(f"DEBUG MESSAGE: method GET {request.GET.get('loginName')} ")
+    """ --- """
+    """ GET request received """
+    if request.method == "GET" and request.GET.get("loginName"):
+        # messages.add_message(request, messages.INFO, "Hello world. message 1")
+        # messages.add_message(request, messages.WARNING, "all good here Hello world.")
+        messages.add_message(
+            request, messages.SUCCESS, f"GET: loginName={request.GET.get('loginName')}"
+        )
         formSearchLogin = FormSearchLogin(request.GET)
+        isUserExist = False
         if formSearchLogin.is_valid():
-            print("DEBUG MESSAGE: form is valid")
-            loginName = request.GET.get("loginName")
-            print(f"DEBUG MESSAGE: checking if login {loginName} is found")
-            loginChecked = getConfirmedLoginName(loginName)
-            print(f"DEBUG MESSAGE: after checking, the loginName = {loginChecked}")
-            isUserExist = True if ( request.GET.get('loginName') == loginChecked ) else False
-
+            loginName = formSearchLogin.cleaned_data["loginName"]
+            loginFound = getConfirmedLoginName(loginName)
+            isUserExist = True if (str(loginFound) == "1") else False
+            userDict = getUserInfo(loginName) if isUserExist else False
+            formUserDetail = FormUserDetail(initial=userDict)
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
     if (
         request.method == "POST"
-        and request.POST.get('postalCode')
-        and request.POST.get('lookupAddress')
+        and request.POST.get("postalCode")
+        and request.POST.get("lookupAddress")
     ):
-        print("DEBUG MESSAGE: FOUND POST + postalCode + lookupAddress")
-        indexID = getIndexFromPostal(request.POST.get('postalCode'))
+        formSearchLogin = FormSearchLogin(request.GET.dict())
+        formUserDetail = FormUserDetail(request.POST.dict())
+        indexID = getIndexFromPostal(request.POST.get("postalCode"))
         listOfAddresses = getIDsFromIndex(indexID)
         myChoices = [
             ("", "Refine address ..."),
         ]
         myChoices += [(k, v) for k, v in listOfAddresses.items()]
-        formUserDetail.fields['addressSelect'].choices = myChoices
-        formUserDetail.fields['postalCode'].initial = request.POST.get('postalCode')
+        formUserDetail.fields["addressSelect"].choices = myChoices
+        formUserDetail.fields["postalCode"].initial = request.POST.get("postalCode")
     """ --- """
     """ Button Pressed APPLY postal code """
     if (
         request.method == "POST"
-        and request.POST.get('addressSelect')
-        and request.POST.get('applyAddress')
+        and request.POST.get("addressSelect")
+        and request.POST.get("applyAddress")
     ):
         print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
-        postalAddress = getAddressFromID(request.POST.get('addressSelect'))
+        formSearchLogin = FormSearchLogin(request.GET.dict())
+        formUserDetail = FormUserDetail(request.POST.dict())
+        print(f"DEBUG MESSAGE: POST: {request.POST.dict()}")
+        postalAddress = getAddressFromID(request.POST.get("addressSelect"))
         if len(postalAddress) >= 5:
-            formUserDetail.fields['address'].initial = postalAddress["Line1"]
-            formUserDetail.fields['city'].initial = postalAddress["City"]
-            formUserDetail.fields['state'].initial = postalAddress["ProvinceCode"]
-            formUserDetail.fields['postalCode'].initial = postalAddress["PostalCode"]
-    """ --- """
+            newAddress = {
+                "address": postalAddress["Line1"],
+                "city": postalAddress["City"],
+                "state": postalAddress["ProvinceCode"],
+                "country": "Canada",
+                "postalCode": postalAddress["PostalCode"],
+            }
+            formUserDetail = FormUserDetail(request.POST.dict() | newAddress)
 
-    if request.method == "POST":
-        print("DEBUG MESSAGE: method POST")
-        # formUserDetail = FormUserDetail(request.POST)
-        if formSearchLogin.is_valid():
+    """ --- """
+    """ Button Pressed UpdateUser """
+    if request.method == "POST" and request.POST.get("updateUser"):
+        print("DEBUG MESSAGE: method POST + updateUser")
+        formSearchLogin = FormSearchLogin(request.GET.dict())
+        formUserDetail = FormUserDetail(request.POST.dict())
+        if formUserDetail.is_valid():
+            messages.add_message(request, messages.SUCCESS, f"POST: updateUser")
             print("DEBUG MESSAGE: form is valid")
             # return HttpResponse('thanks')
         else:
+            messages.add_message(request, messages.WARNING, f"POST: updateUser")
             print("DEBUG MESSAGE: form is NOT valid")
             # return HttpResponse('form is invalid')
 
@@ -555,7 +634,7 @@ def index(request):
     myMssqlResult = queryDBall("SELECT * FROM Taxes")
     myMssqlResultSingle = myMssqlResult[0]["Tax1"]
 
-    loginName = request.GET.get('loginName')
+    loginName = request.GET.get("loginName")
     urlQuery = f"LoginName={loginName}"
     context = {
         "loginName": loginName,

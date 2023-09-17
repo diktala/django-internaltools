@@ -1,197 +1,230 @@
 {% extends "internaltools/base.html" %}
 {% block title %}updateuser{% endblock %}
 {% block content %}
-    <p>BASE HTML {{ loginName }}</p>
-    <p>myTax: {{ myTax }}</p>
-    <!-- form search users -->
-    <form id="SearchLoginForm" action="" novalidate="" method="GET">
-        <div class="row g-3">
-            <fieldset class="form-group border">
-                <legend>Update User</legend>
-                {# {{ formSearchLogin.csrf_token }} #}
-                <label for="{{ formSearchLogin.loginName.id_for_label }}" class="form-label">
-                    {{ formSearchLogin.loginName.label }}
-                </label>
-                {{ formSearchLogin.loginName }}
-                <small class="form-text text-muted">{{ formSearchLogin.loginName.errors }}</small>
-                <button type="submit" class="btn btn-primary mb-3">Search</button>
-            </fieldset>
-        </div>
-    </form>
-    <!-- end form search users -->
-    <!-- form update users -->
-    <form id="UserInfoForm" action="" novalidate="" method="POST">
-        {% csrf_token %}
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li {% if message.tags %}class=" {{ message.tags }} "{% endif %}>{{ message }}</li>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
                 {% endfor %}
             </ul>
         {% endif %}
-        <div class="row g-3">
-            <fieldset class="form-group border" {{ isDisabled }}>
-                <legend>User Info</legend>
-                <button disabled style="display:none;">
-                    <!-- this hidden button to disable submit on Enter key -->
-                </button>
-                {% for hidden in formUserDetail.hidden_fields %}{{ hidden }}{% endfor %}
-                <div class="row mb-3">
-                    <!-- start div row -->
-                    <label for="{{ formUserDetail.firstName.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.firstName.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.firstName }}<small class="form-text text-muted">{{ formUserDetail.firstName.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.lastName.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.lastName.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.lastName }}<small class="form-text text-muted">{{ formUserDetail.lastName.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.organizationName.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.organizationName.label }}
+        <p>BASE HTML {{ loginName }}</p>
+        <p>myTax: {{ myTax }}</p>
+        <!-- form search users -->
+        <form id="SearchLoginForm" action="" novalidate="" method="GET">
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>Update User</legend>
+                    {# {{ formSearchLogin.csrf_token }} #}
+                    <label for="{{ formSearchLogin.loginName.id_for_label }}" class="form-label">
+                        {{ formSearchLogin.loginName.label }}
                     </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.organizationName }}<small class="form-text text-muted">{{ formUserDetail.organizationName.errors }}</small>
+                    {{ formSearchLogin.loginName }}
+                    <small class="form-text text-muted">{{ formSearchLogin.loginName.errors }}</small>
+                    <button type="submit" class="btn btn-primary mb-3">Search</button>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <!-- form update users -->
+        <form id="UserInfoForm" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border" {{ isDisabled }}>
+                    <legend>User Info</legend>
+                    <button disabled style="display:none;">
+                        <!-- this hidden button to disable submit on Enter key -->
+                    </button>
+                    {% for hidden in formUserDetail.hidden_fields %}{{ hidden }}{% endfor %}
+                    <div class="row mb-3">
+                        <!-- start div row -->
+                        <label for="{{ formUserDetail.firstName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.firstName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.firstName }}<small class="form-text text-muted">{{ formUserDetail.firstName.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.lastName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.lastName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.lastName }}<small class="form-text text-muted">{{ formUserDetail.lastName.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.organizationName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.organizationName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.organizationName }}<small class="form-text text-muted">{{ formUserDetail.organizationName.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.address.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.address.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.address }}<small class="form-text text-muted">{{ formUserDetail.address.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.city.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.city.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.city }}<small class="form-text text-muted">{{ formUserDetail.city.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.state.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.state.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.state }}<small class="form-text text-muted">{{ formUserDetail.state.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.country.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.country.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.country }}<small class="form-text text-muted">{{ formUserDetail.country.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.postalCode.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.postalCode.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-auto">
+                                    {{ formUserDetail.postalCode }}<small class="form-text text-muted">{{ formUserDetail.postalCode.errors }}</small>
+                                </div>
+                                <div class="col-auto">
+                                    <button name="lookupAddress"
+                                            value="1"
+                                            type="submit"
+                                            class="btn btn-secondary mb-2">Lookup</button>
+                                </div>
+                                <div class="col-auto">{{ formUserDetail.addressSelect }}</div>
+                                <div class="col-auto">
+                                    <button name="applyAddress"
+                                            value="1"
+                                            type="submit"
+                                            class="btn btn-secondary mb-3">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="{{ formUserDetail.country.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.country.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.country }}<small class="form-text text-muted">{{ formUserDetail.country.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.homePhone.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.homePhone.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.homePhone }}<small class="form-text text-muted">{{ formUserDetail.homePhone.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.accountNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.accountNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.accountNumber }}<small class="form-text text-muted">{{ formUserDetail.accountNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.language.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.language.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.language }}<small class="form-text text-muted">{{ formUserDetail.language.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.paymentMethod.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.paymentMethod.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.paymentMethod }}<small class="form-text text-muted">{{ formUserDetail.paymentMethod.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.creditCardNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.creditCardNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.creditCardNumber }}<small class="form-text text-muted">{{ formUserDetail.creditCardNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.creditCardExpiry.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.creditCardExpiry.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.creditCardExpiry }}<small class="form-text text-muted">{{ formUserDetail.creditCardExpiry.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.bankName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.bankName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.bankName }}<small class="form-text text-muted">{{ formUserDetail.bankName.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.checkNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.checkNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.checkNumber }}<small class="form-text text-muted">{{ formUserDetail.checkNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.bankAccount.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.bankAccount.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.bankAccount }}<small class="form-text text-muted">{{ formUserDetail.bankAccount.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.identificationCard.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.identificationCard.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.identificationCard }}<small class="form-text text-muted">{{ formUserDetail.identificationCard.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.authorizationCode.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.authorizationCode.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.authorizationCode }}<small class="form-text text-muted">{{ formUserDetail.authorizationCode.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.operatingSystem.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.operatingSystem.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.operatingSystem }}<small class="form-text text-muted">{{ formUserDetail.operatingSystem.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.operator.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.operator.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.operator }}<small class="form-text text-muted">{{ formUserDetail.operator.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.referredBy.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formUserDetail.referredBy.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.referredBy }}<small class="form-text text-muted">{{ formUserDetail.referredBy.errors }}</small>
+                        </div>
+                        <label for="{{ formUserDetail.notes.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.notes.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formUserDetail.notes }}<small class="form-text text-muted">{{ formUserDetail.notes.errors }}</small>
+                        </div>
                     </div>
-                    <label for="{{ formUserDetail.address.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.address.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.address }}<small class="form-text text-muted">{{ formUserDetail.address.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.city.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.city.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.city }}<small class="form-text text-muted">{{ formUserDetail.city.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.state.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.state.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.state }}<small class="form-text text-muted">{{ formUserDetail.state.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.postalCode.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.postalCode.label }}</label>
-		    <div class="col-sm-10">
-			    <div class="row">
-				    <div class="col-auto">
-				    {{ formUserDetail.postalCode }}<small class="form-text text-muted">{{ formUserDetail.postalCode.errors }}</small>
-				    </div>
-				    <div class="col-auto">
-                                    <button name="lookupAddress" value="1" type="submit" class="btn btn-secondary mb-2">Lookup</button>
-			            </div>
-				    <div class="col-auto">
-                                    {{ formUserDetail.addressSelect }}
-			            </div>
-				    <div class="col-auto">
-                                    <button name="applyAddress" value="1" type="submit" class="btn btn-secondary mb-3">Apply</button>
-			            </div>
-			    </div>
-                    </div>
-                    <label for="{{ formUserDetail.country.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.country.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.country }}<small class="form-text text-muted">{{ formUserDetail.country.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.homePhone.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.homePhone.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.homePhone }}<small class="form-text text-muted">{{ formUserDetail.homePhone.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.accountNumber.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.accountNumber.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.accountNumber }}<small class="form-text text-muted">{{ formUserDetail.accountNumber.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.language.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.language.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.language }}<small class="form-text text-muted">{{ formUserDetail.language.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.paymentMethod.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.paymentMethod.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.paymentMethod }}<small class="form-text text-muted">{{ formUserDetail.paymentMethod.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.creditCardNumber.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.creditCardNumber.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.creditCardNumber }}<small class="form-text text-muted">{{ formUserDetail.creditCardNumber.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.creditCardExpiry.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.creditCardExpiry.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.creditCardExpiry }}<small class="form-text text-muted">{{ formUserDetail.creditCardExpiry.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.bankName.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.bankName.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.bankName }}<small class="form-text text-muted">{{ formUserDetail.bankName.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.checkNumber.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.checkNumber.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.checkNumber }}<small class="form-text text-muted">{{ formUserDetail.checkNumber.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.bankAccount.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.bankAccount.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.bankAccount }}<small class="form-text text-muted">{{ formUserDetail.bankAccount.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.identificationCard.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.identificationCard.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.identificationCard }}<small class="form-text text-muted">{{ formUserDetail.identificationCard.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.authorizationCode.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.authorizationCode.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.authorizationCode }}<small class="form-text text-muted">{{ formUserDetail.authorizationCode.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.operatingSystem.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">
-                        {{ formUserDetail.operatingSystem.label }}
-                    </label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.operatingSystem }}<small class="form-text text-muted">{{ formUserDetail.operatingSystem.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.operator.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.operator.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.operator }}<small class="form-text text-muted">{{ formUserDetail.operator.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.referredBy.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.referredBy.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.referredBy }}<small class="form-text text-muted">{{ formUserDetail.referredBy.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.notes.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.notes.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.notes }}<small class="form-text text-muted">{{ formUserDetail.notes.errors }}</small>
-                    </div>
-                    <label for="{{ formUserDetail.updateUser.id_for_label }}"
-                           class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.updateUser.label }}</label>
-                    <div class="col-sm-10">
-                        {{ formUserDetail.updateUser }}<small class="form-text text-muted">{{ formUserDetail.updateUser.errors }}</small>
-                    </div>
-                </div>
-                <!-- end div row -->
-                <button type="submit" class="btn btn-secondary mb-3">Update User</button>
-            </fieldset>
-        </div>
-    </form>
-    <!-- end form update users -->
-{% endblock %}
+                    <!-- end div row -->
+                    <button type="submit"
+                            name="updateUser"
+                            value="1"
+                            class="btn btn-secondary mb-3">Update User</button>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form update users -->
+    {% endblock %}
