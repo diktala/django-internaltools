@@ -36,6 +36,7 @@ class FormUserDetail(forms.Form):
     loginName = forms.CharField(
         widget=forms.HiddenInput(),
         disabled=True,
+        required=False,
     )
     firstName = forms.CharField(
         label="First Name",
@@ -462,7 +463,7 @@ class FormUserDetail(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
                 message="invalid characters",
             )
         ],
@@ -471,20 +472,14 @@ class FormUserDetail(forms.Form):
         label="Date Joined",
         widget=forms.HiddenInput(),
         disabled=True,
-        min_length=1,
-        max_length=30,
-        validators=[
-            RegexValidator(
-                regex="^[0-9]{4}-[0-9]{2}-[0-9]{2}( 00:00:00)?$",
-                message="incorrect characters used 2000-01-01",
-            )
-        ],
-    )
+        required=False,
+   )
 
     def clean_lastName(self):
         data = self.cleaned_data["lastName"]
         if "some-word" not in data:
-            raise ValidationError("You have forgotten about some-word!")
+            # raise ValidationError("You have forgotten about some-word!")
+            pass
         return data
 
     def clean(self):
@@ -493,7 +488,7 @@ class FormUserDetail(forms.Form):
         lastName = cleaned_data.get("lastName")
         if firstName and lastName and "help" not in firstName:
             msg = "Must put 'help' in login"
-            self.add_error("firstName", msg)
+            # self.add_error("firstName", msg)
 
 
 def sanitizeLogin(loginName):
@@ -512,6 +507,7 @@ def getConfirmedLoginName(loginToCheck):
 def getUserInfo(loginName):
     usersDict = queryDBrow(
         """SELECT
+          LoginName as 'loginName',
           FirstName as 'firstName',
           LastName as 'lastName',
           OrganizationName as 'organizationName',
@@ -525,7 +521,7 @@ def getUserInfo(loginName):
           isnull(Language, '') as 'language',
           isnull(PaymentMethod, '') as 'paymentMethod',
           CreditCardNumber as 'creditCardNumber',
-          CreditCardExpiry as 'creditCardExpiry',
+          replace(convert(varchar,CreditCardExpiry,102),'.','-') as 'creditCardExpiry',
           BankName as 'bankName',
           CheckNumber as 'checkNumber',
           BankAccount as 'bankAccount',
@@ -570,6 +566,7 @@ def index(request):
             isUserExist = True if (str(loginFound) == "1") else False
             userDict = getUserInfo(loginName) if isUserExist else False
             formUserDetail = FormUserDetail(initial=userDict)
+            # print(f"DEBUG MESSAGE: mssql query: {userDict}")
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -617,11 +614,11 @@ def index(request):
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
         if formUserDetail.is_valid():
-            messages.add_message(request, messages.SUCCESS, f"POST: updateUser")
+            messages.add_message(request, messages.SUCCESS, f"POST: updateUser form is VALID")
             print("DEBUG MESSAGE: form is valid")
             # return HttpResponse('thanks')
         else:
-            messages.add_message(request, messages.WARNING, f"POST: updateUser")
+            messages.add_message(request, messages.WARNING, f"POST: updateUser form is still INVALID")
             print("DEBUG MESSAGE: form is NOT valid")
             # return HttpResponse('form is invalid')
 

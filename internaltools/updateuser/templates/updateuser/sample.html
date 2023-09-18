@@ -14,6 +14,8 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
+        {# formUserDetail.errors.items #}
         <p>BASE HTML {{ loginName }}</p>
         <p>myTax: {{ myTax }}</p>
         <!-- form search users -->
@@ -35,13 +37,13 @@
         <!-- form update users -->
         <form id="UserInfoForm" action="" novalidate="" method="POST">
             {% csrf_token %}
+            {% for hidden in formUserDetail.hidden_fields %}{{ hidden }}{% endfor %}
             <div class="row g-3">
                 <fieldset class="form-group border" {{ isDisabled }}>
                     <legend>User Info</legend>
                     <button disabled style="display:none;">
                         <!-- this hidden button to disable submit on Enter key -->
                     </button>
-                    {% for hidden in formUserDetail.hidden_fields %}{{ hidden }}{% endfor %}
                     <div class="row mb-3">
                         <!-- start div row -->
                         <label for="{{ formUserDetail.firstName.id_for_label }}"
