@@ -190,7 +190,7 @@ class FormUserDetail(forms.Form):
         initial="",
         widget=forms.Select(
             attrs={
-                "class": "form-control",
+                "class": "form-control form-select",
             }
         ),
         required=False,
@@ -240,7 +240,7 @@ class FormUserDetail(forms.Form):
         initial="",
         widget=forms.Select(
             attrs={
-                "class": "form-control",
+                "class": "form-control form-select",
             }
         ),
         required=False,
@@ -251,17 +251,20 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
-    paymentMethod = forms.CharField(
+    paymentMethod = forms.ChoiceField(
         label="Payment Method",
-        widget=forms.TextInput(
+        choices=[
+            ("VISA", "VISA"),
+            ("MC", "MC"),
+            ("", "Cheque"),
+        ],
+        initial="",
+        widget=forms.Select(
             attrs={
-                "placeholder": " ...",
-                "class": "form-control",
+                "class": "form-control form-select",
             }
         ),
         required=False,
-        min_length=1,
-        max_length=30,
         validators=[
             RegexValidator(
                 regex="^VISA|MC$",
@@ -421,7 +424,7 @@ class FormUserDetail(forms.Form):
         label="operator",
         widget=forms.Select(
             attrs={
-                "class": "form-control",
+                "class": "form-control form-select",
             }
         ),
         required=False,
@@ -548,7 +551,6 @@ def index(request):
     }
     formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail()
-    isUserExist = True
 
     """ --- """
     """ GET request received """
@@ -575,6 +577,7 @@ def index(request):
         and request.POST.get("postalCode")
         and request.POST.get("lookupAddress")
     ):
+        isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
         indexID = getIndexFromPostal(request.POST.get("postalCode"))
@@ -593,6 +596,7 @@ def index(request):
         and request.POST.get("applyAddress")
     ):
         print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
+        isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
         print(f"DEBUG MESSAGE: POST: {request.POST.dict()}")
@@ -611,6 +615,7 @@ def index(request):
     """ Button Pressed UpdateUser """
     if request.method == "POST" and request.POST.get("updateUser"):
         print("DEBUG MESSAGE: method POST + updateUser")
+        isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
         if formUserDetail.is_valid():
