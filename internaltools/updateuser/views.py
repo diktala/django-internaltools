@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib import messages
 import re
+from datetime import datetime, timedelta
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
@@ -102,10 +103,10 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=50,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. &',-]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -478,21 +479,55 @@ class FormUserDetail(forms.Form):
         required=False,
    )
 
-    def clean_lastName(self):
-        data = self.cleaned_data["lastName"]
-        if "some-word" not in data:
-            # raise ValidationError("You have forgotten about some-word!")
-            pass
-        return data
-
     def clean(self):
         cleaned_data = super().clean()
-        firstName = cleaned_data.get("firstName")
-        lastName = cleaned_data.get("lastName")
-        if firstName and lastName and "help" not in firstName:
-            msg = "Must put 'help' in login"
-            # self.add_error("firstName", msg)
+        paymentMethod = cleaned_data.get("paymentMethod")
+        creditCardNumber = cleaned_data.get("creditCardNumber")
+        creditCardExpiry = cleaned_data.get("creditCardExpiry")
+        """ check credit card info """
+        """
+        """
+        if paymentMethod is not None and creditCardNumber is not None and creditCardExpiry is not None:
+            if len(creditCardNumber) == 0 and len(creditCardExpiry) > 0:
+                msg = "provide a credit card number or remove the credit card expiry date"
+                self.add_error("creditCardNumber", msg)
+                self.add_error("creditCardExpiry", msg)
+            if len(creditCardNumber) > 0 and len(creditCardExpiry) == 0:
+                msg = "provide a credit card expiry or remove the credit card number"
+                self.add_error("creditCardNumber", msg)
+                self.add_error("creditCardExpiry", msg)
+            if len(creditCardExpiry) > 0 and not isDateValid(creditCardExpiry):
+                self.add_error("creditCardExpiry", 'Date is invalid')
+            if isDateValid(creditCardExpiry) and isDateExpired(creditCardExpiry):
+                self.add_error("creditCardExpiry", 'Credit card is expired')
+            if isDateValid(creditCardExpiry):
+                self.cleaned_data["creditCardExpiry"] = lastDay(creditCardExpiry)
+        return self.cleaned_data
 
+
+
+def isDateValid(dateToCheck):
+    try:
+        formattedDate = datetime.strptime(dateToCheck,'%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
+def isDateExpired(dateToCheck):
+    if isDateValid(dateToCheck):
+        checkDate = datetime.strptime(dateToCheck,'%Y-%m-%d')
+        todayDate = datetime.now()
+        if todayDate > checkDate:
+            return True
+    return False
+
+def lastDay(dateToConvert):
+    lastDay = dateToConvert
+    if isDateValid(dateToConvert):
+        formattedDate = datetime.strptime(dateToConvert,'%Y-%m-%d')
+        nextMonth = formattedDate.replace(day=28) + timedelta(days=5)
+        lastDay = nextMonth - timedelta(days=nextMonth.day)
+    return lastDay.strftime("%Y-%m-%d")
 
 def sanitizeLogin(loginName):
     loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
@@ -566,7 +601,7 @@ def index(request):
             loginName = formSearchLogin.cleaned_data["loginName"]
             loginFound = getConfirmedLoginName(loginName)
             isUserExist = True if (str(loginFound) == "1") else False
-            userDict = getUserInfo(loginName) if isUserExist else False
+            userDict = getUserInfo(loginName) if isUserExist else None
             formUserDetail = FormUserDetail(initial=userDict)
             # print(f"DEBUG MESSAGE: mssql query: {userDict}")
 
@@ -595,11 +630,11 @@ def index(request):
         and request.POST.get("addressSelect")
         and request.POST.get("applyAddress")
     ):
-        print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
+        # print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
         isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
-        print(f"DEBUG MESSAGE: POST: {request.POST.dict()}")
+        # print(f"DEBUG MESSAGE: POST: {request.POST.dict()}")
         postalAddress = getAddressFromID(request.POST.get("addressSelect"))
         if len(postalAddress) >= 5:
             newAddress = {
@@ -614,27 +649,28 @@ def index(request):
     """ --- """
     """ Button Pressed UpdateUser """
     if request.method == "POST" and request.POST.get("updateUser"):
-        print("DEBUG MESSAGE: method POST + updateUser")
+        # print("DEBUG MESSAGE: method POST + updateUser")
         isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
-        formUserDetail = FormUserDetail(request.POST.dict())
-        if formUserDetail.is_valid():
+        initialUserDetail = FormUserDetail(request.POST.dict())
+        if initialUserDetail.is_valid():
             messages.add_message(request, messages.SUCCESS, f"POST: updateUser form is VALID")
-            print("DEBUG MESSAGE: form is valid")
-            # return HttpResponse('thanks')
+            # print("DEBUG MESSAGE: form is valid")
         else:
             messages.add_message(request, messages.WARNING, f"POST: updateUser form is still INVALID")
-            print("DEBUG MESSAGE: form is NOT valid")
-            # return HttpResponse('form is invalid')
+            # print("DEBUG MESSAGE: form is NOT valid")
+        """
+        # rebuilding form using POST + cleaned_data
+        # .cleaned_data generated from is_valid call
+        # .cleaned_data contains updated fields from validation such as ccexpiry
+        # notice .cleaned_data does not contain fields wit errors, we need original POSTed data
+        """
+        formUserDetail = FormUserDetail(request.POST.dict() | initialUserDetail.cleaned_data)
 
     # example query using django models
     # add this: from .models import UsersId
     # myResult = UsersId.objects.using('db2')
     # myResultList = (myResult.values()[0]['LoginName'])
-
-    # example query using modelmssql
-    myMssqlResult = queryDBall("SELECT * FROM Taxes")
-    myMssqlResultSingle = myMssqlResult[0]["Tax1"]
 
     loginName = request.GET.get("loginName")
     urlQuery = f"LoginName={loginName}"
@@ -643,11 +679,9 @@ def index(request):
         "buttonStyle": "success" if isUserExist else "secondary",
         "isValid": "isValid" if isUserExist else "is-invalid",
         "isDisabled": "" if isUserExist else "disabled",
-        "myTax": myMssqlResultSingle,
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "formUserDetail": formUserDetail,
     }
-    # return HttpResponse(f"Hello, the Tax1 is {myMssqlResultSingle}")
     return render(request, "updateuser/sample.html", context)
