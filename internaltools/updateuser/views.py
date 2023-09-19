@@ -1,12 +1,12 @@
+from datetime import datetime, timedelta
 import os
+import re
 from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib import messages
-import re
-from datetime import datetime, timedelta
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
@@ -584,6 +584,7 @@ def index(request):
     defaultData = {
         "loginName": "",
     }
+    isUserExist = False
     formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail()
 
@@ -603,7 +604,6 @@ def index(request):
             isUserExist = True if (str(loginFound) == "1") else False
             userDict = getUserInfo(loginName) if isUserExist else None
             formUserDetail = FormUserDetail(initial=userDict)
-            # print(f"DEBUG MESSAGE: mssql query: {userDict}")
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -630,11 +630,9 @@ def index(request):
         and request.POST.get("addressSelect")
         and request.POST.get("applyAddress")
     ):
-        # print("DEBUG MESSAGE: FOUND POST + addressSelect + applyAddress")
         isUserExist = True
         formSearchLogin = FormSearchLogin(request.GET.dict())
         formUserDetail = FormUserDetail(request.POST.dict())
-        # print(f"DEBUG MESSAGE: POST: {request.POST.dict()}")
         postalAddress = getAddressFromID(request.POST.get("addressSelect"))
         if len(postalAddress) >= 5:
             newAddress = {

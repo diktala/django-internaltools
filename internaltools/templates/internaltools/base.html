@@ -1,21 +1,26 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{% block title %}{% endblock %}</title>
+        <title>
+            {% block title %}{% endblock %}
+        </title>
         <link rel="icon" href="{% static 'internaltools/favicon.ico' %}">
-        <link href="{% static 'internaltools/bootstrap.min.css' %}" rel="stylesheet">
-
+        <link href="{% static 'internaltools/bootstrap.min.css' %}"
+              rel="stylesheet">
         <style>
             pre {
                 background: #ddd;
                 padding: 10px;
             }
+
             h2 {
                 margin-top: 20px;
             }
+
             footer {
                 margin: 20px;
             }
@@ -25,28 +30,26 @@
         <div class="text-white font-weight-bold bg-danger">Internet</div>
         {% include 'internaltools/topmenu.html' with domain=domain urlQuery=urlQuery %}
         <main class="container-fluid">
-<div class="row">
-    <!-- left column -->
-    <div class="d-none d-lg-block col-lg-1 border-right" style="background-color: #ffffed;">
-    </div>
-    <!-- end left column -->
-    <!-- center column -->
-    <div class="col-12 col-lg-10">
-            {% block content %}{% endblock %}
-    </div>
-    <!-- end center column -->
-    <!-- right column -->
-    <div class="d-none d-lg-block col-lg-1 border-left" style="background-color: #ffffed;">
-    </div>
-    <!-- end right column -->
-</div>
+            <div class="row">
+                <!-- left column -->
+                <div class="d-none d-lg-block col-lg-1 border-right"
+                     style="background-color: #ffffed"></div>
+                <!-- end left column -->
+                <!-- center column -->
+                <div class="col-12 col-lg-10">
+                    {% block content %}{% endblock %}
+                </div>
+                <!-- end center column -->
+                <!-- right column -->
+                <div class="d-none d-lg-block col-lg-1 border-left"
+                     style="background-color: #ffffed"></div>
+                <!-- end right column -->
+            </div>
         </main>
         <footer class="text-center">
-            {% block footer %}
-            {% endblock %}
+            {% block footer %}{% endblock %}
         </footer>
-    <div class="p-0 border border-bottom border-danger"></div>
-    <script src="{% static 'internaltools/bootstrap.bundle.min.js' %}"></script>
-
+        <div class="p-0 border border-bottom border-danger"></div>
+        <script src="{% static 'internaltools/bootstrap.bundle.min.js' %}"></script>
     </body>
 </html>
