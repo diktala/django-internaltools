@@ -36,7 +36,6 @@ class FormSearchLogin(forms.Form):
 class FormUserDetail(forms.Form):
     loginName = forms.CharField(
         widget=forms.HiddenInput(),
-        disabled=True,
         required=False,
     )
     firstName = forms.CharField(
@@ -475,9 +474,8 @@ class FormUserDetail(forms.Form):
     dateJoined = forms.CharField(
         label="Date Joined",
         widget=forms.HiddenInput(),
-        disabled=True,
         required=False,
-   )
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -487,9 +485,15 @@ class FormUserDetail(forms.Form):
         """ check credit card info """
         """
         """
-        if paymentMethod is not None and creditCardNumber is not None and creditCardExpiry is not None:
+        if (
+            paymentMethod is not None
+            and creditCardNumber is not None
+            and creditCardExpiry is not None
+        ):
             if len(creditCardNumber) == 0 and len(creditCardExpiry) > 0:
-                msg = "provide a credit card number or remove the credit card expiry date"
+                msg = (
+                    "provide a credit card number or remove the credit card expiry date"
+                )
                 self.add_error("creditCardNumber", msg)
                 self.add_error("creditCardExpiry", msg)
             if len(creditCardNumber) > 0 and len(creditCardExpiry) == 0:
@@ -497,37 +501,39 @@ class FormUserDetail(forms.Form):
                 self.add_error("creditCardNumber", msg)
                 self.add_error("creditCardExpiry", msg)
             if len(creditCardExpiry) > 0 and not isDateValid(creditCardExpiry):
-                self.add_error("creditCardExpiry", 'Date is invalid')
+                self.add_error("creditCardExpiry", "Date is invalid")
             if isDateValid(creditCardExpiry) and isDateExpired(creditCardExpiry):
-                self.add_error("creditCardExpiry", 'Credit card is expired')
+                self.add_error("creditCardExpiry", "Credit card is expired")
             if isDateValid(creditCardExpiry):
                 self.cleaned_data["creditCardExpiry"] = lastDay(creditCardExpiry)
         return self.cleaned_data
 
 
-
 def isDateValid(dateToCheck):
     try:
-        formattedDate = datetime.strptime(dateToCheck,'%Y-%m-%d')
+        formattedDate = datetime.strptime(dateToCheck, "%Y-%m-%d")
         return True
     except ValueError:
         return False
 
+
 def isDateExpired(dateToCheck):
     if isDateValid(dateToCheck):
-        checkDate = datetime.strptime(dateToCheck,'%Y-%m-%d')
+        checkDate = datetime.strptime(dateToCheck, "%Y-%m-%d")
         todayDate = datetime.now()
         if todayDate > checkDate:
             return True
     return False
 
+
 def lastDay(dateToConvert):
     lastDay = dateToConvert
     if isDateValid(dateToConvert):
-        formattedDate = datetime.strptime(dateToConvert,'%Y-%m-%d')
+        formattedDate = datetime.strptime(dateToConvert, "%Y-%m-%d")
         nextMonth = formattedDate.replace(day=28) + timedelta(days=5)
         lastDay = nextMonth - timedelta(days=nextMonth.day)
     return lastDay.strftime("%Y-%m-%d")
+
 
 def sanitizeLogin(loginName):
     loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
@@ -580,6 +586,73 @@ def getUserInfo(loginName):
     return usersDict
 
 
+def submitToAladin(userInfoDict):
+    updateAladinSQL1 = f"""
+        EXECUTE UpdateUserFile
+            @LoginName = %(loginName)s
+            , @FirstName = %(firstName)s
+            , @LastName = %(lastName)s
+            , @OrganizationName = %(organizationName)s
+            , @Address = %(address)s
+            , @City = %(city)s
+            , @State = %(state)s
+            , @PostalCode = %(postalCode)s
+            , @Country = %(country)s
+            , @HomePhone = %(homePhone)s
+            , @OperatingSystem = %(operatingSystem)s
+            , @AccountNumber = %(accountNumber)s
+            , @PaymentMethod = %(paymentMethod)s
+            , @Membership = %(membership)s
+            , @CreditCardExpiry = %(creditCardExpiry)s
+            , @CreditCardNumber = %(creditCardNumber)s
+            , @Notes = %(notes)s
+            , @DateJoined = %(dateJoined)s
+            , @NextBilling = %(nextBilling)s
+            , @AccountSetupBy = %(accountSetupBy)s
+            , @ReferredBy = %(referredBy)s
+            , @GovID = %(govId)s
+            , @GovConfirmation = %(govConfirmation)s
+            , @GovAmount = %(govAmount)s
+            , @OneTimeCharge = %(oneTimeCharge)s
+            , @OneTimeQty = %(oneTimeQty)s
+            , @Language = %(language)s
+            , @DebugLevel = %(debugLevel)d
+            , @Operator = %(operator)s
+    """
+    updateAladinParam1 = {
+        "loginName": userInfoDict["loginName"],
+        "firstName": userInfoDict["firstName"],
+        "lastName": userInfoDict["lastName"],
+        "organizationName": userInfoDict["organizationName"],
+        "address": userInfoDict["address"],
+        "city": userInfoDict["city"],
+        "state": userInfoDict["state"],
+        "postalCode": userInfoDict["postalCode"],
+        "country": userInfoDict["country"],
+        "homePhone": userInfoDict["homePhone"],
+        "operatingSystem": userInfoDict["operatingSystem"],
+        "accountNumber": userInfoDict["accountNumber"],
+        "paymentMethod": userInfoDict["paymentMethod"],
+        "membership": "",
+        "creditCardExpiry": userInfoDict["creditCardExpiry"],
+        "creditCardNumber": userInfoDict["creditCardNumber"],
+        "notes": userInfoDict["notes"],
+        "dateJoined": userInfoDict["dateJoined"],
+        "nextBilling": "",
+        "accountSetupBy": "",
+        "referredBy": userInfoDict["referredBy"],
+        "govId": "",
+        "govConfirmation": "",
+        "govAmount": "",
+        "oneTimeCharge": "",
+        "oneTimeQty": "",
+        "language": userInfoDict["language"],
+        "debugLevel": "1",
+        "operator": userInfoDict["operator"],
+    }
+    queryDBall(updateAladinSQL1, updateAladinParam1)
+
+
 def index(request):
     defaultData = {
         "loginName": "",
@@ -593,9 +666,7 @@ def index(request):
     if request.method == "GET" and request.GET.get("loginName"):
         # messages.add_message(request, messages.INFO, "Hello world. message 1")
         # messages.add_message(request, messages.WARNING, "all good here Hello world.")
-        messages.add_message(
-            request, messages.SUCCESS, f"GET: loginName={request.GET.get('loginName')}"
-        )
+        # messages.add_message( request, messages.SUCCESS, f"{request.GET.get('loginName')}")
         formSearchLogin = FormSearchLogin(request.GET)
         isUserExist = False
         if formSearchLogin.is_valid():
@@ -652,18 +723,23 @@ def index(request):
         formSearchLogin = FormSearchLogin(request.GET.dict())
         initialUserDetail = FormUserDetail(request.POST.dict())
         if initialUserDetail.is_valid():
-            messages.add_message(request, messages.SUCCESS, f"POST: updateUser form is VALID")
-            # print("DEBUG MESSAGE: form is valid")
+            submitToAladin(initialUserDetail.cleaned_data)
+            messages.add_message(
+                request, messages.SUCCESS, f"User info has been updated"
+            )
         else:
-            messages.add_message(request, messages.WARNING, f"POST: updateUser form is still INVALID")
-            # print("DEBUG MESSAGE: form is NOT valid")
+            messages.add_message(
+                request, messages.WARNING, f"POST: updateUser form is still INVALID"
+            )
         """
         # rebuilding form using POST + cleaned_data
         # .cleaned_data generated from is_valid call
         # .cleaned_data contains updated fields from validation such as ccexpiry
         # notice .cleaned_data does not contain fields wit errors, we need original POSTed data
         """
-        formUserDetail = FormUserDetail(request.POST.dict() | initialUserDetail.cleaned_data)
+        formUserDetail = FormUserDetail(
+            request.POST.dict() | initialUserDetail.cleaned_data
+        )
 
     # example query using django models
     # add this: from .models import UsersId
