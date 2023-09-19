@@ -650,7 +650,27 @@ def submitToAladin(userInfoDict):
         "debugLevel": "1",
         "operator": userInfoDict["operator"],
     }
+    updateAladinSQL2 = f"""
+        UPDATE UsersId SET
+        BankName = %(bankName)s
+        , CheckNumber = %(checkNumber)s
+        , BankAccount = %(bankAccount)s
+        , IdentificationCard = %(identificationCard)s
+        , AuthorizationCode = %(authorizationCode)s
+        WHERE LoginName = %(loginName)s
+    """
+    updateAladinParam2 = {
+        "bankName": userInfoDict["bankName"],
+        "checkNumber": userInfoDict["checkNumber"],
+        "bankAccount": userInfoDict["bankAccount"],
+        "identificationCard": userInfoDict["identificationCard"],
+        "authorizationCode": userInfoDict["authorizationCode"],
+        "loginName": userInfoDict["loginName"],
+    }
     queryDBall(updateAladinSQL1, updateAladinParam1)
+    queryDBall(updateAladinSQL2, updateAladinParam2)
+    # print(f"DEBUG MESSAGE: {updateAladinSQL2}")
+    # print(f"DEBUG MESSAGE: {updateAladinParam2}")
 
 
 def index(request):
