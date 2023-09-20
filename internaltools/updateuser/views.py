@@ -25,7 +25,7 @@ class FormSearchLogin(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[a-z0-9][a-z0-9.-]*$",
+                regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
                 message="invalid characters",
                 flags=re.IGNORECASE,
             )
@@ -48,7 +48,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w]$",
@@ -66,7 +66,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w]$",
@@ -84,7 +84,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=25,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -102,7 +102,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=50,
+        max_length=30,
         validators=[
             RegexValidator(
                 regex="^[\w. &',-]*[\w.]$",
@@ -120,7 +120,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -138,7 +138,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -156,7 +156,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=12,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -174,7 +174,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=7,
         validators=[
             RegexValidator(
                 regex="^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$",
@@ -205,7 +205,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=12,
         validators=[
             RegexValidator(
                 regex="^[0-9]{3} [0-9]{3} [0-9]{4}$",
@@ -223,7 +223,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[0-9]{1,9}$",
@@ -282,7 +282,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[0-9 ]{16,19}$",
@@ -318,7 +318,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -336,7 +336,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -354,7 +354,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -372,7 +372,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -390,7 +390,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -408,7 +408,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=10,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -445,7 +445,7 @@ class FormUserDetail(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=30,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
@@ -505,7 +505,7 @@ class FormUserDetail(forms.Form):
             if isDateValid(creditCardExpiry) and isDateExpired(creditCardExpiry):
                 self.add_error("creditCardExpiry", "Credit card is expired")
             if isDateValid(creditCardExpiry):
-                self.cleaned_data["creditCardExpiry"] = lastDay(creditCardExpiry)
+                self.cleaned_data["creditCardExpiry"] = getLastDay(creditCardExpiry)
         return self.cleaned_data
 
 
@@ -526,7 +526,7 @@ def isDateExpired(dateToCheck):
     return False
 
 
-def lastDay(dateToConvert):
+def getLastDay(dateToConvert):
     lastDay = dateToConvert
     if isDateValid(dateToConvert):
         formattedDate = datetime.strptime(dateToConvert, "%Y-%m-%d")
@@ -667,10 +667,10 @@ def submitToAladin(userInfoDict):
         "authorizationCode": userInfoDict["authorizationCode"],
         "loginName": userInfoDict["loginName"],
     }
-    queryDBall(updateAladinSQL1, updateAladinParam1)
-    queryDBall(updateAladinSQL2, updateAladinParam2)
     # print(f"DEBUG MESSAGE: {updateAladinSQL2}")
     # print(f"DEBUG MESSAGE: {updateAladinParam2}")
+    queryDBall(updateAladinSQL1, updateAladinParam1)
+    queryDBall(updateAladinSQL2, updateAladinParam2)
 
 
 def index(request):
@@ -747,6 +747,8 @@ def index(request):
             messages.add_message(
                 request, messages.SUCCESS, f"User info has been updated"
             )
+            # freeze the form
+            isUserExist = False
         else:
             messages.add_message(
                 request, messages.WARNING, f"POST: updateUser form is still INVALID"
