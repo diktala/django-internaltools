@@ -112,9 +112,9 @@ def getAddressFromID(addressID=""):
     addressID = _sanitizeString(addressID)
     payload = {"Key": API_KEY2, "Source": "", "$cache": "true", "Id": addressID}
     url = "https://ws1.postescanada-canadapost.ca"
-    url += "/AddressComplete/Interactive/RetrieveFormatted/v2.10/json3ex.ws"
+    # url += "/AddressComplete/Interactive/RetrieveFormatted/v2.10/json3ex.ws"
+    url += "/AddressComplete/Interactive/Retrieve/v2.11/json3ex.ws"
     detailAddress = {}
-
     try:
         t = requests.get(url, headers=headers, params=payload)
         detailAddress["Id"] = addressID
@@ -122,7 +122,8 @@ def getAddressFromID(addressID=""):
         detailAddress["PostalCode"] = t.json()["Items"][0]["PostalCode"]
         detailAddress["ProvinceCode"] = t.json()["Items"][0]["ProvinceCode"]
         detailAddress["City"] = t.json()["Items"][0]["City"]
-    except:
+    except Exception as error:
+        print("error in getAddressFromID:", type(error).__name__, "–", error)
         pass
 
     return detailAddress
