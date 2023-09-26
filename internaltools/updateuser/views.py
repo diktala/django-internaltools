@@ -27,7 +27,6 @@ class FormSearchLogin(forms.Form):
             RegexValidator(
                 regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
                 message="invalid characters",
-                flags=re.IGNORECASE,
             )
         ],
     )
@@ -36,7 +35,14 @@ class FormSearchLogin(forms.Form):
 class FormUserDetail(forms.Form):
     loginName = forms.CharField(
         widget=forms.HiddenInput(),
-        required=False,
+        required=True,
+        min_length=1,
+        max_length=20,
+        validators=[
+            RegexValidator(
+                regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
+            )
+        ],
     )
     firstName = forms.CharField(
         label="First Name",
@@ -174,7 +180,7 @@ class FormUserDetail(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=7,
+        max_length=20,
         validators=[
             RegexValidator(
                 regex="^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$",
@@ -475,6 +481,13 @@ class FormUserDetail(forms.Form):
         label="Date Joined",
         widget=forms.HiddenInput(),
         required=False,
+        min_length=1,
+        max_length=10,
+        validators=[
+            RegexValidator(
+                regex="^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            )
+        ],
     )
 
     def clean(self):
@@ -583,7 +596,8 @@ def getUserInfo(loginName):
       """,
         loginName,
     )
-    return usersDict
+    strippedUsersDict = {key: value.strip() if isinstance(value, str) else value for key, value in usersDict.items()}
+    return strippedUsersDict
 
 
 def submitToAladin(userInfoDict):
@@ -669,8 +683,8 @@ def submitToAladin(userInfoDict):
     }
     # print(f"DEBUG MESSAGE: {updateAladinSQL2}")
     # print(f"DEBUG MESSAGE: {updateAladinParam2}")
-    queryDBall(updateAladinSQL1, updateAladinParam1)
-    queryDBall(updateAladinSQL2, updateAladinParam2)
+    # queryDBall(updateAladinSQL1, updateAladinParam1)
+    # queryDBall(updateAladinSQL2, updateAladinParam2)
 
 
 def index(request):
@@ -678,23 +692,17 @@ def index(request):
         "loginName": "",
     }
     isUserExist = False
-    formSearchLogin = FormSearchLogin(defaultData)
-    formUserDetail = FormUserDetail()
+    formSearchLogin = FormSearchLogin( defaultData | request.GET.dict() )
+    formUserDetail = FormUserDetail( request.POST.dict() )
 
     """ --- """
     """ GET request received """
-    if request.method == "GET" and request.GET.get("loginName"):
-        # messages.add_message(request, messages.INFO, "Hello world. message 1")
-        # messages.add_message(request, messages.WARNING, "all good here Hello world.")
-        # messages.add_message( request, messages.SUCCESS, f"{request.GET.get('loginName')}")
-        formSearchLogin = FormSearchLogin(request.GET)
-        isUserExist = False
-        if formSearchLogin.is_valid():
-            loginName = formSearchLogin.cleaned_data["loginName"]
-            loginFound = countConfirmedLoginName(loginName)
-            isUserExist = True if (str(loginFound) == "1") else False
-            userDict = getUserInfo(loginName) if isUserExist else None
-            formUserDetail = FormUserDetail(initial=userDict)
+    if formSearchLogin.is_valid():
+        loginName = formSearchLogin.cleaned_data["loginName"]
+        loginFound = countConfirmedLoginName(loginName)
+        isUserExist = True if (str(loginFound) == "1") else False
+        userDict = getUserInfo(loginName) if isUserExist else dict()
+        formUserDetail = FormUserDetail( userDict | request.POST.dict() | {"loginName": loginName} )
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -703,9 +711,6 @@ def index(request):
         and request.POST.get("postalCode")
         and request.POST.get("lookupAddress")
     ):
-        isUserExist = True
-        formSearchLogin = FormSearchLogin(request.GET.dict())
-        formUserDetail = FormUserDetail(request.POST.dict())
         indexID = getIndexFromPostal(request.POST.get("postalCode"))
         listOfAddresses = getIDsFromIndex(indexID)
         myChoices = [
@@ -721,9 +726,6 @@ def index(request):
         and request.POST.get("addressSelect")
         and request.POST.get("applyAddress")
     ):
-        isUserExist = True
-        formSearchLogin = FormSearchLogin(request.GET.dict())
-        formUserDetail = FormUserDetail(request.POST.dict())
         postalAddress = getAddressFromID(request.POST.get("addressSelect"))
         if len(postalAddress) >= 5:
             newAddress = {
@@ -738,20 +740,17 @@ def index(request):
     """ --- """
     """ Button Pressed UpdateUser """
     if request.method == "POST" and request.POST.get("updateUser"):
-        # print("DEBUG MESSAGE: method POST + updateUser")
-        isUserExist = True
-        formSearchLogin = FormSearchLogin(request.GET.dict())
-        initialUserDetail = FormUserDetail(request.POST.dict())
+        initialUserDetail = FormUserDetail( request.POST.dict() )
         if initialUserDetail.is_valid():
             submitToAladin(initialUserDetail.cleaned_data)
             messages.add_message(
                 request, messages.SUCCESS, f"User info has been updated"
             )
             # freeze the form
-            isUserExist = False
+            isUserExist = not isUserExist
         else:
             messages.add_message(
-                request, messages.WARNING, f"POST: updateUser form is still INVALID"
+                request, messages.WARNING, f"Form is still INVALID"
             )
         """
         # rebuilding form using POST + cleaned_data
