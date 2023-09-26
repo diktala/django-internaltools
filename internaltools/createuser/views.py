@@ -681,8 +681,71 @@ def submitToAladin(userInfoDict):
         "authorizationCode": userInfoDict["authorizationCode"],
         "loginName": userInfoDict["loginName"],
     }
-    # print(f"DEBUG MESSAGE: {updateAladinSQL2}")
-    # print(f"DEBUG MESSAGE: {updateAladinParam2}")
+    createAladinSQL1 = f"""
+        EXECUTE CreateUser
+            @LoginName = %(loginName)s
+            , @FirstName = %(firstName)s
+            , @LastName = %(lastName)s
+            , @OrganizationName = %(organizationName)s
+            , @Address = %(address)s
+            , @City = %(city)s
+            , @State = %(state)s
+            , @PostalCode = %(postalCode)s
+            , @Country = %(country)s
+            , @HomePhone = %(homePhone)s
+            , @Membership = %(membership)s
+            , @Notes = %(notes)s
+            , @UserPassword = %(userPassword)s
+            , @OperatingSystem = %(operatingSystem)s
+            , @AccountNumberChr = %(accountNumber)s
+            , @PaymentMethod = %(paymentMethod)s
+            , @CreditCardExpiry = %(creditCardExpiry)s
+            , @CreditCardNumber = %(creditCardNumber)s
+            , @CurrentPlan = %(currentPlan)s
+            , @BankName = %(bankName)s
+            , @CheckNumber = '%(CheckNumber)s'
+            , @BankAccount = '%(BankAccount)s'
+            , @IdentificationCard = '%(IdentificationCard)s'
+            , @AuthorizationCode = '%(AuthorizationCode)s'
+            , @Operator = %(operator)s
+            , @ReferredBy = %(referredBy)s
+            , @GovID = %(govId)s
+            , @GovConfirmation = %(govConfirmation)s
+            , @GovAmount = %(govAmount)s
+    """
+    createAladinParam1 = {
+        "loginName": userInfoDict["loginName"],
+        "firstName": userInfoDict["firstName"],
+        "lastName": userInfoDict["lastName"],
+        "organizationName": userInfoDict["organizationName"],
+        "address": userInfoDict["address"],
+        "city": userInfoDict["city"],
+        "state": userInfoDict["state"],
+        "postalCode": userInfoDict["postalCode"],
+        "country": userInfoDict["country"],
+        "homePhone": userInfoDict["homePhone"],
+        "membership": "",
+        "notes": userInfoDict["notes"],
+        "userPassword": "SomeLongPassword",
+        "operatingSystem": userInfoDict["operatingSystem"],
+        "accountNumber": f"{userInfoDict['homePhone'][0:1]}{userInfoDict['homePhone'][4:7]}{userInfoDict['homePhone'][8:12]}1",
+        "paymentMethod": userInfoDict["paymentMethod"],
+        "creditCardExpiry": userInfoDict["creditCardExpiry"],
+        "creditCardNumber": userInfoDict["creditCardNumber"],
+        "currentPlan": "Shipping",
+        "bankName": userInfoDict["bankName"],
+        "checkNumber": userInfoDict["checkNumber"],
+        "bankAccount": userInfoDict["bankAccount"],
+        "identificationCard": userInfoDict["identificationCard"],
+        "authorizationCode": userInfoDict["authorizationCode"],
+        "operator": userInfoDict["operator"],
+        "referredBy": userInfoDict["referredBy"],
+        "govId": "",
+        "govConfirmation": "",
+        "govAmount": "",
+    }
+    print(f"DEBUG MESSAGE: {createAladinSQL1}")
+    print(f"DEBUG MESSAGE: {createAladinParam1}")
     # queryDBall(updateAladinSQL1, updateAladinParam1)
     # queryDBall(updateAladinSQL2, updateAladinParam2)
 
