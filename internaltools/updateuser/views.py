@@ -540,7 +540,7 @@ def sanitizeLogin(loginName):
     return loginSanitized
 
 
-def getConfirmedLoginName(loginToCheck):
+def countConfirmedLoginName(loginToCheck):
     loginToCheckSanitized = sanitizeLogin(loginToCheck)
     loginFound = queryDBscalar(
         f"SELECT count(*) FROM UsersId where LoginName = lower('{loginToCheckSanitized}')"
@@ -691,7 +691,7 @@ def index(request):
         isUserExist = False
         if formSearchLogin.is_valid():
             loginName = formSearchLogin.cleaned_data["loginName"]
-            loginFound = getConfirmedLoginName(loginName)
+            loginFound = countConfirmedLoginName(loginName)
             isUserExist = True if (str(loginFound) == "1") else False
             userDict = getUserInfo(loginName) if isUserExist else None
             formUserDetail = FormUserDetail(initial=userDict)
