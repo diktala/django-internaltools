@@ -1,5 +1,5 @@
 {% extends "internaltools/base.html" %}
-{% block title %}updateuser{% endblock %}
+{% block title %}createuser{% endblock %}
 {% block content %}
     {% if messages %}
         <ul class="messages">
@@ -20,7 +20,7 @@
         <form id="SearchLoginForm" action="" novalidate="" method="GET">
             <div class="row g-3">
                 <fieldset class="form-group border">
-                    <legend>Update User:</legend>
+                    <legend>Create User:</legend>
                     {# {{ formSearchLogin.csrf_token }} #}
                     <div class="row mb-3">
                         <label for="{{ formSearchLogin.loginName.id_for_label }}"
