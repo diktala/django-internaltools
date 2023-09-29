@@ -549,7 +549,7 @@ def getLastDay(dateToConvert):
 
 
 def sanitizeLogin(loginName):
-    loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
+    loginSanitized = loginName if re.match(r"^[\w.-]{1,30}$", loginName) else ""
     return loginSanitized
 
 

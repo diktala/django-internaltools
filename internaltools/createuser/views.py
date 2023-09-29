@@ -44,6 +44,22 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
+    userPassword = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": " ...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=12,
+        validators=[
+            RegexValidator(
+                regex="^[a-z0-9._-]+$",
+            )
+        ],
+    )
     firstName = forms.CharField(
         label="First Name",
         widget=forms.TextInput(
@@ -549,7 +565,7 @@ def getLastDay(dateToConvert):
 
 
 def sanitizeLogin(loginName):
-    loginSanitized = loginName if re.match(r"[\w.-]{1,30}", loginName) else ""
+    loginSanitized = loginName if re.match(r"^[\w.-]{1,30}$", loginName) else ""
     return loginSanitized
 
 
@@ -726,7 +742,7 @@ def submitToAladin(userInfoDict):
         "homePhone": userInfoDict["homePhone"],
         "membership": "",
         "notes": userInfoDict["notes"],
-        "userPassword": "SomeLongPassword",
+        "userPassword": userInfoDict["userPassword"] or "some-long.1",
         "operatingSystem": userInfoDict["operatingSystem"],
         "accountNumber": f"{userInfoDict['homePhone'][0:1]}{userInfoDict['homePhone'][4:7]}{userInfoDict['homePhone'][8:12]}1",
         "paymentMethod": userInfoDict["paymentMethod"],
