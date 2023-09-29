@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'updateuser.apps.UpdateuserConfig',
     'createuser.apps.CreateuserConfig',
+    'userinvoice.apps.UserinvoiceConfig',
 ]
 
 MIDDLEWARE = [
