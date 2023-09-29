@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'updateuser.apps.UpdateuserConfig',
     'createuser.apps.CreateuserConfig',
     'userinvoice.apps.UserinvoiceConfig',
+    'updateinvoice.apps.UpdateinvoiceConfig',
 ]
 
 MIDDLEWARE = [
