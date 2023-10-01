@@ -9,7 +9,7 @@ from django.core.validators import RegexValidator
 from django.contrib import messages
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from django.template.defaulttags import register
-
+from commons import isDateValid, isDateExpired, getLastDay, sanitizeLogin, getInvoiceNumberFromInvoiceString
 
 @register.filter
 def get_item(dictionary, key):
@@ -37,30 +37,12 @@ class FormSearchLogin(forms.Form):
     )
 
 
-def sanitizeLogin(loginName):
-    loginSanitized = loginName if re.match(r"^[\w.-]{1,30}$", loginName) else ""
-    return loginSanitized
-
-
 def countConfirmedLoginName(loginToCheck):
     loginToCheckSanitized = sanitizeLogin(loginToCheck)
     loginFound = queryDBscalar(
         f"SELECT count(*) FROM UsersId where LoginName = lower('{loginToCheckSanitized}')"
     )
     return loginFound
-
-
-def getInvoiceNumberFromInvoiceString(invoiceString=""):
-    invoiceNumber = "0"
-    #
-    if str(invoiceString).isdecimal():
-        invoiceNumber = str(invoiceString)
-    #
-    matchResult = re.match("^[0-9]{3}.([0-9]+)[0-9]{3}$", str(invoiceString))
-    if matchResult:
-        invoiceNumber = matchResult.group(1)
-    #
-    return invoiceNumber
 
 
 def getLoginNameFromInvoiceNumber(invoiceNumber):
