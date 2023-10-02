@@ -9,7 +9,7 @@ from django.core.validators import RegexValidator
 from django.contrib import messages
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from django.template.defaulttags import register
-from commons import isDateValid, isDateExpired, getLastDay, sanitizeLogin, getInvoiceNumberFromInvoiceString
+import commons
 
 @register.filter
 def get_item(dictionary, key):
@@ -38,7 +38,7 @@ class FormSearchLogin(forms.Form):
 
 
 def countConfirmedLoginName(loginToCheck):
-    loginToCheckSanitized = sanitizeLogin(loginToCheck)
+    loginToCheckSanitized = commons.sanitizeLogin(loginToCheck)
     loginFound = queryDBscalar(
         f"SELECT count(*) FROM UsersId where LoginName = lower('{loginToCheckSanitized}')"
     )
@@ -46,8 +46,8 @@ def countConfirmedLoginName(loginToCheck):
 
 
 def getLoginNameFromInvoiceNumber(invoiceNumber):
-    invoiceNumberSanitized = sanitizeLogin(invoiceNumber)
-    invoiceNumberDigits = getInvoiceNumberFromInvoiceString(invoiceNumberSanitized)
+    invoiceNumberSanitized = commons.sanitizeLogin(invoiceNumber)
+    invoiceNumberDigits = commons.get_invoicenumber_from_obfuscated_number(invoiceNumberSanitized)
     loginName = queryDBscalar(
         f"SELECT LoginName FROM Invoices where InvoiceNumber = %s",
         str(invoiceNumberDigits),
