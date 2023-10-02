@@ -131,7 +131,7 @@ class FormInvoice(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=20,
         validators=[
@@ -189,236 +189,22 @@ class FormInvoice(forms.Form):
             )
         ],
     )
-
-
-class FormUserDetail(forms.Form):
-    loginName = forms.CharField(
-        widget=forms.HiddenInput(),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
-            )
-        ],
-    )
-    userPassword = forms.CharField(
+    itemLine = forms.DecimalField(
+        label="Item Line",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
         required=False,
-        min_length=1,
-        max_length=12,
-        validators=[
-            RegexValidator(
-                regex="^[a-z0-9._-]+$",
-            )
-        ],
+        max_digits=3,
+        decimal_places=0,
     )
-    firstName = forms.CharField(
-        label="First Name",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    lastName = forms.CharField(
-        label="Last Name",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    organizationName = forms.CharField(
-        label="Organization Name",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=25,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    address = forms.CharField(
-        label="Address",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=30,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &',-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    city = forms.CharField(
-        label="City",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    state = forms.CharField(
-        label="State",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    country = forms.CharField(
-        label="Country",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=12,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    postalCode = forms.CharField(
-        label="Postal Code",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$",
-                message="must use a canadian postal code H1H 1H1",
-            )
-        ],
-    )
-    addressSelect = forms.ChoiceField(
-        label="Select Address",
-        choices=[
-            ("", "<<< press Lookup"),
-        ],
-        initial="",
-        widget=forms.Select(
-            attrs={
-                "class": "form-control form-select",
-            }
-        ),
-        required=False,
-    )
-    homePhone = forms.CharField(
-        label="Home Phone",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=12,
-        validators=[
-            RegexValidator(
-                regex="^[0-9]{3} [0-9]{3} [0-9]{4}$",
-                message="must use format 514 555 1212",
-            )
-        ],
-    )
-    accountNumber = forms.CharField(
-        label="Account Number",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=True,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[0-9]{1,9}$",
-                message="must be 9-digit ex. 800-555-1234 becomes 855512341",
-            )
-        ],
-    )
-    language = forms.ChoiceField(
-        label="Language",
-        choices=[
-            ("", "FR"),
-            ("EN", "EN"),
-        ],
-        initial="",
+    itemCode = forms.ChoiceField(
+        choices=[("-", "-")],
+        initial="-",
+        label="Item Code",
         widget=forms.Select(
             attrs={
                 "class": "form-control form-select",
@@ -427,224 +213,34 @@ class FormUserDetail(forms.Form):
         required=False,
         validators=[
             RegexValidator(
-                regex="^EN$",
-                message="Choose EN or empty",
+                regex="^[\w0-9. /-]+$",
+                message="invalid characters",
             )
         ],
     )
-    paymentMethod = forms.ChoiceField(
-        label="Payment Method",
-        choices=[
-            ("VISA", "VISA"),
-            ("MC", "MC"),
-            ("", "Cheque"),
-        ],
-        initial="",
-        widget=forms.Select(
+    quantity = forms.DecimalField(
+        label="Quantity",
+        widget=forms.TextInput(
             attrs={
-                "class": "form-control form-select",
+                "placeholder": "...",
+                "class": "form-control",
             }
         ),
         required=False,
-        validators=[
-            RegexValidator(
-                regex="^VISA|MC$",
-                message="Choose VISA or MC or empty",
-            )
-        ],
+        max_digits=6,
+        decimal_places=2,
     )
-    creditCardNumber = forms.CharField(
-        label="Credit Card Number",
+    lineNote = forms.CharField(
+        label="Line Note",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
         required=False,
         min_length=1,
         max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[0-9 ]{16,19}$",
-                message="must be empty or a credit card number 4111111111111111",
-            )
-        ],
-    )
-    creditCardExpiry = forms.CharField(
-        label="Credit Card Expiry",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=30,
-        validators=[
-            RegexValidator(
-                regex="^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-                message="YYYY-MM-DD ex:2030-11-30",
-            )
-        ],
-    )
-    bankName = forms.CharField(
-        label="Bank Name",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    checkNumber = forms.CharField(
-        label="Check Number",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    bankAccount = forms.CharField(
-        label="Bank Account",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    identificationCard = forms.CharField(
-        label="identificationCard",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    authorizationCode = forms.CharField(
-        label="Authorization Code",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    operatingSystem = forms.CharField(
-        label="Operating System",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=10,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    OPERATORS = os.environ.get("OPERATORS")
-    operatorNames = OPERATORS or "Other"
-    operator = forms.ChoiceField(
-        choices=[(op, op) for op in operatorNames.split(" ")],
-        initial="Other",
-        label="operator",
-        widget=forms.Select(
-            attrs={
-                "class": "form-control form-select",
-            }
-        ),
-        required=False,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    referredBy = forms.CharField(
-        label="Referred By",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=20,
-        validators=[
-            RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
-            )
-        ],
-    )
-    notes = forms.CharField(
-        label="Notes",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": " ...",
-                "class": "form-control",
-            }
-        ),
-        required=False,
-        min_length=1,
-        max_length=250,
         validators=[
             RegexValidator(
                 regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
@@ -652,48 +248,20 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
-    dateJoined = forms.CharField(
-        label="Date Joined",
-        widget=forms.HiddenInput(),
-        required=False,
-        min_length=1,
-        max_length=10,
-        validators=[
-            RegexValidator(
-                regex="^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-            )
-        ],
-    )
-
     def clean(self):
         cleaned_data = super().clean()
-        paymentMethod = cleaned_data.get("paymentMethod")
-        creditCardNumber = cleaned_data.get("creditCardNumber")
-        creditCardExpiry = cleaned_data.get("creditCardExpiry")
-        """ check credit card info """
+        itemLine = cleaned_data.get("itemLine")
+        itemCode = cleaned_data.get("itemCode")
+        quantity = cleaned_data.get("quantity")
         """
         """
         if (
-            paymentMethod is not None
-            and creditCardNumber is not None
-            and creditCardExpiry is not None
+            itemLine is not None
+            and itemCode is not None
+            and quantity is not None
         ):
-            if len(creditCardNumber) == 0 and len(creditCardExpiry) > 0:
-                msg = (
-                    "provide a credit card number or remove the credit card expiry date"
-                )
-                self.add_error("creditCardNumber", msg)
-                self.add_error("creditCardExpiry", msg)
-            if len(creditCardNumber) > 0 and len(creditCardExpiry) == 0:
-                msg = "provide a credit card expiry or remove the credit card number"
-                self.add_error("creditCardNumber", msg)
-                self.add_error("creditCardExpiry", msg)
-            if len(creditCardExpiry) > 0 and not commons.isDateValid(creditCardExpiry):
-                self.add_error("creditCardExpiry", "Date is invalid")
-            if commons.isDateValid(creditCardExpiry) and commons.isDateExpired(creditCardExpiry):
-                self.add_error("creditCardExpiry", "Credit card is expired")
-            if commons.isDateValid(creditCardExpiry):
-                self.cleaned_data["creditCardExpiry"] = commons.getLastDay(creditCardExpiry)
+            self.add_error("itemLine", 'some error for todo ....')
+            self.cleaned_data["lineNote"] = " .......................... "
         return self.cleaned_data
 
 
@@ -705,9 +273,16 @@ def getInvoice(login_or_invoice = ''):
     return strippedInvoiceDict
 
 
-def submitToAladin(userInfoDict):
+def getInvoiceDetail(login_or_invoice = ''):
+    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 3, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
+    paramSQL = { "InvoiceNumberVar": str(login_or_invoice) }
+    invoiceDict = queryDBall( querySQL, paramSQL )
+    return invoiceDict
+
+
+def submitToAladin(invoiceDict):
     updateAladinSQL1 = f"""
-        EXECUTE UpdateUserFile
+        EXECUTE UpdateInvoice
             @LoginName = %(loginName)s
             , @FirstName = %(firstName)s
             , @LastName = %(lastName)s
@@ -739,120 +314,39 @@ def submitToAladin(userInfoDict):
             , @Operator = %(operator)s
     """
     updateAladinParam1 = {
-        "loginName": userInfoDict["loginName"],
-        "firstName": userInfoDict["firstName"],
-        "lastName": userInfoDict["lastName"],
-        "organizationName": userInfoDict["organizationName"],
-        "address": userInfoDict["address"],
-        "city": userInfoDict["city"],
-        "state": userInfoDict["state"],
-        "postalCode": userInfoDict["postalCode"],
-        "country": userInfoDict["country"],
-        "homePhone": userInfoDict["homePhone"],
-        "operatingSystem": userInfoDict["operatingSystem"],
-        "accountNumber": userInfoDict["accountNumber"],
-        "paymentMethod": userInfoDict["paymentMethod"],
+        "loginName": invoiceDict["loginName"],
+        "firstName": invoiceDict["firstName"],
+        "lastName": invoiceDict["lastName"],
+        "organizationName": invoiceDict["organizationName"],
+        "address": invoiceDict["address"],
+        "city": invoiceDict["city"],
+        "state": invoiceDict["state"],
+        "postalCode": invoiceDict["postalCode"],
+        "country": invoiceDict["country"],
+        "homePhone": invoiceDict["homePhone"],
+        "operatingSystem": invoiceDict["operatingSystem"],
+        "accountNumber": invoiceDict["accountNumber"],
+        "paymentMethod": invoiceDict["paymentMethod"],
         "membership": "",
-        "creditCardExpiry": userInfoDict["creditCardExpiry"],
-        "creditCardNumber": userInfoDict["creditCardNumber"],
-        "notes": userInfoDict["notes"],
-        "dateJoined": userInfoDict["dateJoined"],
+        "creditCardExpiry": invoiceDict["creditCardExpiry"],
+        "creditCardNumber": invoiceDict["creditCardNumber"],
+        "notes": invoiceDict["notes"],
+        "dateJoined": invoiceDict["dateJoined"],
         "nextBilling": "",
         "accountSetupBy": "",
-        "referredBy": userInfoDict["referredBy"],
+        "referredBy": invoiceDict["referredBy"],
         "govId": "",
         "govConfirmation": "",
         "govAmount": "",
         "oneTimeCharge": "",
         "oneTimeQty": "",
-        "language": userInfoDict["language"],
+        "language": invoiceDict["language"],
         "debugLevel": "1",
-        "operator": userInfoDict["operator"],
-    }
-    updateAladinSQL2 = f"""
-        UPDATE UsersId SET
-        BankName = %(bankName)s
-        , CheckNumber = %(checkNumber)s
-        , BankAccount = %(bankAccount)s
-        , IdentificationCard = %(identificationCard)s
-        , AuthorizationCode = %(authorizationCode)s
-        WHERE LoginName = %(loginName)s
-    """
-    updateAladinParam2 = {
-        "bankName": userInfoDict["bankName"],
-        "checkNumber": userInfoDict["checkNumber"],
-        "bankAccount": userInfoDict["bankAccount"],
-        "identificationCard": userInfoDict["identificationCard"],
-        "authorizationCode": userInfoDict["authorizationCode"],
-        "loginName": userInfoDict["loginName"],
-    }
-    createAladinSQL1 = f"""
-        EXECUTE CreateUser
-            @LoginName = %(loginName)s
-            , @FirstName = %(firstName)s
-            , @LastName = %(lastName)s
-            , @OrganizationName = %(organizationName)s
-            , @Address = %(address)s
-            , @City = %(city)s
-            , @State = %(state)s
-            , @PostalCode = %(postalCode)s
-            , @Country = %(country)s
-            , @HomePhone = %(homePhone)s
-            , @Membership = %(membership)s
-            , @Notes = %(notes)s
-            , @UserPassword = %(userPassword)s
-            , @OperatingSystem = %(operatingSystem)s
-            , @AccountNumberChr = %(accountNumber)s
-            , @PaymentMethod = %(paymentMethod)s
-            , @CreditCardExpiry = %(creditCardExpiry)s
-            , @CreditCardNumber = %(creditCardNumber)s
-            , @CurrentPlan = %(currentPlan)s
-            , @BankName = %(bankName)s
-            , @CheckNumber = '%(CheckNumber)s'
-            , @BankAccount = '%(BankAccount)s'
-            , @IdentificationCard = '%(IdentificationCard)s'
-            , @AuthorizationCode = '%(AuthorizationCode)s'
-            , @Operator = %(operator)s
-            , @ReferredBy = %(referredBy)s
-            , @GovID = %(govId)s
-            , @GovConfirmation = %(govConfirmation)s
-            , @GovAmount = %(govAmount)s
-    """
-    createAladinParam1 = {
-        "loginName": userInfoDict["loginName"],
-        "firstName": userInfoDict["firstName"],
-        "lastName": userInfoDict["lastName"],
-        "organizationName": userInfoDict["organizationName"],
-        "address": userInfoDict["address"],
-        "city": userInfoDict["city"],
-        "state": userInfoDict["state"],
-        "postalCode": userInfoDict["postalCode"],
-        "country": userInfoDict["country"],
-        "homePhone": userInfoDict["homePhone"],
-        "membership": "",
-        "notes": userInfoDict["notes"],
-        "userPassword": userInfoDict["userPassword"] or "some-long.1",
-        "operatingSystem": userInfoDict["operatingSystem"],
-        "accountNumber": f"{userInfoDict['homePhone'][0:1]}{userInfoDict['homePhone'][4:7]}{userInfoDict['homePhone'][8:12]}1",
-        "paymentMethod": userInfoDict["paymentMethod"],
-        "creditCardExpiry": userInfoDict["creditCardExpiry"],
-        "creditCardNumber": userInfoDict["creditCardNumber"],
-        "currentPlan": "Shipping",
-        "bankName": userInfoDict["bankName"],
-        "checkNumber": userInfoDict["checkNumber"],
-        "bankAccount": userInfoDict["bankAccount"],
-        "identificationCard": userInfoDict["identificationCard"],
-        "authorizationCode": userInfoDict["authorizationCode"],
-        "operator": userInfoDict["operator"],
-        "referredBy": userInfoDict["referredBy"],
-        "govId": "",
-        "govConfirmation": "",
-        "govAmount": "",
+        "operator": invoiceDict["operator"],
     }
     print(f"DEBUG MESSAGE: {createAladinSQL1}")
     print(f"DEBUG MESSAGE: {createAladinParam1}")
     # queryDBall(updateAladinSQL1, updateAladinParam1)
-    # queryDBall(updateAladinSQL2, updateAladinParam2)
 
 
 def index(request):
@@ -865,23 +359,24 @@ def index(request):
     isUserExist = False
     # formUserDetail.fields["postalCode"].initial = request.POST.get("postalCode")
     formInvoice = FormInvoice()
+    invoiceDetailDict = dict()
     """ GET request received """
     if formSearchLogin.is_valid():
         loginName = formSearchLogin.cleaned_data["loginName"]
-        confirmedLoginName = commons.get_loginname_from_database(loginName)
-        if confirmedLoginName:
+        # confirmedLoginName = commons.get_loginname_from_database(loginName)
+        invoiceDict = getInvoice(loginName)
+        if invoiceDict:
             isUserExist = True
-            loginName = confirmedLoginName
-            invoiceDict = getInvoice(loginName)
             formInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
             formInvoice.fields["invoiceNumber"].initial = invoiceDict.get("InvoiceNumber")
             formInvoice.fields["invoiceDate"].initial = commons.getDateFormatted(invoiceDict.get("InvoiceDate"))
-            # formInvoice.fields["invoiceDate"].initial = invoiceDict.get("InvoiceDate")
             formInvoice.fields["dueDate"].initial = commons.getDateFormatted(invoiceDict.get("DueDate"))
             formInvoice.fields["specialNote"].initial = invoiceDict.get("SpecialNote")
             formInvoice.fields["invoiceStatus"].initial = invoiceDict.get("InvoiceStatus")
-            formInvoice.fields["accountBalance"].initial = invoiceDict.get("AccountBalance")
-            debugMessage = f"confirmed login: {loginName}"
+            # TODO: make function for accountbalance
+            formInvoice.fields["accountBalance"].initial = str(invoiceDict.get("AccountBalance"))[0:-2]
+            invoiceDetailDict = getInvoiceDetail(loginName)
+            debugMessage = f"confirmed entered:{loginName} {invoiceDict.get('LoginName')} "
     """ --- """
     if (
         request.method == "POST"
@@ -897,5 +392,6 @@ def index(request):
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "formInvoice": formInvoice,
+        "invoiceDetailDict": invoiceDetailDict,
     }
     return render(request, "updateinvoice/sample.html", context)
