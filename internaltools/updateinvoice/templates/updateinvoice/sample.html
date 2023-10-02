@@ -1,0 +1,135 @@
+{% extends "internaltools/base.html" %}
+{% block title %}updateinvoice{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {# formUserDetail.errors.items #}
+        {# formUserDetail.errors.as_data #}
+	<h1>{{ debugMessage }}</h1>
+	<pre>{{ formInvoice.get_context|pprint }}</pre>
+        <!-- form search users -->
+        <form id="SearchLoginForm" action="" novalidate="" method="GET">
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>Update Invoice:</legend>
+                    {# {{ formSearchLogin.csrf_token }} #}
+                    <div class="row mb-3">
+                        <label for="{{ formSearchLogin.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSearchLogin.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.loginName }}
+                            <small class="form-text text-danger">{{ formSearchLogin.loginName.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary mb-3">Search</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <!-- form update invoice -->
+        <form id="FormInvoice" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            {% for hidden in formInvoice.hidden_fields %}{{ hidden }}{% endfor %}
+            <div class="row g-3">
+                <fieldset class="form-group border" {{ isDisabled }}>
+                    <legend>User Invoice</legend>
+                    <button disabled style="display:none;">
+                        <!-- this hidden button to disable submit on Enter key -->
+                    </button>
+                    <!-- start div row -->
+                    <div class="row mb-3">
+                        <label for="{{ formInvoice.passe.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.passe.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.passe }}<small class="form-text text-danger">{{ formInvoice.passe.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.invoiceNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.invoiceNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.invoiceNumber }}<small class="form-text text-danger">{{ formInvoice.invoiceNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.loginName }}<small class="form-text text-danger">{{ formInvoice.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.invoiceDate.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.invoiceDate.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.invoiceDate }}<small class="form-text text-danger">{{ formInvoice.invoiceDate.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.dueDate.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.dueDate.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.dueDate }}<small class="form-text text-danger">{{ formInvoice.dueDate.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.specialNote.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.specialNote.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.specialNote }}<small class="form-text text-danger">{{ formInvoice.specialNote.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.invoiceStatus.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.invoiceStatus.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.invoiceStatus }}<small class="form-text text-danger">{{ formInvoice.invoiceStatus.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.accountBalance.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.accountBalance.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.accountBalance }}<small class="form-text text-danger">{{ formInvoice.accountBalance.errors }}</small>
+                        </div>
+                        <label for="{{ formInvoice.operators.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formInvoice.operators.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formInvoice.operators }}<small class="form-text text-danger">{{ formInvoice.operators.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateInvoice"
+                                    value="1"
+                                    accesskey="i"
+                                    title="alt-I / ctrl-alt-I"
+                                    class="btn btn-secondary mb-3">Update Invoice</button>
+                        </div>
+                    </div>
+                    <!-- end div row -->
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form update invoice -->
+    {% endblock %}
