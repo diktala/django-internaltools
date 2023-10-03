@@ -135,7 +135,7 @@ class FormInvoice(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=20,
+        max_length=250,
         validators=[
             RegexValidator(
                 regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
@@ -313,87 +313,64 @@ def getAllInvoices(login_or_invoice=""):
 def submitToAladin(invoiceDict):
     updateAladinSQL1 = f"""
         EXECUTE UpdateInvoice
-            @LoginName = %(loginName)s
-            , @FirstName = %(firstName)s
-            , @LastName = %(lastName)s
-            , @OrganizationName = %(organizationName)s
-            , @Address = %(address)s
-            , @City = %(city)s
-            , @State = %(state)s
-            , @PostalCode = %(postalCode)s
-            , @Country = %(country)s
-            , @HomePhone = %(homePhone)s
-            , @OperatingSystem = %(operatingSystem)s
-            , @AccountNumber = %(accountNumber)s
-            , @PaymentMethod = %(paymentMethod)s
-            , @Membership = %(membership)s
-            , @CreditCardExpiry = %(creditCardExpiry)s
-            , @CreditCardNumber = %(creditCardNumber)s
-            , @Notes = %(notes)s
-            , @DateJoined = %(dateJoined)s
-            , @NextBilling = %(nextBilling)s
-            , @AccountSetupBy = %(accountSetupBy)s
-            , @ReferredBy = %(referredBy)s
-            , @GovID = %(govId)s
-            , @GovConfirmation = %(govConfirmation)s
-            , @GovAmount = %(govAmount)s
-            , @OneTimeCharge = %(oneTimeCharge)s
-            , @OneTimeQty = %(oneTimeQty)s
-            , @Language = %(language)s
-            , @DebugLevel = %(debugLevel)d
+            @Passe = %(passe)s
+            , @InvoiceNumber = %(invoiceNumber)s
+            , @LoginName = %(loginName)s
+            , @InvoiceDate = %(invoiceDate)s
+            , @EndPeriodDate = %(dueDate)s
+            , @SpecialNote = %(specialNote)s
+            , @InvoiceStatus = %(invoiceStatus)s
+            , @UpdateItemNumber = %(originalItemLine)s
+            , @ItemNumber = %(itemLine)s
+            , @ItemCode = %(itemCode)s
+            , @QuantitySold = %(quantity)s
+            , @LineNote = %(lineNote)s
             , @Operator = %(operator)s
+            , @AccountBalance = %(accountBalance)s
+            , @NextBilling = %(nextBilling)s
+            , @DebugLevel = %(debugLevel)d
     """
     updateAladinParam1 = {
+        "passe": invoiceDict["passe"],
+        "invoiceNumber": invoiceDict["invoiceNumber"],
         "loginName": invoiceDict["loginName"],
-        "firstName": invoiceDict["firstName"],
-        "lastName": invoiceDict["lastName"],
-        "organizationName": invoiceDict["organizationName"],
-        "address": invoiceDict["address"],
-        "city": invoiceDict["city"],
-        "state": invoiceDict["state"],
-        "postalCode": invoiceDict["postalCode"],
-        "country": invoiceDict["country"],
-        "homePhone": invoiceDict["homePhone"],
-        "operatingSystem": invoiceDict["operatingSystem"],
-        "accountNumber": invoiceDict["accountNumber"],
-        "paymentMethod": invoiceDict["paymentMethod"],
-        "membership": "",
-        "creditCardExpiry": invoiceDict["creditCardExpiry"],
-        "creditCardNumber": invoiceDict["creditCardNumber"],
-        "notes": invoiceDict["notes"],
-        "dateJoined": invoiceDict["dateJoined"],
-        "nextBilling": "",
-        "accountSetupBy": "",
-        "referredBy": invoiceDict["referredBy"],
-        "govId": "",
-        "govConfirmation": "",
-        "govAmount": "",
-        "oneTimeCharge": "",
-        "oneTimeQty": "",
-        "language": invoiceDict["language"],
-        "debugLevel": "1",
+        "invoiceDate": invoiceDict["invoiceDate"],
+        "dueDate": invoiceDict["dueDate"],
+        "specialNote": invoiceDict["specialNote"],
+        "invoiceStatus": invoiceDict["invoiceStatus"],
+        "originalItemLine": invoiceDict["originalItemLine"],
+        "itemLine": invoiceDict["itemLine"],
+        "itemCode": invoiceDict["itemCode"],
+        "quantity": invoiceDict["quantity"],
+        "lineNote": invoiceDict["lineNote"],
         "operator": invoiceDict["operator"],
+        "accountBalance": invoiceDict["accountBalance"],
+        "nextBilling": "",
+        "debugLevel": 1,
     }
-    print(f"DEBUG MESSAGE: {createAladinSQL1}")
-    print(f"DEBUG MESSAGE: {createAladinParam1}")
+    print(f"DEBUG MESSAGE: {updateAladinSQL1}")
+    print(f"DEBUG MESSAGE: {updateAladinParam1}")
     # queryDBall(updateAladinSQL1, updateAladinParam1)
 
 
 def index(request):
+    # get invoice or loginname from URL
     defaultData = {
         "loginName": request.GET.get("loginName") or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
+    #
+    # pre assign parameters
     loginName = defaultData.get("loginName")
-    # debugMessage = f"login: {loginName}"
     isUserExist = False
     formInvoice = FormInvoice()
     invoiceDetailDict = dict()
     list_of_all_invoices = dict()
+    # list_of_items inside the invoiceDetail
     list_of_items = []
     """ Check if valid login or invoicenumber request received """
     if formSearchLogin.is_valid():
-        invoice_or_login = formSearchLogin.cleaned_data["loginName"]
+        invoice_or_login = formSearchLogin.cleaned_data.get("loginName")
         list_of_all_invoices = getAllInvoices(invoice_or_login)
         invoiceDict = getInvoice(invoice_or_login)
         if invoiceDict:
@@ -449,6 +426,8 @@ def index(request):
         formInvoice = FormInvoice(request.POST.dict())
         if formInvoice.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+            submit_invoice_to_aladin = formInvoice.cleaned_data
+            submitToAladin( submit_invoice_to_aladin )
         else:
             messages.add_message(request, messages.WARNING, f"Form is still INVALID")
 
