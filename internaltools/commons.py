@@ -13,6 +13,13 @@ def getDateFormatted( initialDate=''):
     return formattedDate
 
 
+def getNumberFormatted( initialNumber=''):
+    try:
+        return str("{:.2f}".format(float(initialNumber)))
+    except ValueError:
+        return ''
+
+
 def isDateValid(dateToCheck):
     try:
         formattedDate = datetime.strptime(dateToCheck, "%Y-%m-%d")

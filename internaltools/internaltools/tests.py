@@ -13,6 +13,15 @@ class SimpleTest(TestCase):
         self.assertEqual( commons.getDateFormatted("some bad data"), "" )
 
 
+    def test_getNumberFormatted(self):
+        self.assertEqual( commons.getNumberFormatted("2023-01-01"), "" )
+        self.assertEqual( commons.getNumberFormatted("4.12345"), "4.12" )
+        self.assertEqual( commons.getNumberFormatted("1"), "1.00" )
+        self.assertEqual( commons.getNumberFormatted(1), "1.00" )
+        self.assertEqual( commons.getNumberFormatted(1.999), "2.00" )
+        self.assertEqual( commons.getNumberFormatted("-1.999"), "-2.00" )
+
+
     def test_isDateValid(self):
         self.assertTrue( commons.isDateValid("2023-01-01") )
         self.assertFalse( commons.isDateValid("some bad data") )
