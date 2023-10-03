@@ -35,7 +35,7 @@ class FormSearchLogin(forms.Form):
 class FormInvoice(forms.Form):
     passe = forms.CharField(
         label="Password",
-        widget=forms.TextInput(
+        widget=forms.PasswordInput(
             attrs={
                 "placeholder": "password to unlock this form ...",
                 "class": "form-control",
