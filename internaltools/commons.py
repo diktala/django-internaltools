@@ -3,21 +3,24 @@ import re
 from modelmssql import queryDBscalar
 
 
-def getDateFormatted( initialDate=''):
+def getDateFormatted(initialDate=""):
     formattedDate = ""
     if isinstance(initialDate, datetime):
         formattedDate = initialDate.strftime("%Y-%m-%d")
     if isinstance(initialDate, str):
-        formattedDate = re.sub('([0-9]{4}).([0-9]{2}).([0-9]{2}).*',r'\1-\2-\3', initialDate)
-    if not isDateValid(formattedDate): formattedDate=""
+        formattedDate = re.sub(
+            "([0-9]{4}).([0-9]{2}).([0-9]{2}).*", r"\1-\2-\3", initialDate
+        )
+    if not isDateValid(formattedDate):
+        formattedDate = ""
     return formattedDate
 
 
-def getNumberFormatted( initialNumber=''):
+def getNumberFormatted(initialNumber=""):
     try:
         return str("{:.2f}".format(float(initialNumber)))
     except ValueError:
-        return ''
+        return ""
 
 
 def isDateValid(dateToCheck):
@@ -75,7 +78,9 @@ def count_loginnames_in_database(loginToCheck):
 
 def get_loginname_from_invoice(invoiceNumber):
     invoiceNumberSanitized = sanitizeLogin(invoiceNumber)
-    invoiceNumberDigits = get_invoicenumber_from_obfuscated_number(invoiceNumberSanitized)
+    invoiceNumberDigits = get_invoicenumber_from_obfuscated_number(
+        invoiceNumberSanitized
+    )
     loginName = queryDBscalar(
         f"SELECT LoginName FROM Invoices where InvoiceNumber = %s",
         str(invoiceNumberDigits),
