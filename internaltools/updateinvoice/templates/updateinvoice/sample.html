@@ -124,7 +124,7 @@
         </form>
         <!-- end form update invoice -->
         <!-- form invoice items -->
-        {% for eachItem in list_of_items %}
+        {% for eachItem in list_of_items.values %}
             <form id="FormItems-{{ eachItem.itemLine.value }}"
                   action=""
                   novalidate=""

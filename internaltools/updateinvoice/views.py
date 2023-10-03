@@ -364,10 +364,10 @@ def index(request):
     loginName = defaultData.get("loginName")
     isUserExist = False
     formInvoice = FormInvoice()
-    invoiceDetailDict = dict()
+    invoiceDetailList = list([])
     list_of_all_invoices = dict()
-    # list_of_items inside the invoiceDetail
-    list_of_items = []
+    # list_of_items contains a form for each itemLine
+    list_of_items = dict()
     """ Check if valid login or invoicenumber request received """
     if formSearchLogin.is_valid():
         invoice_or_login = formSearchLogin.cleaned_data.get("loginName")
@@ -398,8 +398,10 @@ def index(request):
                 (item.get("ItemCode"), item.get("ItemCode")) for item in itemDict
             ]
             itemChoices.insert(0, ("", ""))
-            invoiceDetailDict = getInvoiceDetail(invoice_or_login)
-            for each_item in invoiceDetailDict:
+            invoiceDetailList = getInvoiceDetail(invoice_or_login)
+            emptyItemDict = {"ItemNumber":"","ItemCode":"","QuantitySold":"","LineNote":""}
+            invoiceDetailList.append(emptyItemDict)
+            for each_item in invoiceDetailList:
                 form = FormInvoice()
                 form.fields["loginName"].initial = invoiceDict.get("LoginName")
                 form.fields["invoiceNumber"].initial = invoiceDict.get("InvoiceNumber")
@@ -420,7 +422,7 @@ def index(request):
                 form.fields["itemCode"].initial = each_item.get("ItemCode")
                 form.fields["quantity"].initial = each_item.get("QuantitySold")
                 form.fields["lineNote"].initial = each_item.get("LineNote")
-                list_of_items.append(form)
+                list_of_items[each_item.get("ItemNumber")] = form
     """ --- """
     if request.method == "POST" and request.POST.get("updateInvoiceBTN"):
         formInvoice = FormInvoice(request.POST.dict())
@@ -433,10 +435,10 @@ def index(request):
 
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         itemLine = request.POST.get("originalItemLine")
-        itemIndex = int(itemLine) - 1
-        list_of_items[itemIndex] = FormInvoice(request.POST.dict())
-        list_of_items[itemIndex].fields["itemCode"].choices = itemChoices
-        itemForm = list_of_items[itemIndex]
+        # itemIndex = int(itemLine) - 1
+        list_of_items[itemLine] = FormInvoice(request.POST.dict())
+        list_of_items.get(itemLine).fields["itemCode"].choices = itemChoices
+        itemForm = list_of_items.get(itemLine)
         # itemCodeValue = itemForm.fields["itemCode"].initial
         # messages.add_message(request, messages.INFO, f"Item is {itemLine} - {itemCodeValue}")
         if itemForm.is_valid():
@@ -454,7 +456,7 @@ def index(request):
         "formSearchLogin": formSearchLogin,
         "formInvoice": formInvoice,
         "list_of_items": list_of_items,
-        "invoiceDetailDict": invoiceDetailDict,
+        "invoiceDetailList": invoiceDetailList,
         "list_of_all_invoices": list_of_all_invoices,
     }
     return render(request, "updateinvoice/sample.html", context)
