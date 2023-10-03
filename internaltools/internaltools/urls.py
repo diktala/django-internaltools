@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('updateuser/', include('updateuser.urls')),
     path('createuser/', include('createuser.urls')),
+    path('', include('createuser.urls', namespace='generic')),
     path('userinvoice/', include('userinvoice.urls')),
     path('updateinvoice/', include('updateinvoice.urls')),
 ]
