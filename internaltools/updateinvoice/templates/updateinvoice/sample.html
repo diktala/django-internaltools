@@ -16,8 +16,7 @@
         {% endif %}
         {# formUserDetail.errors.items #}
         {# formUserDetail.errors.as_data #}
-	<h1>{{ debugMessage }}</h1>
-	<pre>{{ invoiceDetailDict|pprint }}</pre>
+        <h1>{{ debugMessage }}</h1>
         <!-- form search users -->
         <form id="SearchLoginForm" action="" novalidate="" method="GET">
             <div class="row g-3">
@@ -55,9 +54,7 @@
                     <!-- start div row -->
                     <div class="row mb-3">
                         <label for="{{ formInvoice.passe.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.passe.label }}
-                        </label>
+                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.passe.label }}</label>
                         <div class="col-sm-10">
                             {{ formInvoice.passe }}<small class="form-text text-danger">{{ formInvoice.passe.errors }}</small>
                         </div>
@@ -69,9 +66,7 @@
                             {{ formInvoice.invoiceNumber }}<small class="form-text text-danger">{{ formInvoice.invoiceNumber.errors }}</small>
                         </div>
                         <label for="{{ formInvoice.loginName.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.loginName.label }}
-                        </label>
+                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.loginName.label }}</label>
                         <div class="col-sm-10">
                             {{ formInvoice.loginName }}<small class="form-text text-danger">{{ formInvoice.loginName.errors }}</small>
                         </div>
@@ -83,9 +78,7 @@
                             {{ formInvoice.invoiceDate }}<small class="form-text text-danger">{{ formInvoice.invoiceDate.errors }}</small>
                         </div>
                         <label for="{{ formInvoice.dueDate.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.dueDate.label }}
-                        </label>
+                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.dueDate.label }}</label>
                         <div class="col-sm-10">
                             {{ formInvoice.dueDate }}<small class="form-text text-danger">{{ formInvoice.dueDate.errors }}</small>
                         </div>
@@ -110,17 +103,15 @@
                         <div class="col-sm-10">
                             {{ formInvoice.accountBalance }}<small class="form-text text-danger">{{ formInvoice.accountBalance.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.operators.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.operators.label }}
-                        </label>
+                        <label for="{{ formInvoice.operator.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.operator.label }}</label>
                         <div class="col-sm-10">
-                            {{ formInvoice.operators }}<small class="form-text text-danger">{{ formInvoice.operators.errors }}</small>
+                            {{ formInvoice.operator }}<small class="form-text text-danger">{{ formInvoice.operator.errors }}</small>
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
                             <button type="submit"
-                                    name="updateInvoice"
+                                    name="updateInvoiceBTN"
                                     value="1"
                                     accesskey="i"
                                     title="alt-I / ctrl-alt-I"
@@ -132,4 +123,65 @@
             </div>
         </form>
         <!-- end form update invoice -->
+        <!-- form invoice items -->
+        {% for eachItem in list_of_items %}
+            <form id="FormItems-{{ eachItem.itemLine.value }}"
+                  action=""
+                  novalidate=""
+                  method="POST">
+                {% csrf_token %}
+                {% for hidden in eachItem.hidden_fields %}{{ hidden }}{% endfor %}
+                <button disabled style="display:none;">
+                    <!-- this hidden button to disable submit on Enter key -->
+                </button>
+                <div class="row g-3">
+                    <fieldset class="form-group border" {{ isDisabled }}>
+                        <!-- start div row -->
+                        <div class="row mt-1 mb-1">
+                            {{ eachItem.passe.as_hidden }}
+                            {{ eachItem.invoiceNumber.as_hidden }}
+                            {{ eachItem.loginName.as_hidden }}
+                            {{ eachItem.invoiceDate.as_hidden }}
+                            {{ eachItem.dueDate.as_hidden }}
+                            {{ eachItem.specialNote.as_hidden }}
+                            {{ eachItem.invoiceStatus.as_hidden }}
+                            {{ eachItem.accountBalance.as_hidden }}
+                            <div class="col-sm-1">
+                                {{ eachItem.itemLine }}<small class="form-text text-danger">{{ eachItem.itemLine.errors }}</small>
+                            </div>
+                            <div class="col-sm-4">
+                                {{ eachItem.itemCode }}<small class="form-text text-danger">{{ eachItem.itemCode.errors }}</small>
+                            </div>
+                            <div class="col-sm-2">
+                                {{ eachItem.quantity }}<small class="form-text text-danger">{{ eachItem.quantity.errors }}</small>
+                            </div>
+                            <div class="col-sm-3">
+                                {{ eachItem.lineNote }}<small class="form-text text-danger">{{ eachItem.lineNote.errors }}</small>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit"
+                                        name="updateItemBTN"
+                                        value="1"
+                                        accesskey="l"
+                                        title="alt-L / ctrl-alt-L"
+                                        class="btn btn-secondary">Update</button>
+                            </div>
+                        </div>
+                        <!-- end div row -->
+                    </fieldset>
+                </div>
+            </form>
+        {% endfor %}
+        <!-- end form invoice items -->
+        <!-- start list of invoices -->
+        <hr />
+        <div class="container-fluid">
+            <div class="list-unstyled row">
+                {% for eachInvoice in list_of_all_invoices %}
+                    <a href="?loginName={{ eachInvoice.PrevInvoiceNumber }}"
+                       class="border list-item col-lg-2">{{ eachInvoice.PrevInvoiceDate }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- end list of invoices -->
     {% endblock %}

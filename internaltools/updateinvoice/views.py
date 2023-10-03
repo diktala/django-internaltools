@@ -13,7 +13,7 @@ import commons
 
 class FormSearchLogin(forms.Form):
     loginName = forms.CharField(
-        label="Login Name",
+        label="Invoice / Login",
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Customer username ...",
@@ -41,7 +41,7 @@ class FormInvoice(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=20,
         validators=[
@@ -56,7 +56,8 @@ class FormInvoice(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "placeholder": "...",
-                "class": "form-control",
+                "class": "form-control-plaintext",
+                "readonly": "readonly",
             }
         ),
         required=True,
@@ -74,7 +75,8 @@ class FormInvoice(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "placeholder": "...",
-                "class": "form-control",
+                "class": "form-control-plaintext",
+                "readonly": "readonly",
             }
         ),
         required=True,
@@ -141,7 +143,7 @@ class FormInvoice(forms.Form):
             )
         ],
     )
-    CHOICES = ["Printed","Reported","Paid","Canceled"]
+    CHOICES = ["Printed", "Reported", "Paid", "Canceled"]
     invoiceStatus = forms.ChoiceField(
         choices=[(op, op) for op in CHOICES],
         label="Invoice Status",
@@ -188,6 +190,18 @@ class FormInvoice(forms.Form):
                 message="invalid characters",
             )
         ],
+    )
+    originalItemLine = forms.DecimalField(
+        label="Original Item Line",
+        widget=forms.HiddenInput(
+            attrs={
+                "placeholder": "...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        max_digits=3,
+        decimal_places=0,
     )
     itemLine = forms.DecimalField(
         label="Item Line",
@@ -240,7 +254,7 @@ class FormInvoice(forms.Form):
         ),
         required=False,
         min_length=1,
-        max_length=20,
+        max_length=30,
         validators=[
             RegexValidator(
                 regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
@@ -248,13 +262,12 @@ class FormInvoice(forms.Form):
             )
         ],
     )
+    """
     def clean(self):
         cleaned_data = super().clean()
         itemLine = cleaned_data.get("itemLine")
         itemCode = cleaned_data.get("itemCode")
         quantity = cleaned_data.get("quantity")
-        """
-        """
         if (
             itemLine is not None
             and itemCode is not None
@@ -263,21 +276,38 @@ class FormInvoice(forms.Form):
             self.add_error("itemLine", 'some error for todo ....')
             self.cleaned_data["lineNote"] = " .......................... "
         return self.cleaned_data
+    """
 
 
-def getInvoice(login_or_invoice = ''):
+def getInvoice(login_or_invoice=""):
     querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 2, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
-    paramSQL = { "InvoiceNumberVar": str(login_or_invoice) }
-    invoiceDict = queryDBrow( querySQL, paramSQL )
-    strippedInvoiceDict = {key: value.strip() if isinstance(value, str) else value for key, value in invoiceDict.items()}
+    paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
+    invoiceDict = queryDBrow(querySQL, paramSQL)
+    strippedInvoiceDict = {
+        key: value.strip() if isinstance(value, str) else value
+        for key, value in invoiceDict.items()
+    }
     return strippedInvoiceDict
 
 
-def getInvoiceDetail(login_or_invoice = ''):
+def getInvoiceDetail(login_or_invoice=""):
     querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 3, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
-    paramSQL = { "InvoiceNumberVar": str(login_or_invoice) }
-    invoiceDict = queryDBall( querySQL, paramSQL )
+    paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
+    invoiceDict = queryDBall(querySQL, paramSQL)
     return invoiceDict
+
+
+def getItemCodes():
+    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 5 """
+    itemDict = queryDBall(querySQL)
+    return itemDict
+
+
+def getAllInvoices(login_or_invoice=""):
+    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 6, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
+    paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
+    list_of_invoices = queryDBall(querySQL, paramSQL)
+    return list_of_invoices
 
 
 def submitToAladin(invoiceDict):
@@ -355,43 +385,97 @@ def index(request):
     }
     formSearchLogin = FormSearchLogin(defaultData)
     loginName = defaultData.get("loginName")
-    debugMessage = f"login: {loginName}"
+    # debugMessage = f"login: {loginName}"
     isUserExist = False
-    # formUserDetail.fields["postalCode"].initial = request.POST.get("postalCode")
     formInvoice = FormInvoice()
     invoiceDetailDict = dict()
-    """ GET request received """
+    list_of_all_invoices = dict()
+    list_of_items = []
+    """ Check if valid login or invoicenumber request received """
     if formSearchLogin.is_valid():
-        loginName = formSearchLogin.cleaned_data["loginName"]
-        # confirmedLoginName = commons.get_loginname_from_database(loginName)
-        invoiceDict = getInvoice(loginName)
+        invoice_or_login = formSearchLogin.cleaned_data["loginName"]
+        list_of_all_invoices = getAllInvoices(invoice_or_login)
+        invoiceDict = getInvoice(invoice_or_login)
         if invoiceDict:
             isUserExist = True
             formInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
-            formInvoice.fields["invoiceNumber"].initial = invoiceDict.get("InvoiceNumber")
-            formInvoice.fields["invoiceDate"].initial = commons.getDateFormatted(invoiceDict.get("InvoiceDate"))
-            formInvoice.fields["dueDate"].initial = commons.getDateFormatted(invoiceDict.get("DueDate"))
+            formInvoice.fields["invoiceNumber"].initial = invoiceDict.get(
+                "InvoiceNumber"
+            )
+            formInvoice.fields["invoiceDate"].initial = commons.getDateFormatted(
+                invoiceDict.get("InvoiceDate")
+            )
+            formInvoice.fields["dueDate"].initial = commons.getDateFormatted(
+                invoiceDict.get("DueDate")
+            )
             formInvoice.fields["specialNote"].initial = invoiceDict.get("SpecialNote")
-            formInvoice.fields["invoiceStatus"].initial = invoiceDict.get("InvoiceStatus")
-            # TODO: make function for accountbalance
-            formInvoice.fields["accountBalance"].initial = str(invoiceDict.get("AccountBalance"))[0:-2]
-            invoiceDetailDict = getInvoiceDetail(loginName)
-            debugMessage = f"confirmed entered:{loginName} {invoiceDict.get('LoginName')} "
+            formInvoice.fields["invoiceStatus"].initial = invoiceDict.get(
+                "InvoiceStatus"
+            )
+            formInvoice.fields["accountBalance"].initial = commons.getNumberFormatted(
+                invoiceDict.get("AccountBalance")
+            )
+            # debugMessage = f"confirmed entered:{invoice_or_login} {invoiceDict.get('LoginName')} "
+            itemDict = getItemCodes()
+            itemChoices = [
+                (item.get("ItemCode"), item.get("ItemCode")) for item in itemDict
+            ]
+            itemChoices.insert(0, ("", ""))
+            invoiceDetailDict = getInvoiceDetail(invoice_or_login)
+            for each_item in invoiceDetailDict:
+                form = FormInvoice()
+                form.fields["loginName"].initial = invoiceDict.get("LoginName")
+                form.fields["invoiceNumber"].initial = invoiceDict.get("InvoiceNumber")
+                form.fields["invoiceDate"].initial = commons.getDateFormatted(
+                    invoiceDict.get("InvoiceDate")
+                )
+                form.fields["dueDate"].initial = commons.getDateFormatted(
+                    invoiceDict.get("DueDate")
+                )
+                form.fields["specialNote"].initial = invoiceDict.get("SpecialNote")
+                form.fields["invoiceStatus"].initial = invoiceDict.get("InvoiceStatus")
+                form.fields["accountBalance"].initial = commons.getNumberFormatted(
+                    invoiceDict.get("AccountBalance")
+                )
+                form.fields["originalItemLine"].initial = each_item.get("ItemNumber")
+                form.fields["itemLine"].initial = each_item.get("ItemNumber")
+                form.fields["itemCode"].choices = itemChoices
+                form.fields["itemCode"].initial = each_item.get("ItemCode")
+                form.fields["quantity"].initial = each_item.get("QuantitySold")
+                form.fields["lineNote"].initial = each_item.get("LineNote")
+                list_of_items.append(form)
     """ --- """
-    if (
-        request.method == "POST"
-    ):
-        formInvoice = FormInvoice( request.POST.dict() )
+    if request.method == "POST" and request.POST.get("updateInvoiceBTN"):
+        formInvoice = FormInvoice(request.POST.dict())
+        if formInvoice.is_valid():
+            messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+        else:
+            messages.add_message(request, messages.WARNING, f"Form is still INVALID")
+
+    if request.method == "POST" and request.POST.get("updateItemBTN"):
+        itemLine = request.POST.get("originalItemLine")
+        itemIndex = int(itemLine) - 1
+        list_of_items[itemIndex] = FormInvoice(request.POST.dict())
+        list_of_items[itemIndex].fields["itemCode"].choices = itemChoices
+        itemForm = list_of_items[itemIndex]
+        # itemCodeValue = itemForm.fields["itemCode"].initial
+        # messages.add_message(request, messages.INFO, f"Item is {itemLine} - {itemCodeValue}")
+        if itemForm.is_valid():
+            messages.add_message(request, messages.SUCCESS, f"Item is VALID")
+        else:
+            messages.add_message(request, messages.WARNING, f"Item is still INVALID")
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        "debugMessage": debugMessage,
+        # "debugMessage": debugMessage,
         "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "formInvoice": formInvoice,
+        "list_of_items": list_of_items,
         "invoiceDetailDict": invoiceDetailDict,
+        "list_of_all_invoices": list_of_all_invoices,
     }
     return render(request, "updateinvoice/sample.html", context)
