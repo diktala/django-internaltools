@@ -38,7 +38,7 @@ class FormSearchLogin(forms.Form):
             attrs={
                 "placeholder": "password to enable update functions ...",
                 "class": "form-control",
-            }
+            },
         ),
         required=False,
         min_length=1,
@@ -359,7 +359,10 @@ def submitToAladin(invoiceDict):
 def index(request):
     # get invoice or loginname from POST or from URL
     defaultData = {
-        "loginName": request.POST.get("loginName") or request.GET.get("loginName") or request.GET.get("LoginName") or "",
+        "loginName": request.POST.get("loginName")
+        or request.GET.get("loginName")
+        or request.GET.get("LoginName")
+        or "",
         "passe": request.POST.get("passe") or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
@@ -407,7 +410,12 @@ def index(request):
             itemChoices.insert(0, ("", ""))
             # get detail of this invoice store it in a list of forms
             invoiceDetailList = getInvoiceDetail(invoice_or_login)
-            emptyItemDict = {"ItemNumber":"","ItemCode":"","QuantitySold":"","LineNote":""}
+            emptyItemDict = {
+                "ItemNumber": "",
+                "ItemCode": "",
+                "QuantitySold": "",
+                "LineNote": "",
+            }
             invoiceDetailList.append(emptyItemDict)
             # each item in invoicedetail gets its own html form
             for each_item in invoiceDetailList:
@@ -440,7 +448,7 @@ def index(request):
         if formInvoice.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Form is VALID")
             submit_invoice_to_aladin = formInvoice.cleaned_data
-            submitToAladin( submit_invoice_to_aladin )
+            submitToAladin(submit_invoice_to_aladin)
         else:
             messages.add_message(request, messages.WARNING, f"Form is still INVALID")
 
@@ -455,7 +463,7 @@ def index(request):
         if itemForm.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Item is VALID")
             submit_invoice_to_aladin = itemForm.cleaned_data
-            submitToAladin( submit_invoice_to_aladin )
+            submitToAladin(submit_invoice_to_aladin)
         else:
             messages.add_message(request, messages.WARNING, f"Item is still INVALID")
     #

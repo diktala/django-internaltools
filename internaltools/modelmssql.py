@@ -25,6 +25,7 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASS = os.environ.get("DB_PASS")
 DB_NAME = os.environ.get("DB_NAME")
 
+
 class fake_mssql:
     def connect(server, user, password, database):
         return fake_mssql()
@@ -90,4 +91,3 @@ def queryDBall(query, params=""):
         allRows.append(rowResult.copy())
     dbLink.close
     return allRows
-

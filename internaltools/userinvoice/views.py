@@ -11,6 +11,7 @@ from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from django.template.defaulttags import register
 import commons
 
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
@@ -47,7 +48,9 @@ def countConfirmedLoginName(loginToCheck):
 
 def getLoginNameFromInvoiceNumber(invoiceNumber):
     invoiceNumberSanitized = commons.sanitizeLogin(invoiceNumber)
-    invoiceNumberDigits = commons.get_invoicenumber_from_obfuscated_number(invoiceNumberSanitized)
+    invoiceNumberDigits = commons.get_invoicenumber_from_obfuscated_number(
+        invoiceNumberSanitized
+    )
     loginName = queryDBscalar(
         f"SELECT LoginName FROM Invoices where InvoiceNumber = %s",
         str(invoiceNumberDigits),

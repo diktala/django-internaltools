@@ -596,7 +596,10 @@ def getUserInfo(loginName):
       """,
         loginName,
     )
-    strippedUsersDict = {key: value.strip() if isinstance(value, str) else value for key, value in usersDict.items()}
+    strippedUsersDict = {
+        key: value.strip() if isinstance(value, str) else value
+        for key, value in usersDict.items()
+    }
     return strippedUsersDict
 
 
@@ -755,8 +758,8 @@ def index(request):
         "loginName": "",
     }
     isUserExist = False
-    formSearchLogin = FormSearchLogin( defaultData | request.GET.dict() )
-    formUserDetail = FormUserDetail( request.POST.dict() )
+    formSearchLogin = FormSearchLogin(defaultData | request.GET.dict())
+    formUserDetail = FormUserDetail(request.POST.dict())
 
     """ --- """
     """ GET request received """
@@ -765,7 +768,9 @@ def index(request):
         loginFound = countConfirmedLoginName(loginName)
         isUserExist = True if (str(loginFound) == "1") else False
         userDict = getUserInfo(loginName) if isUserExist else dict()
-        formUserDetail = FormUserDetail( userDict | request.POST.dict() | {"loginName": loginName} )
+        formUserDetail = FormUserDetail(
+            userDict | request.POST.dict() | {"loginName": loginName}
+        )
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -803,7 +808,7 @@ def index(request):
     """ --- """
     """ Button Pressed UpdateUser """
     if request.method == "POST" and request.POST.get("updateUser"):
-        initialUserDetail = FormUserDetail( request.POST.dict() )
+        initialUserDetail = FormUserDetail(request.POST.dict())
         if initialUserDetail.is_valid():
             submitToAladin(initialUserDetail.cleaned_data)
             messages.add_message(
@@ -812,9 +817,7 @@ def index(request):
             # freeze the form
             isUserExist = not isUserExist
         else:
-            messages.add_message(
-                request, messages.WARNING, f"Form is still INVALID"
-            )
+            messages.add_message(request, messages.WARNING, f"Form is still INVALID")
         """
         # rebuilding form using POST + cleaned_data
         # .cleaned_data generated from is_valid call
