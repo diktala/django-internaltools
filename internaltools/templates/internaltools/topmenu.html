@@ -4,10 +4,11 @@
             <ul class="nav nav-tabs">
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-			{% url 'createuser:index' as thisurl %}
-			<a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}" href="{{ thisurl }}">Create User</a>
+                        {% url 'createuser:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Create User</a>
                         <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'createuser/' %} active {% endif%}"
-				href="https://internal.{{ domain }}/createuser/index.php?{{ urlQuery }}">Create User</a> -->
+    href="https://internal.{{ domain }}/createuser/index.php?{{ urlQuery }}">Create User</a> -->
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -109,19 +110,21 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-			{% url 'userinvoice:index' as thisurl %}
-			<a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}" href="{{ thisurl }}">User Invoices</a>
+                        {% url 'userinvoice:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">User Invoices</a>
                         <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'userinvoice/' %} active {% endif%}"
-				href="https://www.{{ domain }}/scripts/internal/UserInvoice/default.asp?{{ urlQuery }}">User Invoices</a>-->
+    href="https://www.{{ domain }}/scripts/internal/UserInvoice/default.asp?{{ urlQuery }}">User Invoices</a>-->
                     </div>
                     <!-- nav-link -->
                 </li>
-		<li class="nav-item col p-0">
+                <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-			{% url 'updateuser:index' as thisurl %}
-			<a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}" href="{{ thisurl }}">Update</a>
+                        {% url 'updateuser:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Update</a>
                         <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'updateuser/' %} active {% endif%}"
-				href="https://internal.{{ domain }}/createuser/updateuser.php?{{ urlQuery }}">Update</a>-->
+    href="https://internal.{{ domain }}/createuser/updateuser.php?{{ urlQuery }}">Update</a>-->
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -219,10 +222,10 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-			{% url 'updateinvoice:index' as thisurl %}
-			<a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}" href="{{ thisurl }}">Update Invoice</a>
-                        <!--<a class="nav-link p-0 {% if request.resolver_match.route == 'updateinvoice/' %} active {% endif%}"
-                           href="https://www.{{ domain }}/scripts/internal/UserInvoice/UpdateInvoice.asp?{{ urlQuery }}">
+                        {% url 'updateinvoice:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Update Invoice</a>
+                        <!--<a class="nav-link p-0 {% if request.resolver_match.route == 'updateinvoice/' %} active {% endif%}" href="https://www.{{ domain }}/scripts/internal/UserInvoice/UpdateInvoice.asp?{{ urlQuery }}">
                             Update Invoice
 			</a>-->
                     </div>

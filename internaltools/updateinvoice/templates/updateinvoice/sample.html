@@ -19,7 +19,7 @@
         <h1>{{ debugMessage }}</h1>
         <!-- form search users -->
         <form id="SearchLoginForm" action="" novalidate="" method="POST">
-	    {% csrf_token %}
+            {% csrf_token %}
             <div class="row g-3">
                 <fieldset class="form-group border">
                     <legend>Update Invoice:</legend>
@@ -131,13 +131,13 @@
                   method="POST">
                 {% csrf_token %}
                 {% for hidden in eachItem.hidden_fields %}{{ hidden }}{% endfor %}
-		{{ eachItem.invoiceNumber.as_hidden }}
-		{{ eachItem.loginName.as_hidden }}
-		{{ eachItem.invoiceDate.as_hidden }}
-		{{ eachItem.dueDate.as_hidden }}
-		{{ eachItem.specialNote.as_hidden }}
-		{{ eachItem.invoiceStatus.as_hidden }}
-		{{ eachItem.accountBalance.as_hidden }}
+                {{ eachItem.invoiceNumber.as_hidden }}
+                {{ eachItem.loginName.as_hidden }}
+                {{ eachItem.invoiceDate.as_hidden }}
+                {{ eachItem.dueDate.as_hidden }}
+                {{ eachItem.specialNote.as_hidden }}
+                {{ eachItem.invoiceStatus.as_hidden }}
+                {{ eachItem.accountBalance.as_hidden }}
                 <button disabled style="display:none;">
                     <!-- this hidden button to disable submit on Enter key -->
                 </button>

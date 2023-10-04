@@ -40,74 +40,69 @@
             </div>
         </form>
         <!-- end form search users -->
-    <!-- display user summary -->
-    <table class="table table-bordered">
-        <tr class="{{ invoices.UserInvoice.0.ActiveUser|yesno:"table-secondary,table-danger" }}">
-            <td>
-		Outstanding balance: ${{ invoices.UserInvoice.0.OutStandingBalance|floatformat:"2" }}
-            </td>
-            <td>
-                Username: {{ loginName }}
-            </td>
-            <td>
-                Member since: {{ invoices.UserInvoice.0.DateJoined|date:"Y-m-d" }}
-            </td>
-            <td>
-                Account Status: {{ invoices.UserInvoice.0.ActiveUser|yesno:"Active,Inactive" }}
-            </td>
-        </tr>
-    </table>
-    <h4>Billing plans for user {{ loginName }}</h4>
-    <table class="table table-bordered">
-        <tr class="table-light fw-lighter small" >
-            <th>Next billing</th>
-            <th>Plan</th>
-	    <th>Detail</th>
-        </tr>
-        {% for eachPlan in invoices.UserPlans %}
-            <tr class="table-light fw-lighter small" >
-		<td>{{ eachPlan.NextBilling|date:"Y-m-d" }}</td>
-                <td>{{ eachPlan.CurrentPlan }}</td>
-                <td>{{ eachPlan.DomainName }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    <!-- end display user summary -->
-        {% comment %}
-	<h1>Login is {{ loginName }} {{ isDisabled }}</h1>
-	<pre> {{ invoices.UserInvoice.0.InvoiceNumber }}</pre>
-	<pre> {{ invoices.InvoiceDetail.1225|first|pprint }}</pre>
-	<pre> {{ invoices.InvoiceDetail|get_item:1522266|pprint }}</pre>
-	<pre> {{ invoices.InvoiceDetail|get_item:invoices.UserInvoice.0.InvoiceNumber|pprint }}</pre>
-	<h1>loginNameCrypted: {{ loginNameCrypted|urlencode }}</h1>
-	<pre> {{ invoices.UserInvoice|first|pprint }}</pre>
-        {% endcomment %}
-    <!-- display invoice details -->
-    <h4>Latest transactions for user {{ loginName }}</h4>
-    {% for eachInvoice in invoices.UserInvoice %}
+        <!-- display user summary -->
         <table class="table table-bordered">
-	<thead class="{{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'table-dark,table-success' }}">
-        <tr>
-		<td colspan="3" >{{ eachInvoice.InvoiceDate|date:"Y-m-d" }} {{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'Invoice,Payment' }} {{ eachInvoice.PaidAmount|yesno:"$," }}{{ eachInvoice.PaidAmount|floatformat:"2"|default:"" }} {{eachInvoice.InvoiceStatus|cut:'Payment' }}  <a href="https://tech.{{domain}}/userinvoice/pdfinvoice.php?var1={{eachInvoice.loginNameCrypted|urlencode}}&amp;var2={{eachInvoice.invoiceNumberCrypted|urlencode}}">{{eachInvoice.invoiceNumberObfuscated}}</a> <abbr title="{{ eachInvoice.SpecialNote|default:'' }}">{{ eachInvoice.InvoiceNumber|default:"" }}</abbr></td>
-        </tr>
-        </thead>
-	    {% if eachInvoice.InvoiceStatus != 'Payment' %}
-            {% for eachInvoiceDetail in invoices.InvoiceDetail|get_item:eachInvoice.InvoiceNumber %}
-            <tr>
-                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail.ItemCode }} </td>
-                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail.QuantitySold }} </td>
-                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail.LineNote|default:"" }}</td>
+            <tr class="{{ invoices.UserInvoice.0.ActiveUser|yesno:"table-secondary,table-danger" }}">
+                <td>Outstanding balance: ${{ invoices.UserInvoice.0.OutStandingBalance|floatformat:"2" }}</td>
+                <td>Username: {{ loginName }}</td>
+                <td>Member since: {{ invoices.UserInvoice.0.DateJoined|date:"Y-m-d" }}</td>
+                <td>Account Status: {{ invoices.UserInvoice.0.ActiveUser|yesno:"Active,Inactive" }}</td>
             </tr>
-            {% if forloop.last %}
-            <tr>
-                <td class="table-light fw-lighter small">Total:</td>
-                <td colspan="2" class="table-light fw-lighter small"> ${{ eachInvoiceDetail.InvoiceBalance|floatformat:"2" }} </td>
-            </tr>
-	    {% endif %}{# endif forloop.last #}
-            {% endfor %}
-	    {% endif %}{# endif InvoiceStatus != 'Payment' #}
         </table>
-     {% endfor %}
-    <!-- end display invoice details -->
-
-{% endblock %}
+        <h4>Billing plans for user {{ loginName }}</h4>
+        <table class="table table-bordered">
+            <tr class="table-light fw-lighter small">
+                <th>Next billing</th>
+                <th>Plan</th>
+                <th>Detail</th>
+            </tr>
+            {% for eachPlan in invoices.UserPlans %}
+                <tr class="table-light fw-lighter small">
+                    <td>{{ eachPlan.NextBilling|date:"Y-m-d" }}</td>
+                    <td>{{ eachPlan.CurrentPlan }}</td>
+                    <td>{{ eachPlan.DomainName }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <!-- end display user summary -->
+        {% comment %}
+        <h1>Login is {{ loginName }} {{ isDisabled }}</h1>
+        <pre> {{ invoices.UserInvoice.0.InvoiceNumber }}</pre>
+        <pre> {{ invoices.InvoiceDetail.1225|first|pprint }}</pre>
+        <pre> {{ invoices.InvoiceDetail|get_item:1522266|pprint }}</pre>
+        <pre> {{ invoices.InvoiceDetail|get_item:invoices.UserInvoice.0.InvoiceNumber|pprint }}</pre>
+        <h1>loginNameCrypted: {{ loginNameCrypted|urlencode }}</h1>
+        <pre> {{ invoices.UserInvoice|first|pprint }}</pre>
+        {% endcomment %}
+        <!-- display invoice details -->
+        <h4>Latest transactions for user {{ loginName }}</h4>
+        {% for eachInvoice in invoices.UserInvoice %}
+            <table class="table table-bordered">
+                <thead class="{{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'table-dark,table-success' }}">
+                    <tr>
+                        <td colspan="3">
+                            {{ eachInvoice.InvoiceDate|date:"Y-m-d" }} {{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'Invoice,Payment' }} {{ eachInvoice.PaidAmount|yesno:"$," }}{{ eachInvoice.PaidAmount|floatformat:"2"|default:"" }} {{ eachInvoice.InvoiceStatus|cut:'Payment' }}  <a href="https://tech.{{ domain }}/userinvoice/pdfinvoice.php?var1={{ eachInvoice.loginNameCrypted|urlencode }}&amp;var2={{ eachInvoice.invoiceNumberCrypted|urlencode }}">{{ eachInvoice.invoiceNumberObfuscated }}</a> <abbr title="{{ eachInvoice.SpecialNote|default:'' }}">{{ eachInvoice.InvoiceNumber|default:"" }}</abbr>
+                        </td>
+                    </tr>
+                </thead>
+                {% if eachInvoice.InvoiceStatus != 'Payment' %}
+                    {% for eachInvoiceDetail in invoices.InvoiceDetail|get_item:eachInvoice.InvoiceNumber %}
+                        <tr>
+                            <td class="table-light fw-lighter small">{{ eachInvoiceDetail.ItemCode }}</td>
+                            <td class="table-light fw-lighter small">{{ eachInvoiceDetail.QuantitySold }}</td>
+                            <td class="table-light fw-lighter small">{{ eachInvoiceDetail.LineNote|default:"" }}</td>
+                        </tr>
+                        {% if forloop.last %}
+                            <tr>
+                                <td class="table-light fw-lighter small">Total:</td>
+                                <td colspan="2" class="table-light fw-lighter small">${{ eachInvoiceDetail.InvoiceBalance|floatformat:"2" }}</td>
+                            </tr>
+                        {% endif %}
+                        {# endif forloop.last #}
+                    {% endfor %}
+                {% endif %}
+                {# endif InvoiceStatus != 'Payment' #}
+            </table>
+        {% endfor %}
+        <!-- end display invoice details -->
+    {% endblock %}
