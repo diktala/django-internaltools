@@ -18,11 +18,11 @@
         {# formUserDetail.errors.as_data #}
         <h1>{{ debugMessage }}</h1>
         <!-- form search users -->
-        <form id="SearchLoginForm" action="" novalidate="" method="GET">
+        <form id="SearchLoginForm" action="" novalidate="" method="POST">
+	    {% csrf_token %}
             <div class="row g-3">
                 <fieldset class="form-group border">
                     <legend>Update Invoice:</legend>
-                    {# {{ formSearchLogin.csrf_token }} #}
                     <div class="row mb-3">
                         <label for="{{ formSearchLogin.loginName.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
@@ -31,6 +31,11 @@
                         <div class="col-sm-10">
                             {{ formSearchLogin.loginName }}
                             <small class="form-text text-danger">{{ formSearchLogin.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formSearchLogin.passe.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formSearchLogin.passe.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.passe }}<small class="form-text text-danger">{{ formSearchLogin.passe.errors }}</small>
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
@@ -53,11 +58,6 @@
                     </button>
                     <!-- start div row -->
                     <div class="row mb-3">
-                        <label for="{{ formInvoice.passe.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.passe.label }}</label>
-                        <div class="col-sm-10">
-                            {{ formInvoice.passe }}<small class="form-text text-danger">{{ formInvoice.passe.errors }}</small>
-                        </div>
                         <label for="{{ formInvoice.invoiceNumber.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
                             {{ formInvoice.invoiceNumber.label }}
@@ -131,6 +131,13 @@
                   method="POST">
                 {% csrf_token %}
                 {% for hidden in eachItem.hidden_fields %}{{ hidden }}{% endfor %}
+		{{ eachItem.invoiceNumber.as_hidden }}
+		{{ eachItem.loginName.as_hidden }}
+		{{ eachItem.invoiceDate.as_hidden }}
+		{{ eachItem.dueDate.as_hidden }}
+		{{ eachItem.specialNote.as_hidden }}
+		{{ eachItem.invoiceStatus.as_hidden }}
+		{{ eachItem.accountBalance.as_hidden }}
                 <button disabled style="display:none;">
                     <!-- this hidden button to disable submit on Enter key -->
                 </button>
@@ -138,14 +145,6 @@
                     <fieldset class="form-group border" {{ isDisabled }}>
                         <!-- start div row -->
                         <div class="row mt-1 mb-1">
-                            {{ eachItem.passe.as_hidden }}
-                            {{ eachItem.invoiceNumber.as_hidden }}
-                            {{ eachItem.loginName.as_hidden }}
-                            {{ eachItem.invoiceDate.as_hidden }}
-                            {{ eachItem.dueDate.as_hidden }}
-                            {{ eachItem.specialNote.as_hidden }}
-                            {{ eachItem.invoiceStatus.as_hidden }}
-                            {{ eachItem.accountBalance.as_hidden }}
                             <div class="col-sm-1">
                                 {{ eachItem.itemLine }}<small class="form-text text-danger">{{ eachItem.itemLine.errors }}</small>
                             </div>

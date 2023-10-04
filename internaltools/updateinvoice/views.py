@@ -30,14 +30,32 @@ class FormSearchLogin(forms.Form):
             )
         ],
     )
+    passe = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            # retain the value after POST
+            render_value=True,
+            attrs={
+                "placeholder": "password to enable update functions ...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=20,
+        validators=[
+            RegexValidator(
+                regex="^\w+$",
+                message="invalid characters",
+            )
+        ],
+    )
 
 
 class FormInvoice(forms.Form):
     passe = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput(
+        widget=forms.HiddenInput(
             attrs={
-                "placeholder": "password to unlock this form ...",
                 "class": "form-control",
             }
         ),
@@ -262,21 +280,6 @@ class FormInvoice(forms.Form):
             )
         ],
     )
-    """
-    def clean(self):
-        cleaned_data = super().clean()
-        itemLine = cleaned_data.get("itemLine")
-        itemCode = cleaned_data.get("itemCode")
-        quantity = cleaned_data.get("quantity")
-        if (
-            itemLine is not None
-            and itemCode is not None
-            and quantity is not None
-        ):
-            self.add_error("itemLine", 'some error for todo ....')
-            self.cleaned_data["lineNote"] = " .......................... "
-        return self.cleaned_data
-    """
 
 
 def getInvoice(login_or_invoice=""):
@@ -354,9 +357,10 @@ def submitToAladin(invoiceDict):
 
 
 def index(request):
-    # get invoice or loginname from URL
+    # get invoice or loginname from POST or from URL
     defaultData = {
-        "loginName": request.GET.get("loginName") or "",
+        "loginName": request.POST.get("loginName") or request.GET.get("loginName") or request.GET.get("LoginName") or "",
+        "passe": request.POST.get("passe") or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
     #
@@ -368,13 +372,16 @@ def index(request):
     list_of_all_invoices = dict()
     # list_of_items contains a form for each itemLine
     list_of_items = dict()
-    """ Check if valid login or invoicenumber request received """
+    # Check if valid login or invoicenumber request received
     if formSearchLogin.is_valid():
         invoice_or_login = formSearchLogin.cleaned_data.get("loginName")
+        password_of_form = formSearchLogin.cleaned_data.get("passe")
         list_of_all_invoices = getAllInvoices(invoice_or_login)
         invoiceDict = getInvoice(invoice_or_login)
         if invoiceDict:
+            # found invoice for this user
             isUserExist = True
+            formInvoice.fields["passe"].initial = password_of_form
             formInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
             formInvoice.fields["invoiceNumber"].initial = invoiceDict.get(
                 "InvoiceNumber"
@@ -392,17 +399,20 @@ def index(request):
             formInvoice.fields["accountBalance"].initial = commons.getNumberFormatted(
                 invoiceDict.get("AccountBalance")
             )
-            # debugMessage = f"confirmed entered:{invoice_or_login} {invoiceDict.get('LoginName')} "
+            # populate list of itemCodes as drop down choices
             itemDict = getItemCodes()
             itemChoices = [
                 (item.get("ItemCode"), item.get("ItemCode")) for item in itemDict
             ]
             itemChoices.insert(0, ("", ""))
+            # get detail of this invoice store it in a list of forms
             invoiceDetailList = getInvoiceDetail(invoice_or_login)
             emptyItemDict = {"ItemNumber":"","ItemCode":"","QuantitySold":"","LineNote":""}
             invoiceDetailList.append(emptyItemDict)
+            # each item in invoicedetail gets its own html form
             for each_item in invoiceDetailList:
                 form = FormInvoice()
+                form.fields["passe"].initial = password_of_form
                 form.fields["loginName"].initial = invoiceDict.get("LoginName")
                 form.fields["invoiceNumber"].initial = invoiceDict.get("InvoiceNumber")
                 form.fields["invoiceDate"].initial = commons.getDateFormatted(
@@ -422,8 +432,9 @@ def index(request):
                 form.fields["itemCode"].initial = each_item.get("ItemCode")
                 form.fields["quantity"].initial = each_item.get("QuantitySold")
                 form.fields["lineNote"].initial = each_item.get("LineNote")
-                list_of_items[each_item.get("ItemNumber")] = form
+                list_of_items[str(each_item.get("ItemNumber"))] = form
     """ --- """
+    # update invoice button was submitted
     if request.method == "POST" and request.POST.get("updateInvoiceBTN"):
         formInvoice = FormInvoice(request.POST.dict())
         if formInvoice.is_valid():
@@ -433,16 +444,18 @@ def index(request):
         else:
             messages.add_message(request, messages.WARNING, f"Form is still INVALID")
 
+    """ --- """
+    # update line item button was submitted
     if request.method == "POST" and request.POST.get("updateItemBTN"):
+        # update the correct form from the list
         itemLine = request.POST.get("originalItemLine")
-        # itemIndex = int(itemLine) - 1
         list_of_items[itemLine] = FormInvoice(request.POST.dict())
         list_of_items.get(itemLine).fields["itemCode"].choices = itemChoices
         itemForm = list_of_items.get(itemLine)
-        # itemCodeValue = itemForm.fields["itemCode"].initial
-        # messages.add_message(request, messages.INFO, f"Item is {itemLine} - {itemCodeValue}")
         if itemForm.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Item is VALID")
+            submit_invoice_to_aladin = itemForm.cleaned_data
+            submitToAladin( submit_invoice_to_aladin )
         else:
             messages.add_message(request, messages.WARNING, f"Item is still INVALID")
     #
