@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('createuser.urls', namespace='generic')),
     path('userinvoice/', include('userinvoice.urls')),
     path('updateinvoice/', include('updateinvoice.urls')),
+    path('userplans/', include('userplans.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
