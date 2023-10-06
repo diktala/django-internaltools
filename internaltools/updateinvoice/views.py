@@ -283,7 +283,7 @@ class FormInvoice(forms.Form):
 
 
 def getInvoice(login_or_invoice=""):
-    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 2, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
+    querySQL = """EXECUTE DisplayInvoice 2, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
     paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
     invoiceDict = queryDBrow(querySQL, paramSQL)
     strippedInvoiceDict = {
@@ -294,20 +294,20 @@ def getInvoice(login_or_invoice=""):
 
 
 def getInvoiceDetail(login_or_invoice=""):
-    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 3, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
+    querySQL = """EXECUTE DisplayInvoice 3, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
     paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
     invoiceDict = queryDBall(querySQL, paramSQL)
     return invoiceDict
 
 
 def getItemCodes():
-    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 5 """
+    querySQL = """EXECUTE DisplayInvoice 5 """
     itemDict = queryDBall(querySQL)
     return itemDict
 
 
 def getAllInvoices(login_or_invoice=""):
-    querySQL = """EXECUTE wwwMaintenance.dbo.DisplayInvoice 6, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
+    querySQL = """EXECUTE DisplayInvoice 6, @InvoiceNumberVar = %(InvoiceNumberVar)s"""
     paramSQL = {"InvoiceNumberVar": str(login_or_invoice)}
     list_of_invoices = queryDBall(querySQL, paramSQL)
     return list_of_invoices
