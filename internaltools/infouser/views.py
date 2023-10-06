@@ -72,22 +72,23 @@ class FormCallLog(forms.Form):
         label="Special Note",
         widget=forms.TextInput(
             attrs={
-                "placeholder": "...",
+                "placeholder": "... type call log ...",
                 "class": "form-control",
             }
         ),
-        required=False,
+        required=True,
         min_length=1,
         max_length=200,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
         ],
     )
     requiresFeedback = forms.BooleanField(
-        label="Requires Feedback?",
+        label="Feedback?",
         initial="",
         widget=forms.CheckboxInput(
             attrs={
@@ -100,18 +101,14 @@ class FormCallLog(forms.Form):
 
 
 def get_user_info(loginName=""):
-    querySQL = (
-        """EXECUTE InfoUser @LoginName = %(loginName)s"""
-    )
+    querySQL = """EXECUTE InfoUser @LoginName = %(loginName)s"""
     paramSQL = {"loginName": str(loginName)}
     userInfo = queryDBall(querySQL, paramSQL)
     return userInfo
 
 
 def get_user_plans(loginName=""):
-    querySQL = (
-        """EXECUTE UpdateUsersPlans @LoginName = %(loginName)s"""
-    )
+    querySQL = """EXECUTE UpdateUsersPlans @LoginName = %(loginName)s"""
     paramSQL = {"loginName": str(loginName)}
     planDict = queryDBall(querySQL, paramSQL)
     return planDict
@@ -125,11 +122,12 @@ def get_call_logs(loginName=""):
             , @Desc1 = %(specialNote)s
             , @ReqAttention = %(requiresFeedback)s
             """
-    paramSQL = {"loginName": str(loginName),
-                "operator": '',
-                "specialNote": '',
-                "requiresFeedback": '',
-                }
+    paramSQL = {
+        "loginName": str(loginName),
+        "operator": "",
+        "specialNote": "",
+        "requiresFeedback": "",
+    }
     callLogDict = queryDBall(querySQL, paramSQL)
     return callLogDict
 
@@ -142,14 +140,15 @@ def submitToAladin(callLogDict):
             , @Desc1 = %(specialNote)s
             , @ReqAttention = %(requiresFeedback)s
             """
-    updateAladinParam1 = {"loginName": str(callLogDict.get("loginName")),
-                "operator": str(callLogDict.get("operator")),
-                "Desc1": str(callLogDict.get("specialNote")),
-                "requiresFeedback": "1" if callLogDict.get("requiresFeedback") else "",
-                }
-    print(f"DEBUG MESSAGE: {updateAladinSQL1}")
-    print(f"DEBUG MESSAGE: {updateAladinParam1}")
-    # queryDBall(updateAladinSQL1, updateAladinParam1)
+    updateAladinParam1 = {
+        "loginName": str(callLogDict.get("loginName")),
+        "operator": str(callLogDict.get("operator")),
+        "specialNote": str(callLogDict.get("specialNote")),
+        "requiresFeedback": "1" if callLogDict.get("requiresFeedback") else "",
+    }
+    # print(f"DEBUG MESSAGE: {updateAladinSQL1}")
+    # print(f"DEBUG MESSAGE: {updateAladinParam1}")
+    queryDBall(updateAladinSQL1, updateAladinParam1)
 
 
 def index(request):
@@ -166,9 +165,9 @@ def index(request):
     # pre assign parameters
     loginName = defaultData.get("loginName")
     isUserExist = False
-    userInfo = dict()
-    userPlans = dict()
-    callLogs = dict()
+    userInfo = list([])
+    userPlans = list([])
+    callLogs = list([])
     # Check if valid login request received
     if formSearchLogin.is_valid():
         loginName = formSearchLogin.cleaned_data.get("loginName")
@@ -187,9 +186,15 @@ def index(request):
             submit_invoice_to_aladin = formCallLog.cleaned_data
             # print(f"DEBUG MESSAGE: {formCallLog.cleaned_data}")
             submitToAladin(submit_invoice_to_aladin)
-            messages.add_message(request, messages.SUCCESS, f"Item is VALID")
+            messages.add_message(request, messages.SUCCESS, f"form is VALID")
+            # refresh callLogs
+            loginName = formCallLog.cleaned_data.get("loginName")
+            callLogs = get_call_logs(loginName)
+            # clear the callLog form
+            formCallLog = FormCallLog()
+            formCallLog.fields["loginName"].initial = loginName
         else:
-            messages.add_message(request, messages.WARNING, f"Item is still INVALID")
+            messages.add_message(request, messages.WARNING, f"form is still INVALID")
             # messages.add_message(request, messages.INFO, f"error is:  {form_being_updated.errors}")
     #
     urlQuery = f"LoginName={loginName}"
@@ -201,7 +206,7 @@ def index(request):
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "formCallLog": formCallLog,
-        "userInfo": userInfo,
+        "userInfo": userInfo[0] if len(userInfo) > 0 else None,
         "userPlans": userPlans,
         "callLogs": callLogs,
     }
