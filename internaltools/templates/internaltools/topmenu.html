@@ -14,8 +14,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/InfoUser/default.asp?{{ urlQuery }}">Users</a>
+                        {% url 'infouser:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Info User</a>
                     </div>
                     <!-- nav-link -->
                 </li>

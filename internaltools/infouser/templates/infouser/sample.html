@@ -1,0 +1,89 @@
+{% extends "internaltools/base.html" %}
+{% block title %}infouser{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <h1>{{ debugMessage }}</h1>
+        <!-- form search users -->
+        <form id="SearchLoginForm" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>Info User:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formSearchLogin.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSearchLogin.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.loginName }}
+                            <small class="form-text text-danger">{{ formSearchLogin.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formSearchLogin.passe.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formSearchLogin.passe.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.passe }}<small class="form-text text-danger">{{ formSearchLogin.passe.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary mb-3">Search</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <h1>TODO: add user info</h1>
+        <!-- form plan items -->
+        <form id="CallComments" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            {% for hidden in formCallLog.hidden_fields %}{{ hidden }}{% endfor %}
+            <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+            </button>
+            <fieldset class="form-group border" {{ isDisabled }}>
+                <div class="row mb-3">
+                    <div class="col-sm-2">
+                        {{ formCallLog.operator }}
+                        <small class="form-text text-danger">{{ formCallLog.operator.errors }}</small>
+                    </div>
+                    <div class="col-sm-2">
+                        {{ formCallLog.specialNote }}
+                        <small class="form-text text-danger">{{ formCallLog.specialNote.errors }}</small>
+                    </div>
+                    <label for="{{ formCallLog.requiresFeedback.id_for_label }}"
+                               class="col-sm-2 col-check-label text-end">
+                            {{ formCallLog.requiresFeedback.label }}
+                    </label>
+                    <div class="col-sm-1">
+                        {{ formCallLog.requiresFeedback }}
+                        <small class="form-text text-danger">{{ formCallLog.requiresFeedback.errors }}</small>
+                    </div>
+                    <div class="col-sm-2">
+                        {{ formCallLog.requestFeedback }}
+                        <small class="form-text text-danger">{{ formCallLog.requestFeedback.errors }}</small>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit"
+                                name="updateItemBTN"
+                                value="1"
+                                accesskey="l"
+                                title="alt-L / ctrl-alt-L"
+                                class="btn btn-secondary">Update</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <!-- end form plan items -->
+    {% endblock %}
