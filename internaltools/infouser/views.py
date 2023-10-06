@@ -157,6 +157,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
+        or request.session.get('loginName')
         or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
@@ -178,6 +179,9 @@ def index(request):
             # found user info for this user
             isUserExist = True
             formCallLog.fields["loginName"].initial = loginName
+            formCallLog.fields["operator"].initial = request.session.get("operator")
+            # store in cookie session
+            request.session['loginName'] = loginName
     """ --- """
     # item button was submitted
     if request.method == "POST" and request.POST.get("updateItemBTN"):
@@ -187,12 +191,15 @@ def index(request):
             # print(f"DEBUG MESSAGE: {formCallLog.cleaned_data}")
             submitToAladin(submit_invoice_to_aladin)
             messages.add_message(request, messages.SUCCESS, f"form is VALID")
-            # refresh callLogs
+            # save operator in cookie session
+            request.session['operator'] = formCallLog.cleaned_data.get("operator")
+            # refresh the callLogs to show the new entry
             loginName = formCallLog.cleaned_data.get("loginName")
             callLogs = get_call_logs(loginName)
             # clear the callLog form
             formCallLog = FormCallLog()
             formCallLog.fields["loginName"].initial = loginName
+            formCallLog.fields["operator"].initial = request.session.get('operator')
         else:
             messages.add_message(request, messages.WARNING, f"form is still INVALID")
             # messages.add_message(request, messages.INFO, f"error is:  {form_being_updated.errors}")
