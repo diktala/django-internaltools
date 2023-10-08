@@ -26,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.urandom(12)
+SECRET_KEY = "using-static-scret-key-while-in-developement"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'updateinvoice.apps.UpdateinvoiceConfig',
     'userplans.apps.UserplansConfig',
     'infouser.apps.InfouserConfig',
+    'mailaccount.apps.MailaccountConfig',
 ]
 
 MIDDLEWARE = [
