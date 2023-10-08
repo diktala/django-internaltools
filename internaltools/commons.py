@@ -81,10 +81,26 @@ def get_loginname_from_invoice(invoiceNumber):
     invoiceNumberDigits = get_invoicenumber_from_obfuscated_number(
         invoiceNumberSanitized
     )
-    loginName = queryDBscalar(
-        f"SELECT LoginName FROM Invoices where InvoiceNumber = %s",
-        str(invoiceNumberDigits),
-    )
+    loginName = ""
+    if len(invoiceNumberDigits) > 0:
+        loginName = queryDBscalar(
+            f"SELECT LoginName FROM Invoices where InvoiceNumber = %s",
+            str(invoiceNumberDigits),
+        )
+    if isinstance(loginName, str):
+        return loginName.strip()
+    else:
+        return ""
+
+
+def get_loginname_from_secondary_mail(secondaryMail):
+    secondaryMailSanitized = sanitizeLogin(secondaryMail)
+    loginName = ""
+    if len(secondaryMailSanitized) > 0:
+        loginName = queryDBscalar(
+            f"SELECT MainLoginName FROM SecondaryMailbox where MailBox = %s",
+            str(secondaryMailSanitized),
+        )
     if isinstance(loginName, str):
         return loginName.strip()
     else:
@@ -95,15 +111,24 @@ def get_loginname_from_database(either_login_or_invoice=""):
     confirmedLoginName = ""
     if not isinstance(either_login_or_invoice, str):
         either_login_or_invoice = ""
+    #
+    # case loginname is a secondary mail account
+    main_login = get_loginname_from_secondary_mail(either_login_or_invoice)
+    loginFound = count_loginnames_in_database(main_login)
+    if str(loginFound) == "1":
+        confirmedLoginName = main_login
+    #
     # case loginname is an invoicenumber
     invoiceNumber = either_login_or_invoice
     loginNameFromInvoice = get_loginname_from_invoice(invoiceNumber)
     loginFound = count_loginnames_in_database(loginNameFromInvoice)
     if str(loginFound) == "1":
         confirmedLoginName = loginNameFromInvoice
+    #
     # case loginname is normal alias
     loginName = either_login_or_invoice
     loginFound = count_loginnames_in_database(loginName)
     if str(loginFound) == "1":
         confirmedLoginName = loginName
+    #
     return confirmedLoginName

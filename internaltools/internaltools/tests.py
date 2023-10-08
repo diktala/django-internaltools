@@ -67,6 +67,13 @@ class SimpleTest(TestCase):
         self.assertEqual(commons.get_loginname_from_invoice("1000"), "ammina")
         self.assertEqual(commons.get_loginname_from_invoice("123.1000123"), "ammina")
 
+    def test_get_loginname_from_secondary_mail(self):
+        self.assertEqual(commons.get_loginname_from_secondary_mail("sec.trial"), "trial")
+        self.assertEqual(commons.get_loginname_from_secondary_mail("bugbugnothing"), "")
+        self.assertEqual(commons.get_loginname_from_secondary_mail("trial"), "")
+        self.assertEqual(commons.get_loginname_from_secondary_mail(""), "")
+        self.assertEqual(commons.get_loginname_from_secondary_mail("weirdchar\\!@#'"), "")
+
     def test_get_loginname_from_database(self):
         self.assertEqual(commons.get_loginname_from_database("trial"), "trial")
         self.assertEqual(commons.get_loginname_from_database("1000"), "ammina")
@@ -78,6 +85,8 @@ class SimpleTest(TestCase):
         self.assertEqual(commons.get_loginname_from_database(1000), "")
         self.assertEqual(commons.get_loginname_from_database(None), "")
         self.assertEqual(commons.get_loginname_from_database("has spaces"), "")
+        self.assertEqual(commons.get_loginname_from_database("sec.trial"), "trial")
+        self.assertEqual(commons.get_loginname_from_database("trial2"), "trial")
 
     """
     def test_form_validation_valid(self):
