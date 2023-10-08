@@ -172,16 +172,17 @@ def index(request):
     # Check if valid login request received
     if formSearchLogin.is_valid():
         loginName = formSearchLogin.cleaned_data.get("loginName")
-        userInfo = get_user_info(loginName)
-        userPlans = get_user_plans(loginName)
-        callLogs = get_call_logs(loginName)
+        confirmedLoginName = commons.get_loginname_from_database(loginName)
+        userInfo = get_user_info(confirmedLoginName)
+        userPlans = get_user_plans(confirmedLoginName)
+        callLogs = get_call_logs(confirmedLoginName)
         if userInfo:
             # found user info for this user
             isUserExist = True
-            formCallLog.fields["loginName"].initial = loginName
+            formCallLog.fields["loginName"].initial = confirmedLoginName
             formCallLog.fields["operator"].initial = request.session.get("operator")
             # store in cookie session
-            request.session['loginName'] = loginName
+            request.session['loginName'] = confirmedLoginName
     """ --- """
     # item button was submitted
     if request.method == "POST" and request.POST.get("updateItemBTN"):
