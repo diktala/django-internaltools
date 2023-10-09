@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'userplans.apps.UserplansConfig',
     'infouser.apps.InfouserConfig',
     'mailaccount.apps.MailaccountConfig',
+    'usersearch.apps.UsersearchConfig',
 ]
 
 MIDDLEWARE = [
