@@ -178,7 +178,9 @@ def insertInvoiceKeys(userInvoices):
 
 def index(request):
     defaultData = {
-        "loginName": request.GET.get("loginName") or "",
+        "loginName": request.GET.get("loginName")
+        or request.session.get("loginName")
+        or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
     loginName = defaultData.get("loginName")
@@ -192,6 +194,8 @@ def index(request):
         if confirmedLoginName:
             isUserExist = True
             loginName = confirmedLoginName
+            # store loginName in session cookie
+            request.session["loginName"] = loginName
             # messages.add_message( request, messages.SUCCESS, f"Found User {loginName}")
             invoices["UserInvoice"] = getInvoices(loginName)
             invoices["UniqueInvoices"] = getUniqueInvoices(invoices["UserInvoice"])
