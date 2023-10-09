@@ -225,6 +225,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
+        or request.session.get('loginName')
         or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
@@ -248,6 +249,8 @@ def index(request):
         if userPlans:
             # found user plans for this user
             isUserExist = True
+            # store in cookie session
+            request.session['loginName'] = loginName
             emptyUserPlan = {
                 "LoginName": loginName,
                 "ShortNextBilling": "",
@@ -282,7 +285,7 @@ def index(request):
                     each_item.get("PlanExpires")
                 )
                 form.fields["specialNote"].initial = each_item.get("DomainName")
-                form.fields["operator"].initial = each_item.get("Operator")
+                form.fields["operator"].initial = request.session.get("operator")
                 dict_of_forms[str(each_item.get("LineID"))] = form
     """ --- """
     # update line item button was submitted
@@ -296,6 +299,8 @@ def index(request):
             messages.add_message(request, messages.SUCCESS, f"Item is VALID")
             submit_invoice_to_aladin = form_being_updated.cleaned_data
             submitToAladin(submit_invoice_to_aladin)
+            # store in cookie session
+            request.session['operator'] = form_being_updated.cleaned_data.get("operator")
         else:
             messages.add_message(request, messages.WARNING, f"Item is still INVALID")
             # messages.add_message(request, messages.INFO, f"error is:  {form_being_updated.errors}")
