@@ -25,7 +25,7 @@ class FormSearchLogin(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
+                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
                 message="invalid characters",
             )
         ],
