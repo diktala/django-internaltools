@@ -362,6 +362,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
+        or request.session.get('loginName')
         or "",
         "passe": request.POST.get("passe") or "",
     }
@@ -386,6 +387,7 @@ def index(request):
             isUserExist = True
             formInvoice.fields["passe"].initial = password_of_form
             formInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
+            formInvoice.fields["operator"].initial = request.session.get("operator")
             formInvoice.fields["invoiceNumber"].initial = invoiceDict.get(
                 "InvoiceNumber"
             )
@@ -402,6 +404,8 @@ def index(request):
             formInvoice.fields["accountBalance"].initial = commons.getNumberFormatted(
                 invoiceDict.get("AccountBalance")
             )
+            # store loginName in session cookie
+            request.session['loginName'] = invoiceDict.get("LoginName")
             # populate list of itemCodes as drop down choices
             itemDict = getItemCodes()
             itemChoices = [
@@ -449,6 +453,8 @@ def index(request):
             messages.add_message(request, messages.SUCCESS, f"Form is VALID")
             submit_invoice_to_aladin = formInvoice.cleaned_data
             submitToAladin(submit_invoice_to_aladin)
+            # store operator in cookie session
+            request.session['operator'] = formInvoice.cleaned_data.get("operator")
         else:
             messages.add_message(request, messages.WARNING, f"Form is still INVALID")
 
