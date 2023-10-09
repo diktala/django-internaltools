@@ -755,10 +755,12 @@ def submitToAladin(userInfoDict):
 
 def index(request):
     defaultData = {
-        "loginName": "",
+        "loginName": request.GET.get("loginName")
+        or request.session.get("loginName")
+        or "",
     }
     isUserExist = False
-    formSearchLogin = FormSearchLogin(defaultData | request.GET.dict())
+    formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail(request.POST.dict())
 
     """ --- """
@@ -766,11 +768,17 @@ def index(request):
     if formSearchLogin.is_valid():
         loginName = formSearchLogin.cleaned_data["loginName"]
         loginFound = countConfirmedLoginName(loginName)
-        isUserExist = True if (str(loginFound) == "1") else False
-        userDict = getUserInfo(loginName) if isUserExist else dict()
+        userDict = dict()
+        if str(loginFound) == "1":
+            isUserExist = True
+            # store login in cookie session
+            request.session["loginName"] = loginName
+            userDict = getUserInfo(loginName)
+        #
         formUserDetail = FormUserDetail(
             userDict | request.POST.dict() | {"loginName": loginName}
         )
+        formUserDetail.fields["operator"].initial = request.session.get("operator")
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -811,6 +819,8 @@ def index(request):
         initialUserDetail = FormUserDetail(request.POST.dict())
         if initialUserDetail.is_valid():
             submitToAladin(initialUserDetail.cleaned_data)
+            # store operator in cookie session
+            request.session["operator"] = initialUserDetail.cleaned_data.get("operator")
             messages.add_message(
                 request, messages.SUCCESS, f"User info has been updated"
             )
