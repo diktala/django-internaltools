@@ -40,4 +40,13 @@ urlpatterns = [
 from django.http import HttpResponse
 def index(request):
     return HttpResponse("Hello, world.")
+
+# ~/django-internaltools/internaltools/templates/internaltools/topmenu.html
+{% url 'userplans:index' as thisurl %}
+<a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+href="{{ thisurl }}">Info User</a>
+
+# templates
+mkdir -p ~/django-internaltools/internaltools/userplans/templates/userplans/
+
 ```
