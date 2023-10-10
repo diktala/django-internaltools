@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('infouser.urls', namespace='generic')),
     path('mailaccount/', include('mailaccount.urls')),
     path('usersearch/', include('usersearch.urls')),
+    path('outstandingissues/', include('outstandingissues.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

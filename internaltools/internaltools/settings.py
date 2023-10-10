@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'infouser.apps.InfouserConfig',
     'mailaccount.apps.MailaccountConfig',
     'usersearch.apps.UsersearchConfig',
+    'outstandingissues.apps.OutstandingissuesConfig',
 ]
 
 MIDDLEWARE = [
