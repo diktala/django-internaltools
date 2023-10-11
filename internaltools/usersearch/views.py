@@ -13,7 +13,7 @@ import commons
 
 class FormSearchLogin(forms.Form):
     loginName = forms.CharField(
-        label="Login Name",
+        label="Search Word",
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Customer username ...",
@@ -84,6 +84,8 @@ def index(request):
         if len(userSearch) > 0:
             # found users
             isUserExist = True
+            print ( f"DEBUG: userSearch: {userSearch}" )
+            # request.session["loginName"] = loginName
     """ --- """
     #
     urlQuery = f"LoginName={loginName}"

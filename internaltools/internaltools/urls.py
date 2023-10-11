@@ -30,6 +30,7 @@ urlpatterns = [
     path('usersearch/', include('usersearch.urls')),
     path('outstandingissues/', include('outstandingissues.urls')),
     path('endaccount/', include('endaccount.urls')),
+    path('restoreuser/', include('restoreuser.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
