@@ -148,8 +148,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/TerminateUser/default.asp?{{ urlQuery }}">End Account</a>
+                        {% url 'endaccount:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">End Account</a>
                     </div>
                     <!-- nav-link -->
                 </li>

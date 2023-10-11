@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'mailaccount.apps.MailaccountConfig',
     'usersearch.apps.UsersearchConfig',
     'outstandingissues.apps.OutstandingissuesConfig',
+    'endaccount.apps.EndaccountConfig',
 ]
 
 MIDDLEWARE = [

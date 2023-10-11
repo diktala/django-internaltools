@@ -1,0 +1,87 @@
+{% extends "internaltools/base.html" %}
+{% block title %}endaccount{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- form search users -->
+        <form id="EndAccount" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>End Account:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formEndAccount.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formEndAccount.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formEndAccount.loginName }}
+                            <small class="form-text text-danger">{{ formEndAccount.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formEndAccount.specialNote.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formEndAccount.specialNote.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formEndAccount.specialNote }}<small class="form-text text-danger">{{ formEndAccount.specialNote.errors }}</small>
+                        </div>
+                        <label for="{{ formEndAccount.operator.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formEndAccount.operator.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formEndAccount.operator }}<small class="form-text text-danger">{{ formEndAccount.operator.errors }}</small>
+                        </div>
+                        <label for="{{ formEndAccount.terminationType.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formEndAccount.terminationType.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formEndAccount.terminationType }}<small class="form-text text-danger">{{ formEndAccount.terminationType.errors }}</small>
+                        </div>
+                        <label for="{{ formEndAccount.specifyDate.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formEndAccount.specifyDate.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formEndAccount.specifyDate }}<small class="form-text text-danger">{{ formEndAccount.specifyDate.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    class="btn btn-secondary mb-3">End Account</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <div class="row mb-3 border-top border-bottom border-2">
+            <div class="col-sm-2 fw-bold">Date Joined</div>
+            <div class="col-sm-2 fw-bold">Expiration</div>
+            <div class="col-sm-2 fw-bold">Status</div>
+            <div class="col-sm-2 fw-bold">Balance</div>
+            <div class="col-sm-2 fw-bold">Next Bill</div>
+            <div class="w-100 d-none d-sm-block border-bottom">
+                <!-- new row -->
+            </div>
+            <div class="col-sm-2">{{ userInfo.DateJoined|date:"Y-m-d" }}</div>
+            <div class="col-sm-2">{{ userInfo.AccountExpires|date:"Y-m-d"|default:"" }}</div>
+            <div class="col-sm-2">{{ userInfo.ActiveUser|yesno:"Active," }}</div>
+            <div class="col-sm-2">{{ userInfo.OutStandingBalance|floatformat:2 }}</div>
+            <div class="col-sm-2">{{ userInfo.NextBilling|date:"Y-m-d" }}</div>
+            <div class="w-100 d-none d-sm-block border-bottom"></div>
+        {% endblock %}
