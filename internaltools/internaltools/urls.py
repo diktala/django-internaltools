@@ -31,6 +31,7 @@ urlpatterns = [
     path('outstandingissues/', include('outstandingissues.urls')),
     path('endaccount/', include('endaccount.urls')),
     path('restoreuser/', include('restoreuser.urls')),
+    path('changepass/', include('changepass.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
