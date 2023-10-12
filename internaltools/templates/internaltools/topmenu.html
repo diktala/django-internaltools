@@ -7,8 +7,6 @@
                         {% url 'createuser:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
                            href="{{ thisurl }}">Create User</a>
-                        <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'createuser/' %} active {% endif%}"
-    href="https://internal.{{ domain }}/createuser/index.php?{{ urlQuery }}">Create User</a> -->
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -75,8 +73,6 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/PayProc/Pay.asp?{{ urlQuery }}">Old Pay Process</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -90,8 +86,6 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/ProcessCC/default.asp?{{ urlQuery }}">Old ProcessCC</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -116,8 +110,6 @@
                         {% url 'userinvoice:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
                            href="{{ thisurl }}">User Invoices</a>
-                        <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'userinvoice/' %} active {% endif%}"
-    href="https://www.{{ domain }}/scripts/internal/UserInvoice/default.asp?{{ urlQuery }}">User Invoices</a>-->
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -125,9 +117,7 @@
                     <div class="nav-link p-0 border">
                         {% url 'updateuser:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Update</a>
-                        <!-- <a class="nav-link p-0 {% if request.resolver_match.route == 'updateuser/' %} active {% endif%}"
-    href="https://internal.{{ domain }}/createuser/updateuser.php?{{ urlQuery }}">Update</a>-->
+                           href="{{ thisurl }}">Update User</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -231,9 +221,6 @@
                         {% url 'updateinvoice:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
                            href="{{ thisurl }}">Update Invoice</a>
-                        <!--<a class="nav-link p-0 {% if request.resolver_match.route == 'updateinvoice/' %} active {% endif%}" href="https://www.{{ domain }}/scripts/internal/UserInvoice/UpdateInvoice.asp?{{ urlQuery }}">
-                            Update Invoice
-			</a>-->
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -246,8 +233,6 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/HowTo/HowTo.asp?SelectLanguage=F">HowTo</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -267,10 +252,6 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://www.{{ domain }}/scripts/internal/quote/CustomInvoice.asp?{{ urlQuery }}">
-                            Payment Receipt
-                        </a>
                     </div>
                     <!-- nav-link -->
                 </li>
