@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'endaccount.apps.EndaccountConfig',
     'restoreuser.apps.RestoreuserConfig',
     'changepass.apps.ChangepassConfig',
+    'userinput.apps.UserinputConfig',
 ]
 
 MIDDLEWARE = [
