@@ -34,6 +34,7 @@ urlpatterns = [
     path('changepass/', include('changepass.urls')),
     path('userinput/', include('userinput.urls')),
     path('blockaccount/', include('blockaccount.urls')),
+    path('commentlogs/', include('commentlogs.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

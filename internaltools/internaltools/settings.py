@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'changepass.apps.ChangepassConfig',
     'userinput.apps.UserinputConfig',
     'blockaccount.apps.BlockaccountConfig',
+    'commentlogs.apps.CommentlogsConfig',
 ]
 
 MIDDLEWARE = [

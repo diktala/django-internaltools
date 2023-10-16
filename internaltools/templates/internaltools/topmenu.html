@@ -180,8 +180,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/calllogs/index.php?{{ urlQuery }}">Call Logs</a>
+                        {% url 'commentlogs:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Comment Logs</a>
                     </div>
                     <!-- nav-link -->
                 </li>
