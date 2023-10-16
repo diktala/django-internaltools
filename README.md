@@ -7,8 +7,7 @@ django crud to manage users
 
 ```
 # make sure venv is active
-python -m venv ~/venv
-source ~/venv/bin/activate
+source venv/bin/activate
 
 # 
 cd ~/django-internaltools/internaltools/
