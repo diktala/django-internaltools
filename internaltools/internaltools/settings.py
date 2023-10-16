@@ -29,9 +29,12 @@ SECRET_KEY = os.urandom(12)
 SECRET_KEY = "using-static-scret-key-while-in-developement"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*', 'myhost.example.com', ]
+# ALLOWED_HOSTS = ['*', 'myhost.example.com', ]
+# ALLOWED_HOSTS = [ os.environ.get('ALLOWED_HOSTS', 'myhost.example.com') ]
+ALLOWED_HOSTS = [ os.environ.get('ALLOWED_HOSTS', '*') ]
 CSRF_TRUSTED_ORIGINS = ['https://*.com', 'http://*.com', 'https://*.net', 'https://*.ca', ]
 
 
