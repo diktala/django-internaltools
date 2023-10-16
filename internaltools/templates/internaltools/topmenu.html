@@ -154,8 +154,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/blockaccount/index.php?{{ urlQuery }}">Block Account</a>
+			{% url 'blockaccount:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Block Account</a>
                     </div>
                     <!-- nav-link -->
                 </li>
