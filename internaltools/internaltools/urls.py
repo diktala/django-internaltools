@@ -35,6 +35,7 @@ urlpatterns = [
     path('userinput/', include('userinput.urls')),
     path('blockaccount/', include('blockaccount.urls')),
     path('commentlogs/', include('commentlogs.urls')),
+    path('netstats/', include('netstats.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'userinput.apps.UserinputConfig',
     'blockaccount.apps.BlockaccountConfig',
     'commentlogs.apps.CommentlogsConfig',
+    'netstats.apps.NetstatsConfig',
 ]
 
 MIDDLEWARE = [

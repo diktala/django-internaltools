@@ -1,0 +1,126 @@
+{% extends "internaltools/base.html" %}
+{% block title %}netstats{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- form search users -->
+        <form id="netstats" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>Connection Time:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formSearchLogin.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSearchLogin.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.loginName }}
+                            <small class="form-text text-danger">{{ formSearchLogin.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formSearchLogin.latestDate.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSearchLogin.latestDate.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSearchLogin.latestDate }}<small class="form-text text-danger">{{ formSearchLogin.latestDate.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    class="btn btn-secondary mb-3">Display</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <!-- start monthly stats -->
+        {% if monthStats %}
+            <div class="row mb-3 border-top border-bottom border-2">
+                <div class="col-sm-3 fw-bold">Month</div>
+                <div class="col-sm-3 fw-bold">Connection (Hours)</div>
+                <div class="col-sm-3 fw-bold">Download (GB)</div>
+                <div class="col-sm-3 fw-bold">Upload (GB)</div>
+                <div class="w-100 d-none d-sm-block border-bottom">
+                    <!-- new row -->
+                </div>
+                {% for eachInput in monthStats %}
+                    <div class="col-sm-3">{{ eachInput.StartOfPeriod }}</div>
+                    <div class="col-sm-3">{{ eachInput.SessionTime|floatformat:"2g" }}</div>
+                    <div class="col-sm-3">{{ eachInput.TotAcctOutputOctets|floatformat:"2g" }}</div>
+                    <div class="col-sm-3">{{ eachInput.TotAcctInputOctets|floatformat:"2g" }}</div>
+                    <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% endfor %}
+                {% for eachInput in earlierMonthStats %}
+                    <div class="col-sm-3">{{ eachInput.StartOfPeriod }}</div>
+                    <div class="col-sm-3">{{ eachInput.SessionTime|floatformat:"2g" }}</div>
+                    <div class="col-sm-3">{{ eachInput.TotAcctOutputOctets|floatformat:"2g" }}</div>
+                    <div class="col-sm-3">{{ eachInput.TotAcctInputOctets|floatformat:"2g" }}</div>
+                    <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% endfor %}
+            </div>
+            <!-- end monthly stats -->
+            <!-- start current stats -->
+            <div class="row mb-3 border-top border-bottom border-2">
+                <div class="col-sm-4 fw-bold">Current Session Since</div>
+                <div class="col-sm-4 fw-bold">Conected to</div>
+                <div class="col-sm-4 fw-bold">IP</div>
+                <div class="w-100 d-none d-sm-block border-bottom">
+                    <!-- new row -->
+                </div>
+                {% for eachInput in currentStats %}
+                    <div class="col-sm-4">{{ eachInput.InDate|date:"Y-m-d H:i" }}</div>
+                    <div class="col-sm-4">
+                        {{ eachInput.CallingStationId|default:"" }} /
+                        {{ eachInput.NASIdentifier|default:"" }}
+                    </div>
+                    <div class="col-sm-4">{{ eachInput.FramedIPAddress|default:"" }}</div>
+                    <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- end current stats -->
+        <!-- start detail stats -->
+        {% if allStats %}
+            <div class="row mb-3 border-top border-bottom border-2">
+                <div class="col-sm-2 fw-bold">Session Start</div>
+                <div class="col-sm-2 fw-bold">Session End</div>
+                <div class="col-sm-1 fw-bold">Hours</div>
+                <div class="col-sm-2 fw-bold">Connected to</div>
+                <div class="col-sm-2 fw-bold">IP</div>
+                <div class="col-sm-1 fw-bold">Cause</div>
+                <div class="col-sm-1 fw-bold">DN (GB)</div>
+                <div class="col-sm-1 fw-bold">UP (GB)</div>
+                <div class="w-100 d-none d-sm-block border-bottom">
+                    <!-- new row -->
+                </div>
+                {% for eachInput in allStats %}
+                    {% cycle 'bg-light' 'bg-light-subtle' as rowcolor silent %}
+                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.InDate|date:"Y-m-d H:i" }}</div>
+                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.OutDate|date:"Y-m-d H:i" }}</div>
+                    <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctSessionTime|floatformat:"2g" }}</div>
+                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.CallingStationId }} / {{ eachInput.NASIdentifier }}</div>
+                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.FramedIPAddress }}</div>
+                    <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctTerminateCause }}</div>
+                    <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctOutputOctets|floatformat:"2g" }}</div>
+                    <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctInputOctets|floatformat:"2g" }}</div>
+                    <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- end detail stats -->
+    {% endblock %}
