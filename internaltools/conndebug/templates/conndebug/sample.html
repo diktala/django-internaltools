@@ -1,0 +1,67 @@
+{% extends "internaltools/base.html" %}
+{% load static %}
+{% block title %}conndebug{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <h4>Connection Debugging:</h4>
+        <!-- start display gridjs summary -->
+        <link href="{% static 'internaltools/mermaid.min.css' %}" rel="stylesheet" />
+        <script src="{% static 'internaltools/gridjs.umd.js' %}"></script>
+        <div id="table"></div>
+        <script>
+            new gridjs.Grid({
+                columns: [{
+                    id: 'date',
+                    name: 'Date'
+                }, {
+                    id: 'login',
+                    name: 'Login'
+                }, {
+                    id: 'ip',
+                    name: 'IP'
+                }, {
+                    id: 'aggregator',
+                    name: 'Aggregator'
+                }, {
+                    id: 'detail',
+                    name: 'Detail'
+                }, ],
+                data: [
+                {% for eachIssue in connectionList %} 
+                {
+                    date: '{{ eachIssue.LogDate|date:"Y-m-d H:i" }}',
+                    login: gridjs.html('<a href="{% url "infouser:index" %}?loginName={{ eachIssue.LoginName|slice:":-8" }}">{{ eachIssue.LoginName }}</a>'),
+                    ip: '{{ eachIssue.FramedIPAddress|default:"" }}',
+                    aggregator: '{{ eachIssue.RAS|default:"" }}',
+                    {% if " disabled" in eachIssue.RejectCause %}
+                        detail: gridjs.html('<div class="bg-warning-subtle">' + '{{ eachIssue.RejectCause|striptags|cut:" /  / "|default:"" }}' + '</div>'),
+                    {% elif " Expired" in eachIssue.RejectCause %}
+                        detail: gridjs.html('<div class="bg-info-subtle">' + '{{ eachIssue.RejectCause|cut:" 00:00:00 "|striptags|cut:" /  / "|default:"" }}' + '</div>'),
+                    {% elif " reminder" in eachIssue.RejectCause %}
+                        detail: gridjs.html('<div class="bg-danger-subtle">' + '{{ eachIssue.RejectCause|striptags|cut:" /  / "|default:"" }}' + '</div>'),
+                    {% else %}
+                        detail: gridjs.html('<div class="bg-success-subtle">' + 'Account allowed ' + '{{ eachIssue.RejectCause|striptags|cut:" /  / "|default:"" }}' + '</div>'),
+                    {% endif %}
+                },
+                {% endfor %}
+                ],
+                search: true,
+                sort: true,
+                resizable: true,
+                pagination: false,
+            }).render(document.getElementById('table'));
+        </script>
+        <!-- end display gridjs summary -->
+    {% endblock %}

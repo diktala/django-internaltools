@@ -28,8 +28,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/conndebug/index.php?{{ urlQuery }}">Debugging</a>
+                        {% url 'conndebug:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Debugging</a>
                     </div>
                     <!-- nav-link -->
                 </li>
