@@ -37,6 +37,7 @@ urlpatterns = [
     path('commentlogs/', include('commentlogs.urls')),
     path('netstats/', include('netstats.urls')),
     path('conndebug/', include('conndebug.urls')),
+    path('verifypass/', include('verifypass.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'commentlogs.apps.CommentlogsConfig',
     'netstats.apps.NetstatsConfig',
     'conndebug.apps.ConndebugConfig',
+    'verifypass.apps.VerifypassConfig',
 ]
 
 MIDDLEWARE = [

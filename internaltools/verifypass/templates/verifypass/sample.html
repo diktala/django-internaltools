@@ -1,0 +1,60 @@
+{% extends "internaltools/base.html" %}
+{% block title %}verifypass{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- form search users -->
+        <form id="verifypass" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>Verify Password:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formVerifyPassword.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formVerifyPassword.loginName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formVerifyPassword.loginName }}
+                            <small class="form-text text-danger">{{ formVerifyPassword.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formVerifyPassword.verifyPassword.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formVerifyPassword.verifyPassword.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formVerifyPassword.verifyPassword }}<small class="form-text text-danger">{{ formVerifyPassword.verifyPassword.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    class="btn btn-secondary mb-3">Confirm Password</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <div class="row mb-3 border-top border-bottom border-2">
+            <div class="col-sm-12 fw-bold">Password Hint</div>
+            <div class="w-100 d-none d-sm-block border-bottom">
+                <!-- new row -->
+            </div>
+            <div class="col-sm-12">
+                {{ passwordHint.Results|cut:"<br>" }}
+            </div>
+            <div class="w-100 d-none d-sm-block border-bottom"></div>
+        {% endblock %}
