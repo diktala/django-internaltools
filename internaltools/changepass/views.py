@@ -58,7 +58,7 @@ class FormChangePassword(forms.Form):
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=250,
         validators=[
@@ -111,9 +111,18 @@ def set_user_password(loginName, userPassword):
         "newPassword": userPassword.get("newPassword"),
         "debugLevel": 1,
     }
-    print(f"DEBUG: querySQL: {querySQL}")
-    print(f"DEBUG: paramSQL: {paramSQL}")
-    # userInfo = queryDBall(querySQL, paramSQL)
+    # print(f"DEBUG: querySQL: {querySQL}")
+    # print(f"DEBUG: paramSQL: {paramSQL}")
+    userInfo = queryDBall(querySQL, paramSQL)
+
+
+def is_login_exist(loginName):
+    isLoginExist = False
+    if commons.count_loginnames_in_database(
+        loginName
+    ) or commons.get_loginname_from_secondary_mail(loginName):
+        isLoginExist = True
+    return isLoginExist
 
 
 def index(request):
@@ -136,17 +145,15 @@ def index(request):
         if formChangePassword.is_valid():
             operator = formChangePassword.cleaned_data.get("operator")
             loginName = formChangePassword.cleaned_data.get("loginName")
-            is_login_exist = commons.count_loginnames_in_database(loginName)
-            if is_login_exist:
+            isLoginExist = is_login_exist(loginName)
+            if isLoginExist:
                 request.session["loginName"] = loginName
                 request.session["operator"] = operator
                 set_user_password(loginName, formChangePassword.cleaned_data)
                 userInfo = get_user_info(loginName)
-                messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+                messages.add_message(request, messages.SUCCESS, f"Password updated")
             else:
-                messages.add_message(request, messages.WARNING, f"user is INVALID")
-        else:
-            messages.add_message(request, messages.WARNING, f"Form is INVALID")
+                messages.add_message(request, messages.WARNING, f"user was not found")
 
     urlQuery = f"LoginName={loginName}"
     context = {
