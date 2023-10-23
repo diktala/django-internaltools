@@ -366,21 +366,57 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
-    bankAccount = forms.CharField(
-        label="Bank Account",
+    bankInstitution = forms.CharField(
+        label="Bank Institution",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
         required=False,
         min_length=1,
-        max_length=20,
+        max_length=3,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
+                regex="^[\d]*$",
+                message="only numbers allowed",
+            )
+        ],
+    )
+    bankTransit = forms.CharField(
+        label="Bank Transit",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=6,
+        validators=[
+            RegexValidator(
+                regex="^[\d]*$",
+                message="only numbers allowed",
+            )
+        ],
+    )
+    bankAccount = forms.CharField(
+        label="Bank Account",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=12,
+        validators=[
+            RegexValidator(
+                regex="^[\d]*$",
+                message="only numbers allowed",
             )
         ],
     )
@@ -535,6 +571,24 @@ class FormUserDetail(forms.Form):
                 self.add_error("creditCardExpiry", "Credit card is expired")
             if isDateValid(creditCardExpiry):
                 self.cleaned_data["creditCardExpiry"] = getLastDay(creditCardExpiry)
+        #
+        bankInstitution = cleaned_data.get("bankInstitution")
+        bankTransit = cleaned_data.get("bankTransit")
+        bankAccount = cleaned_data.get("bankAccount")
+        if (
+            bankInstitution is not None
+            and bankTransit is not None
+            and bankAccount is not None
+            and len(bankInstitution + bankTransit + bankAccount) > 0
+        ):
+            if len(bankInstitution) == 0 or len(bankTransit) == 0 or len(bankAccount) == 0:
+                msg = (
+                    "must provide full bank information or remove the info"
+                )
+                self.add_error("bankInstitution", msg)
+                self.add_error("bankTransit", msg)
+                self.add_error("bankAccount", msg)
+        #
         return self.cleaned_data
 
 
@@ -597,7 +651,9 @@ def getUserInfo(loginName):
           replace(convert(varchar,CreditCardExpiry,102),'.','-') as 'creditCardExpiry',
           BankName as 'bankName',
           CheckNumber as 'checkNumber',
-          BankAccount as 'bankAccount',
+          BkAccount as 'bankAccount',
+          BkBranchTransit as 'bankTransit',
+          BkInstitutionId as 'bankInstitution',
           IdentificationCard as 'identificationCard',
           AuthorizationCode as 'authorizationCode',
           OperatingSystem as 'operatingSystem',
@@ -695,7 +751,9 @@ def submitToAladin(userInfoDict):
     updateAladinParam2 = {
         "bankName": userInfoDict["bankName"],
         "checkNumber": userInfoDict["checkNumber"],
-        "bankAccount": userInfoDict["bankAccount"],
+        "BkAccount": userInfoDict["bankAccount"],
+        "BkInstitutionId": userInfoDict["bankInstitution"],
+        "BkBranchTransit": userInfoDict["bankTransit"],
         "identificationCard": userInfoDict["identificationCard"],
         "authorizationCode": userInfoDict["authorizationCode"],
         "loginName": userInfoDict["loginName"],
@@ -763,10 +821,15 @@ def submitToAladin(userInfoDict):
         "govConfirmation": "",
         "govAmount": "",
     }
-    print(f"DEBUG MESSAGE: {createAladinSQL1}")
-    print(f"DEBUG MESSAGE: {createAladinParam1}")
+    print(f"DEBUG updateAladinSQL1: {updateAladinSQL1}")
+    print(f"DEBUG updateAladinParam1: {updateAladinParam1}")
+    print(f"DEBUG updateAladinSQL2: {updateAladinSQL2}")
+    print(f"DEBUG updateAladinParam2: {updateAladinParam2}")
+    print(f"DEBUG createAladinSQL1: {createAladinSQL1}")
+    print(f"DEBUG createAladinParam1: {createAladinParam1}")
     # queryDBall(updateAladinSQL1, updateAladinParam1)
     # queryDBall(updateAladinSQL2, updateAladinParam2)
+    # queryDBall(createAladinSQL1, createAladinParam1)
 
 
 def index(request):
