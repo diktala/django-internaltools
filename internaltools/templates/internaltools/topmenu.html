@@ -4,9 +4,9 @@
             <ul class="nav nav-tabs">
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'createuser:index' as thisurl %}
+                        {% url 'updateuser:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Create User</a>
+                           href="{{ thisurl }}">Create Update</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -116,9 +116,6 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'updateuser:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Update User</a>
                     </div>
                     <!-- nav-link -->
                 </li>

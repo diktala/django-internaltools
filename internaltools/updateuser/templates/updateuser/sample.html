@@ -1,5 +1,5 @@
 {% extends "internaltools/base.html" %}
-{% block title %}updateuser{% endblock %}
+{% block title %}{{ isUserExist|yesno:"updateuser,createuser" }}{% endblock %}
 {% block content %}
     {% if messages %}
         <ul class="messages">
@@ -20,7 +20,7 @@
         <form id="SearchLoginForm" action="" novalidate="" method="GET">
             <div class="row g-3">
                 <fieldset class="form-group border">
-                    <legend>Update User:</legend>
+                    <legend>{{ isUserExist|yesno:"Update User:,Create User:" }}</legend>
                     {# {{ formSearchLogin.csrf_token }} #}
                     <div class="row mb-3">
                         <label for="{{ formSearchLogin.loginName.id_for_label }}"
@@ -52,6 +52,15 @@
                     </button>
                     <div class="row mb-3">
                         <!-- start div row -->
+                        {% if not isUserExist %}
+                            <label for="{{ formUserDetail.userPassword.id_for_label }}"
+                                   class="border-bottom col-sm-2 col-form-label">
+                                {{ formUserDetail.userPassword.label }}
+                            </label>
+                            <div class="col-sm-10">
+                                {{ formUserDetail.userPassword }}<small class="form-text text-danger">{{ formUserDetail.userPassword.errors }}</small>
+                            </div>
+                        {% endif %}
                         <label for="{{ formUserDetail.firstName.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
                             {{ formUserDetail.firstName.label }}
@@ -117,11 +126,6 @@
                                 </div>
                             </div>
                         </div>
-                        <label for="{{ formUserDetail.country.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">{{ formUserDetail.country.label }}</label>
-                        <div class="col-sm-10">
-                            {{ formUserDetail.country }}<small class="form-text text-danger">{{ formUserDetail.country.errors }}</small>
-                        </div>
                         <label for="{{ formUserDetail.homePhone.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
                             {{ formUserDetail.homePhone.label }}
@@ -129,13 +133,15 @@
                         <div class="col-sm-10">
                             {{ formUserDetail.homePhone }}<small class="form-text text-danger">{{ formUserDetail.homePhone.errors }}</small>
                         </div>
-                        <label for="{{ formUserDetail.accountNumber.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formUserDetail.accountNumber.label }}
-                        </label>
-                        <div class="col-sm-10">
-                            {{ formUserDetail.accountNumber }}<small class="form-text text-danger">{{ formUserDetail.accountNumber.errors }}</small>
-                        </div>
+                        {% if isUserExist %}
+                            <label for="{{ formUserDetail.accountNumber.id_for_label }}"
+                                   class="border-bottom col-sm-2 col-form-label">
+                                {{ formUserDetail.accountNumber.label }}
+                            </label>
+                            <div class="col-sm-10">
+                                {{ formUserDetail.accountNumber }}<small class="form-text text-danger">{{ formUserDetail.accountNumber.errors }}</small>
+                            </div>
+                        {% endif %}
                         <label for="{{ formUserDetail.language.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
                             {{ formUserDetail.language.label }}
@@ -164,6 +170,28 @@
                         <div class="col-sm-10">
                             {{ formUserDetail.creditCardExpiry }}<small class="form-text text-danger">{{ formUserDetail.creditCardExpiry.errors }}</small>
                         </div>
+                        <div class="border-bottom col-sm-2 form-label mt-3">PPA</div>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="input-group">
+                                    <div class="form-floating col-sm-2">
+                                        {{ formUserDetail.bankInstitution }}
+                                        <small class="form-text text-danger">{{ formUserDetail.bankInstitution.errors }}</small>
+                                        <label for="{{ formUserDetail.bankInstitution.id_for_label }}">{{ formUserDetail.bankInstitution.label }}</label>
+                                    </div>
+                                    <div class="form-floating col-sm-5">
+                                        {{ formUserDetail.bankTransit }}
+                                        <small class="form-text text-danger">{{ formUserDetail.bankTransit.errors }}</small>
+                                        <label for="{{ formUserDetail.bankTransit.id_for_label }}">{{ formUserDetail.bankTransit.label }}</label>
+                                    </div>
+                                    <div class="form-floating col-sm-5">
+                                        {{ formUserDetail.bankAccount }}
+                                        <small class="form-text text-danger">{{ formUserDetail.bankAccount.errors }}</small>
+                                        <label for="{{ formUserDetail.bankAccount.id_for_label }}">{{ formUserDetail.bankAccount.label }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <label for="{{ formUserDetail.bankName.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
                             {{ formUserDetail.bankName.label }}
@@ -177,13 +205,6 @@
                         </label>
                         <div class="col-sm-10">
                             {{ formUserDetail.checkNumber }}<small class="form-text text-danger">{{ formUserDetail.checkNumber.errors }}</small>
-                        </div>
-                        <label for="{{ formUserDetail.bankAccount.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">
-                            {{ formUserDetail.bankAccount.label }}
-                        </label>
-                        <div class="col-sm-10">
-                            {{ formUserDetail.bankAccount }}<small class="form-text text-danger">{{ formUserDetail.bankAccount.errors }}</small>
                         </div>
                         <label for="{{ formUserDetail.identificationCard.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
@@ -232,7 +253,9 @@
                                     value="1"
                                     accesskey="s"
                                     title="alt-S / ctrl-alt-S"
-                                    class="btn btn-secondary mb-3">Update User</button>
+                                    class="btn btn-secondary mb-3">
+                                {{ isUserExist|yesno:"Update User,Create User" }}
+                            </button>
                         </div>
                     </div>
                     <!-- end div row -->

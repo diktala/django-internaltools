@@ -9,6 +9,8 @@ from django.core.validators import RegexValidator
 from django.contrib import messages
 from modelmssql import queryDBall, queryDBrow, queryDBscalar
 from canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
+import commons
+import secrets
 
 
 class FormSearchLogin(forms.Form):
@@ -44,11 +46,28 @@ class FormUserDetail(forms.Form):
             )
         ],
     )
+    userPassword = forms.CharField(
+        label="Assign Password",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "... auto generated ...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=5,
+        max_length=12,
+        validators=[
+            RegexValidator(
+                regex="^[a-z0-9._-]+$",
+            )
+        ],
+    )
     firstName = forms.CharField(
         label="First Name",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -66,7 +85,7 @@ class FormUserDetail(forms.Form):
         label="Last Name",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -84,7 +103,7 @@ class FormUserDetail(forms.Form):
         label="Organization Name",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -102,7 +121,7 @@ class FormUserDetail(forms.Form):
         label="Address",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -120,7 +139,7 @@ class FormUserDetail(forms.Form):
         label="City",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -138,7 +157,7 @@ class FormUserDetail(forms.Form):
         label="State",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -156,7 +175,7 @@ class FormUserDetail(forms.Form):
         label="Country",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -174,7 +193,7 @@ class FormUserDetail(forms.Form):
         label="Postal Code",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -205,7 +224,7 @@ class FormUserDetail(forms.Form):
         label="Home Phone",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -223,11 +242,11 @@ class FormUserDetail(forms.Form):
         label="Account Number",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "... auto generated ...",
                 "class": "form-control",
             }
         ),
-        required=True,
+        required=False,
         min_length=1,
         max_length=20,
         validators=[
@@ -282,7 +301,7 @@ class FormUserDetail(forms.Form):
         label="Credit Card Number",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -300,7 +319,7 @@ class FormUserDetail(forms.Form):
         label="Credit Card Expiry",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -318,7 +337,7 @@ class FormUserDetail(forms.Form):
         label="Bank Name",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -336,7 +355,7 @@ class FormUserDetail(forms.Form):
         label="Check Number",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -347,6 +366,42 @@ class FormUserDetail(forms.Form):
             RegexValidator(
                 regex="^[\w. &'-]*[\w.]$",
                 message="invalid characters",
+            )
+        ],
+    )
+    bankInstitution = forms.CharField(
+        label="Bank Institution",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=3,
+        validators=[
+            RegexValidator(
+                regex="^[\d]*$",
+                message="only numbers allowed",
+            )
+        ],
+    )
+    bankTransit = forms.CharField(
+        label="Bank Transit",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "...",
+                "class": "form-control",
+            }
+        ),
+        required=False,
+        min_length=1,
+        max_length=6,
+        validators=[
+            RegexValidator(
+                regex="^[\d]*$",
+                message="only numbers allowed",
             )
         ],
     )
@@ -354,17 +409,17 @@ class FormUserDetail(forms.Form):
         label="Bank Account",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
         required=False,
         min_length=1,
-        max_length=20,
+        max_length=12,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
-                message="invalid characters",
+                regex="^[\d]*$",
+                message="only numbers allowed",
             )
         ],
     )
@@ -372,7 +427,7 @@ class FormUserDetail(forms.Form):
         label="identificationCard",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -390,7 +445,7 @@ class FormUserDetail(forms.Form):
         label="Authorization Code",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -408,7 +463,7 @@ class FormUserDetail(forms.Form):
         label="Operating System",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -445,7 +500,7 @@ class FormUserDetail(forms.Form):
         label="Referred By",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -463,7 +518,7 @@ class FormUserDetail(forms.Form):
         label="Notes",
         widget=forms.TextInput(
             attrs={
-                "placeholder": " ...",
+                "placeholder": "...",
                 "class": "form-control",
             }
         ),
@@ -513,52 +568,37 @@ class FormUserDetail(forms.Form):
                 msg = "provide a credit card expiry or remove the credit card number"
                 self.add_error("creditCardNumber", msg)
                 self.add_error("creditCardExpiry", msg)
-            if len(creditCardExpiry) > 0 and not isDateValid(creditCardExpiry):
+            if len(creditCardExpiry) > 0 and not commons.isDateValid(creditCardExpiry):
                 self.add_error("creditCardExpiry", "Date is invalid")
-            if isDateValid(creditCardExpiry) and isDateExpired(creditCardExpiry):
+            if commons.isDateValid(creditCardExpiry) and commons.isDateExpired(
+                creditCardExpiry
+            ):
                 self.add_error("creditCardExpiry", "Credit card is expired")
-            if isDateValid(creditCardExpiry):
-                self.cleaned_data["creditCardExpiry"] = getLastDay(creditCardExpiry)
+            if commons.isDateValid(creditCardExpiry):
+                self.cleaned_data["creditCardExpiry"] = commons.getLastDay(
+                    creditCardExpiry
+                )
+        #
+        bankInstitution = cleaned_data.get("bankInstitution")
+        bankTransit = cleaned_data.get("bankTransit")
+        bankAccount = cleaned_data.get("bankAccount")
+        if (
+            bankInstitution is not None
+            and bankTransit is not None
+            and bankAccount is not None
+            and len(bankInstitution + bankTransit + bankAccount) > 0
+        ):
+            if (
+                len(bankInstitution) == 0
+                or len(bankTransit) == 0
+                or len(bankAccount) == 0
+            ):
+                msg = "must provide full bank information or remove the info"
+                self.add_error("bankInstitution", msg)
+                self.add_error("bankTransit", msg)
+                self.add_error("bankAccount", msg)
+        #
         return self.cleaned_data
-
-
-def isDateValid(dateToCheck):
-    try:
-        formattedDate = datetime.strptime(dateToCheck, "%Y-%m-%d")
-        return True
-    except ValueError:
-        return False
-
-
-def isDateExpired(dateToCheck):
-    if isDateValid(dateToCheck):
-        checkDate = datetime.strptime(dateToCheck, "%Y-%m-%d")
-        todayDate = datetime.now()
-        if todayDate > checkDate:
-            return True
-    return False
-
-
-def getLastDay(dateToConvert):
-    lastDay = dateToConvert
-    if isDateValid(dateToConvert):
-        formattedDate = datetime.strptime(dateToConvert, "%Y-%m-%d")
-        nextMonth = formattedDate.replace(day=28) + timedelta(days=5)
-        lastDay = nextMonth - timedelta(days=nextMonth.day)
-    return lastDay.strftime("%Y-%m-%d")
-
-
-def sanitizeLogin(loginName):
-    loginSanitized = loginName if re.match(r"^[\w.-]{1,30}$", loginName) else ""
-    return loginSanitized
-
-
-def countConfirmedLoginName(loginToCheck):
-    loginToCheckSanitized = sanitizeLogin(loginToCheck)
-    loginFound = queryDBscalar(
-        f"SELECT count(*) FROM UsersId where LoginName = lower('{loginToCheckSanitized}')"
-    )
-    return loginFound
 
 
 def getUserInfo(loginName):
@@ -581,7 +621,9 @@ def getUserInfo(loginName):
           replace(convert(varchar,CreditCardExpiry,102),'.','-') as 'creditCardExpiry',
           BankName as 'bankName',
           CheckNumber as 'checkNumber',
-          BankAccount as 'bankAccount',
+          BkAccount as 'bankAccount',
+          BkBranchTransit as 'bankTransit',
+          BkInstitutionId as 'bankInstitution',
           IdentificationCard as 'identificationCard',
           AuthorizationCode as 'authorizationCode',
           OperatingSystem as 'operatingSystem',
@@ -637,52 +679,57 @@ def submitToAladin(userInfoDict):
             , @Operator = %(operator)s
     """
     updateAladinParam1 = {
-        "loginName": userInfoDict["loginName"],
-        "firstName": userInfoDict["firstName"],
-        "lastName": userInfoDict["lastName"],
-        "organizationName": userInfoDict["organizationName"],
-        "address": userInfoDict["address"],
-        "city": userInfoDict["city"],
-        "state": userInfoDict["state"],
-        "postalCode": userInfoDict["postalCode"],
-        "country": userInfoDict["country"],
-        "homePhone": userInfoDict["homePhone"],
-        "operatingSystem": userInfoDict["operatingSystem"],
-        "accountNumber": userInfoDict["accountNumber"],
-        "paymentMethod": userInfoDict["paymentMethod"],
+        "loginName": userInfoDict.get("loginName"),
+        "firstName": userInfoDict.get("firstName"),
+        "lastName": userInfoDict.get("lastName"),
+        "organizationName": userInfoDict.get("organizationName"),
+        "address": userInfoDict.get("address"),
+        "city": userInfoDict.get("city"),
+        "state": userInfoDict.get("state"),
+        "postalCode": userInfoDict.get("postalCode"),
+        "country": userInfoDict.get("country"),
+        "homePhone": userInfoDict.get("homePhone"),
+        "operatingSystem": userInfoDict.get("operatingSystem"),
+        "accountNumber": userInfoDict.get("accountNumber")
+        or f"{userInfoDict.get('homePhone')[0:1]}{userInfoDict.get('homePhone')[4:7]}{userInfoDict.get('homePhone')[8:12]}1",
+        "paymentMethod": userInfoDict.get("paymentMethod"),
         "membership": "",
-        "creditCardExpiry": userInfoDict["creditCardExpiry"],
-        "creditCardNumber": userInfoDict["creditCardNumber"],
-        "notes": userInfoDict["notes"],
-        "dateJoined": userInfoDict["dateJoined"],
+        "creditCardExpiry": userInfoDict.get("creditCardExpiry"),
+        "creditCardNumber": userInfoDict.get("creditCardNumber"),
+        "notes": userInfoDict.get("notes"),
+        "dateJoined": userInfoDict.get("dateJoined"),
         "nextBilling": "",
         "accountSetupBy": "",
-        "referredBy": userInfoDict["referredBy"],
+        "referredBy": userInfoDict.get("referredBy"),
         "govId": "",
         "govConfirmation": "",
         "govAmount": "",
         "oneTimeCharge": "",
         "oneTimeQty": "",
-        "language": userInfoDict["language"],
+        "language": userInfoDict.get("language"),
         "debugLevel": "1",
-        "operator": userInfoDict["operator"],
+        "operator": userInfoDict.get("operator"),
     }
     updateAladinSQL2 = f"""
         UPDATE UsersId SET
         BankName = %(bankName)s
         , CheckNumber = %(checkNumber)s
-        , BankAccount = %(bankAccount)s
+        , BkAccount = %(bankAccount)s
+        , BkInstitutionId = %(bankInstitution)s
+        , BkBranchTransit = %(bankTransit)s
         , IdentificationCard = %(identificationCard)s
         , AuthorizationCode = %(authorizationCode)s
         WHERE LoginName = %(loginName)s
     """
     updateAladinParam2 = {
-        "bankName": userInfoDict["bankName"],
-        "checkNumber": userInfoDict["checkNumber"],
-        "bankAccount": userInfoDict["bankAccount"],
-        "identificationCard": userInfoDict["identificationCard"],
-        "authorizationCode": userInfoDict["authorizationCode"],
-        "loginName": userInfoDict["loginName"],
+        "bankName": userInfoDict.get("bankName"),
+        "checkNumber": userInfoDict.get("checkNumber"),
+        "bankAccount": userInfoDict.get("bankAccount"),
+        "bankInstitution": userInfoDict.get("bankInstitution"),
+        "bankTransit": userInfoDict.get("bankTransit"),
+        "identificationCard": userInfoDict.get("identificationCard"),
+        "authorizationCode": userInfoDict.get("authorizationCode"),
+        "loginName": userInfoDict.get("loginName"),
     }
     createAladinSQL1 = f"""
         EXECUTE CreateUser
@@ -706,51 +753,67 @@ def submitToAladin(userInfoDict):
             , @CreditCardNumber = %(creditCardNumber)s
             , @CurrentPlan = %(currentPlan)s
             , @BankName = %(bankName)s
-            , @CheckNumber = '%(CheckNumber)s'
-            , @BankAccount = '%(BankAccount)s'
-            , @IdentificationCard = '%(IdentificationCard)s'
-            , @AuthorizationCode = '%(AuthorizationCode)s'
+            , @CheckNumber = %(checkNumber)s
+            , @BankAccount = %(bankAccount)s
+            , @IdentificationCard = %(identificationCard)s
+            , @AuthorizationCode = %(authorizationCode)s
             , @Operator = %(operator)s
             , @ReferredBy = %(referredBy)s
             , @GovID = %(govId)s
             , @GovConfirmation = %(govConfirmation)s
             , @GovAmount = %(govAmount)s
     """
+    randomPassword = secrets.token_urlsafe(8).lower()
     createAladinParam1 = {
-        "loginName": userInfoDict["loginName"],
-        "firstName": userInfoDict["firstName"],
-        "lastName": userInfoDict["lastName"],
-        "organizationName": userInfoDict["organizationName"],
-        "address": userInfoDict["address"],
-        "city": userInfoDict["city"],
-        "state": userInfoDict["state"],
-        "postalCode": userInfoDict["postalCode"],
-        "country": userInfoDict["country"],
-        "homePhone": userInfoDict["homePhone"],
+        "loginName": userInfoDict.get("loginName"),
+        "firstName": userInfoDict.get("firstName"),
+        "lastName": userInfoDict.get("lastName"),
+        "organizationName": userInfoDict.get("organizationName"),
+        "address": userInfoDict.get("address"),
+        "city": userInfoDict.get("city"),
+        "state": userInfoDict.get("state"),
+        "postalCode": userInfoDict.get("postalCode"),
+        "country": userInfoDict.get("country"),
+        "homePhone": userInfoDict.get("homePhone"),
         "membership": "",
-        "notes": userInfoDict["notes"],
-        "userPassword": "SomeLongPassword",
-        "operatingSystem": userInfoDict["operatingSystem"],
-        "accountNumber": f"{userInfoDict['homePhone'][0:1]}{userInfoDict['homePhone'][4:7]}{userInfoDict['homePhone'][8:12]}1",
-        "paymentMethod": userInfoDict["paymentMethod"],
-        "creditCardExpiry": userInfoDict["creditCardExpiry"],
-        "creditCardNumber": userInfoDict["creditCardNumber"],
-        "currentPlan": "Shipping",
-        "bankName": userInfoDict["bankName"],
-        "checkNumber": userInfoDict["checkNumber"],
-        "bankAccount": userInfoDict["bankAccount"],
-        "identificationCard": userInfoDict["identificationCard"],
-        "authorizationCode": userInfoDict["authorizationCode"],
-        "operator": userInfoDict["operator"],
-        "referredBy": userInfoDict["referredBy"],
+        "notes": userInfoDict.get("notes"),
+        "userPassword": userInfoDict.get("userPassword") or randomPassword,
+        "operatingSystem": userInfoDict.get("operatingSystem"),
+        "accountNumber": f"{userInfoDict.get('homePhone')[0:1]}{userInfoDict.get('homePhone')[4:7]}{userInfoDict.get('homePhone')[8:12]}1",
+        "paymentMethod": userInfoDict.get("paymentMethod"),
+        "creditCardExpiry": userInfoDict.get("creditCardExpiry"),
+        "creditCardNumber": userInfoDict.get("creditCardNumber"),
+        "currentPlan": "",
+        "bankName": userInfoDict.get("bankName"),
+        "checkNumber": userInfoDict.get("checkNumber"),
+        "bankAccount": "",
+        "checkNumber": userInfoDict.get("checkNumber"),
+        "identificationCard": userInfoDict.get("identificationCard"),
+        "authorizationCode": userInfoDict.get("authorizationCode"),
+        "operator": userInfoDict.get("operator"),
+        "referredBy": userInfoDict.get("referredBy"),
         "govId": "",
         "govConfirmation": "",
         "govAmount": "",
     }
-    print(f"DEBUG MESSAGE: {updateAladinSQL2}")
-    print(f"DEBUG MESSAGE: {updateAladinParam2}")
-    # queryDBall(updateAladinSQL1, updateAladinParam1)
-    # queryDBall(updateAladinSQL2, updateAladinParam2)
+    loginName = userInfoDict.get("loginName")
+    confirmedLoginName = commons.get_loginname_from_database(loginName)
+    if confirmedLoginName:
+        # user update
+        # print(f"DEBUG updateAladinSQL1: {updateAladinSQL1}")
+        # print(f"DEBUG updateAladinParam1: {updateAladinParam1}")
+        # print(f"DEBUG updateAladinSQL2: {updateAladinSQL2}")
+        # print(f"DEBUG updateAladinParam2: {updateAladinParam2}")
+        queryDBall(updateAladinSQL1, updateAladinParam1)
+        queryDBall(updateAladinSQL2, updateAladinParam2)
+    else:
+        # user create
+        # print(f"DEBUG createAladinSQL1: {createAladinSQL1}")
+        # print(f"DEBUG createAladinParam1: {createAladinParam1}")
+        # print(f"DEBUG updateAladinSQL2: {updateAladinSQL2}")
+        # print(f"DEBUG updateAladinParam2: {updateAladinParam2}")
+        queryDBall(createAladinSQL1, createAladinParam1)
+        queryDBall(updateAladinSQL2, updateAladinParam2)
 
 
 def index(request):
@@ -759,26 +822,32 @@ def index(request):
         or request.session.get("loginName")
         or "",
     }
-    isUserExist = False
     formSearchLogin = FormSearchLogin(defaultData)
-    formUserDetail = FormUserDetail(request.POST.dict())
+    formUserDetail = FormUserDetail()
+    isUserExist = False
+    freezeForm = False
 
     """ --- """
     """ GET request received """
     if formSearchLogin.is_valid():
-        loginName = formSearchLogin.cleaned_data["loginName"]
-        loginFound = countConfirmedLoginName(loginName)
+        loginName = formSearchLogin.cleaned_data.get("loginName")
+        confirmedLoginName = commons.get_loginname_from_database(loginName)
         userDict = dict()
-        if str(loginFound) == "1":
+        if confirmedLoginName:
             isUserExist = True
             # store login in cookie session
-            request.session["loginName"] = loginName
-            userDict = getUserInfo(loginName)
+            request.session["loginName"] = confirmedLoginName
+            # display the primary account
+            formSearchLogin = FormSearchLogin({"loginName": confirmedLoginName})
+            userDict = getUserInfo(confirmedLoginName)
         #
+        randomPassword = secrets.token_urlsafe(8).lower()
         formUserDetail = FormUserDetail(
-            userDict | request.POST.dict() | {"loginName": loginName}
+            userDict
+            | {"operator": request.session.get("operator")}
+            | {"userPassword": randomPassword}
+            | {"loginName": confirmedLoginName or loginName}
         )
-        formUserDetail.fields["operator"].initial = request.session.get("operator")
 
     """ --- """
     """ Button Pressed LOOKUP postal code """
@@ -793,8 +862,8 @@ def index(request):
             ("", "Refine address ..."),
         ]
         myChoices += [(k, v) for k, v in listOfAddresses.items()]
+        formUserDetail = FormUserDetail(request.POST.dict())
         formUserDetail.fields["addressSelect"].choices = myChoices
-        formUserDetail.fields["postalCode"].initial = request.POST.get("postalCode")
     """ --- """
     """ Button Pressed APPLY postal code """
     if (
@@ -805,29 +874,36 @@ def index(request):
         postalAddress = getAddressFromID(request.POST.get("addressSelect"))
         if len(postalAddress) >= 5:
             newAddress = {
-                "address": postalAddress["Line1"],
-                "city": postalAddress["City"],
-                "state": postalAddress["ProvinceCode"],
+                "address": postalAddress.get("Line1"),
+                "city": postalAddress.get("City"),
+                "state": postalAddress.get("ProvinceCode"),
                 "country": "Canada",
-                "postalCode": postalAddress["PostalCode"],
+                "postalCode": postalAddress.get("PostalCode"),
             }
             formUserDetail = FormUserDetail(request.POST.dict() | newAddress)
 
     """ --- """
-    """ Button Pressed UpdateUser """
+    """ Button Pressed Create/UpdateUser """
     if request.method == "POST" and request.POST.get("updateUser"):
         initialUserDetail = FormUserDetail(request.POST.dict())
         if initialUserDetail.is_valid():
             submitToAladin(initialUserDetail.cleaned_data)
-            # store operator in cookie session
+            # store login and operator in session cookie
+            request.session["loginName"] = initialUserDetail.cleaned_data.get(
+                "loginName"
+            )
             request.session["operator"] = initialUserDetail.cleaned_data.get("operator")
             messages.add_message(
-                request, messages.SUCCESS, f"User info has been updated"
+                request, messages.SUCCESS, f"User info has been submitted"
             )
             # freeze the form
-            isUserExist = not isUserExist
+            freezeForm = True
         else:
-            messages.add_message(request, messages.WARNING, f"Form is still INVALID")
+            messages.add_message(
+                request,
+                messages.WARNING,
+                f"form still INVALID",
+            )
         """
         # rebuilding form using POST + cleaned_data
         # .cleaned_data generated from is_valid call
@@ -838,18 +914,12 @@ def index(request):
             request.POST.dict() | initialUserDetail.cleaned_data
         )
 
-    # example query using django models
-    # add this: from .models import UsersId
-    # myResult = UsersId.objects.using('db2')
-    # myResultList = (myResult.values()[0]['LoginName'])
-
     loginName = request.GET.get("loginName")
     urlQuery = f"LoginName={loginName}"
     context = {
         "loginName": loginName,
-        "buttonStyle": "success" if isUserExist else "secondary",
-        "isValid": "isValid" if isUserExist else "is-invalid",
-        "isDisabled": "" if isUserExist else "disabled",
+        "isDisabled": "disabled" if freezeForm else "",
+        "isUserExist": isUserExist,
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
