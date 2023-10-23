@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'updateuser.apps.UpdateuserConfig',
-    'createuser.apps.CreateuserConfig',
     'userinvoice.apps.UserinvoiceConfig',
     'updateinvoice.apps.UpdateinvoiceConfig',
     'userplans.apps.UserplansConfig',
