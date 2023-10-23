@@ -214,9 +214,9 @@ def submitToAladin(planDict):
         "operator": planDict["operator"],
         "debugLevel": 1,
     }
-    print(f"DEBUG MESSAGE: {updateAladinSQL1}")
-    print(f"DEBUG MESSAGE: {updateAladinParam1}")
-    # queryDBall(updateAladinSQL1, updateAladinParam1)
+    # print(f"DEBUG MESSAGE: {updateAladinSQL1}")
+    # print(f"DEBUG MESSAGE: {updateAladinParam1}")
+    queryDBall(updateAladinSQL1, updateAladinParam1)
 
 
 def index(request):
