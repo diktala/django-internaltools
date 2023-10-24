@@ -113,7 +113,7 @@
                 </div>
                 <div class="col-sm-2">Last invoice:</div>
                 <div class="col-sm-10">
-                    {{ userInfo.LastInvoiceStatus }} {{ userInfo.LastInvoiceBalance|yesno:"$,$," }}{{ userInfo.LastInvoiceBalance|floatformat:2 }}
+                    {{ userInfo.LastInvoiceStatus|default:"" }} {{ userInfo.LastInvoiceBalance|yesno:"$,$," }}{{ userInfo.LastInvoiceBalance|floatformat:2 }}
                 </div>
                 <div class="w-100 d-none d-sm-block border-bottom">
                     <!-- new row -->

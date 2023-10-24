@@ -116,11 +116,14 @@ def get_user_plans(loginName=""):
 
 def get_call_logs(loginName=""):
     querySQL = """
+        SET ROWCOUNT 1000;
         EXECUTE GetUserProfile
             @LoginName = %(loginName)s
             , @Operator = %(operator)s
             , @Desc1 = %(specialNote)s
             , @ReqAttention = %(requiresFeedback)s
+            ;
+        SET ROWCOUNT 0;
             """
     paramSQL = {
         "loginName": str(loginName),
