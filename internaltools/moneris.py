@@ -120,7 +120,7 @@ def submitPayment(session, creditCard):
         "payment_method": "moto",
         "order_no": orderid,
         "cust_id": "my_customer",
-        "amount": absoluteAmount,
+        "amount": str("{:.2f}".format(absoluteAmount)),
         "cc_number": creditCard.get("Num"),
         "exp_month": creditCard.get("ExpMonth"),
         "exp_year": creditCard.get("ExpYear"),
@@ -145,10 +145,25 @@ def pay(creditCard):
     }
     """
     session = getSession()
+    # print (f"DEBUG MONERIS: acquired session")
     csrfField = getCSRF(session)
+    # print (f"DEBUG MONERIS: acquired csrf {csrfField}")
+    #
     monerisPage = loginPortal(session, csrfField)
+    # result = extractFromHtml(r".*<title>(.*)</title>.*", monerisPage)
+    # print (f"DEBUG MONERIS: loaded login page {result}")
+    #
     monerisPage = loginConfirmPortal(session)
+    # result = extractFromHtml(r".*(Welcome.*?)<.*", monerisPage)
+    # print (f"DEBUG MONERIS: loaded second login {result}")
+    #
+    # print (f"DEBUG MONERIS: submitting {creditCard}")
     monerisPage = submitPayment(session, creditCard)
+    # result = extractFromHtml(r".*(textError>.*?)<.*", monerisPage)
+    # print (f"DEBUG MONERIS: submitted payment request {result}")
+    # result = extractFromHtml(r".*(Amount:.*?)Credit Card Number.*", monerisPage)
+    # print (f"DEBUG MONERIS: amount shown {result}")
+    #
 
     payment = dict()
     payment["result"] = extractFromHtml(r".*Result:.*?<b> *(.*)<.b>.*", monerisPage)
