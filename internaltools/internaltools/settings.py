@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'netstats.apps.NetstatsConfig',
     'conndebug.apps.ConndebugConfig',
     'verifypass.apps.VerifypassConfig',
+    'payment.apps.PaymentConfig',
 ]
 
 MIDDLEWARE = [

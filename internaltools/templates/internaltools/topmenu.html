@@ -164,8 +164,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/payproc/processcc.php?{{ urlQuery }}">Process CC</a>
+                        {% url 'payment:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Payment</a>
                     </div>
                     <!-- nav-link -->
                 </li>

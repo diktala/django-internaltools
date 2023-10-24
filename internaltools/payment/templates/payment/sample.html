@@ -1,0 +1,137 @@
+{% extends "internaltools/base.html" %}
+{% block title %}payment{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- form search users -->
+        <form id="payment" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            {% for hidden in formPayment.hidden_fields %}{{ hidden }}{% endfor %}
+            <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+            </button>
+            <div class="row g-3">
+                <fieldset class="form-group border" {{ isDisabled }}>
+                    <legend>Payment:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formPayment.loginName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formPayment.loginName.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formPayment.loginName }}
+                            <small class="form-text text-danger">{{ formPayment.loginName.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.invoiceNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.invoiceNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.invoiceNumber }}
+                            <small class="form-text text-danger">{{ formPayment.invoiceNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.operator.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formPayment.operator.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formPayment.operator }}
+                            <small class="form-text text-danger">{{ formPayment.operator.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.paymentType.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.paymentType.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.paymentType }}
+                            <small class="form-text text-danger">{{ formPayment.paymentType.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.specialNote.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.specialNote.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.specialNote }}
+                            <small class="form-text text-danger">{{ formPayment.specialNote.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.amount.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formPayment.amount.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formPayment.amount }}
+                            <small class="form-text text-danger">{{ formPayment.amount.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.refundPassword.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.refundPassword.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.refundPassword }}
+                            <small class="form-text text-danger">{{ formPayment.refundPassword.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.chequeNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.chequeNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.chequeNumber }}
+                            <small class="form-text text-danger">{{ formPayment.chequeNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.creditCardNumber.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.creditCardNumber.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.creditCardNumber }}
+                            <small class="form-text text-danger">{{ formPayment.creditCardNumber.errors }}</small>
+                        </div>
+                        <label for="{{ formPayment.creditCardExpiry.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formPayment.creditCardExpiry.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formPayment.creditCardExpiry }}
+                            <small class="form-text text-danger">{{ formPayment.creditCardExpiry.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    accesskey="l"
+                                    title="alt-L / ctrl-alt-L"
+                                    class="btn btn-secondary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <!-- start payment logs -->
+        <div class="row mb-3 border-top border-bottom border-2">
+            <div class="col-sm-2">Date:</div>
+            <div class="col-sm-2">Login:</div>
+            <div class="col-sm-4">Description:</div>
+            <div class="col-sm-2">Amount:</div>
+            <div class="col-sm-2">Operator:</div>
+            <div class="w-100 d-none d-sm-block border-bottom"></div>
+            {% for eachLog in paymentLogs %}
+                {% cycle 'bg-light' 'bg-light-subtle' as rowcolor silent %}
+                <div class="col-sm-2 {{ rowcolor }}">{{ eachLog.TranDate|date:"Y-m-d H:i" }}</div>
+                <div class="col-sm-2 {{ rowcolor }}">
+                    <a href="{% url "infouser:index" %}?loginName={{ eachLog.LoginName }}">{{ eachLog.LoginName }}</a>
+                </div>
+                <div class="col-sm-4 {{ rowcolor }}">{{ eachLog.Desc1|default:"" }} {{ eachLog.Desc2|default:"" }}</div>
+                <div class="col-sm-2 {{ rowcolor }}">${{ eachLog.PaidAmount|floatformat:"2g" }}</div>
+                <div class="col-sm-2 {{ rowcolor }}">{{ eachLog.Operator|default:"" }}</div>
+                <div class="w-100 d-none d-sm-block border-bottom"></div>
+            {% endfor %}
+        </div>
+        <!-- end payment logs -->
+    {% endblock %}
