@@ -36,8 +36,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/antispam/index.php?{{ urlQuery }}">Antispam</a>
+                        {% url 'endaccount:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">End Account</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -50,8 +51,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/payproc/?{{ urlQuery }}">Pay Process</a>
+                        {% url 'blockaccount:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Block Account</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -60,62 +62,17 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/adsl/index.php?{{ urlQuery }}">DSL</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://nexxia.{{ domain }}/?{{ urlQuery }}">Tickets</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'userplans:index' as thisurl %}
+                        {% url 'updateinvoice:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">User Plans</a>
+                           href="{{ thisurl }}">Update Invoice</a>
                     </div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/troublereporter/">Outages</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        <a class="nav-link p-0" href="https://internal.{{ domain }}/support/">TechSup</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="w-100 d-none d-sm-block">
-                    <!-- use 7 columns for screens bigger than -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'userinvoice:index' as thisurl %}
+                        {% url 'mailaccount:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">User Invoices</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
+                           href="{{ thisurl }}">Additional Email</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -137,25 +94,22 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'endaccount:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">End Account</a>
+                        <a class="nav-link p-0"
+                           href="https://internal.{{ domain }}/billinglist/?{{ urlQuery }}">Billing Reminders</a>
                     </div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'restoreuser:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Restore User</a>
+                        <a class="nav-link p-0"
+                           href="https://internal.{{ domain }}/troublereporter/">Outages</a>
                     </div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-			{% url 'blockaccount:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Block Account</a>
+                        <a class="nav-link p-0"
+                           href="https://internal.{{ domain }}/latepayments/?{{ urlQuery }}">Late Payments</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -164,17 +118,17 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'payment:index' as thisurl %}
+                        {% url 'userinvoice:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Payment</a>
+                           href="{{ thisurl }}">User Invoices</a>
                     </div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'mailaccount:index' as thisurl %}
+                        {% url 'webhosting:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Additional Email</a>
+                           href="{{ thisurl }}">Webhosting</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -195,9 +149,60 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/billinglist/?{{ urlQuery }}">Billing Reminders</a>
+                        {% url 'verifypass:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Verify Password</a>
                     </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border">
+                        {% url 'restoreuser:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Restore User</a>
+                    </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border">
+                        {% url 'userinput:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">User Input</a>
+                    </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="w-100 d-none d-sm-block">
+                    <!-- use 7 columns for screens bigger than -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border">
+                        {% url 'payment:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Payment</a>
+                    </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border">
+                        {% url 'userplans:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">User Plans</a>
+                    </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border"></div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border">
+                        <a class="nav-link p-0"
+                           href="https://internal.{{ domain }}/tellocator/index.php?{{ urlQuery }}">Locate Tel</a>
+                    </div>
+                    <!-- nav-link -->
+                </li>
+                <li class="nav-item col p-0">
+                    <div class="nav-link p-0 border"></div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
@@ -209,63 +214,11 @@
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/latepayments/?{{ urlQuery }}">Late Payments</a>
-                    </div>
+                    <div class="nav-link p-0 border"></div>
                     <!-- nav-link -->
                 </li>
                 <li class="w-100 d-none d-sm-block">
                     <!-- use 7 columns for screens bigger than -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'updateinvoice:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Update Invoice</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'webhosting:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Webhosting</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/tellocator/index.php?{{ urlQuery }}">Locate Tel</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'verifypass:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Verify Password</a>
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                    </div>
-                    <!-- nav-link -->
-                </li>
-                <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border">
-                        {% url 'userinput:index' as thisurl %}
-                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">User Input</a>
-                    </div>
-                    <!-- nav-link -->
                 </li>
             </ul>
         </div>
