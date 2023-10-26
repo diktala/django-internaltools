@@ -38,6 +38,7 @@ urlpatterns = [
     path('conndebug/', include('conndebug.urls')),
     path('verifypass/', include('verifypass.urls')),
     path('payment/', include('payment.urls')),
+    path('webhosting/', include('webhosting.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

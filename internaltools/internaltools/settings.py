@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'conndebug.apps.ConndebugConfig',
     'verifypass.apps.VerifypassConfig',
     'payment.apps.PaymentConfig',
+    'webhosting.apps.WebhostingConfig',
 ]
 
 MIDDLEWARE = [
