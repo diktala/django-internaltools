@@ -3,6 +3,25 @@ django crud to manage users
 
 ---
 
+- Dev environement
+
+```
+iterm2 with 3 tabs each with screen session:
+:sessionname docker
+:sessionname s2
+:sessionname s3
+screen -d -r s docker
+    0$ -> docker-compose up -d; docker-compose logs -f
+    1$ -> docker container exec -it --user squid devtools bash
+       -> source ~/django-internaltools/venv/bin/activate
+       -> cd ~/django-internaltools/internaltools/
+       -> python manage.py shell
+       -> import some-app.views
+screen -d -r s s2
+screen -d -r s s3
+
+```
+
 - Quick start an app:
 
 ```
