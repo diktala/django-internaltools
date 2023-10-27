@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'verifypass.apps.VerifypassConfig',
     'payment.apps.PaymentConfig',
     'webhosting.apps.WebhostingConfig',
+    'iplocator.apps.IplocatorConfig',
 ]
 
 MIDDLEWARE = [

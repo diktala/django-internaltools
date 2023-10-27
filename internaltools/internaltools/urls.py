@@ -39,6 +39,7 @@ urlpatterns = [
     path('verifypass/', include('verifypass.urls')),
     path('payment/', include('payment.urls')),
     path('webhosting/', include('webhosting.urls')),
+    path('iplocator/', include('iplocator.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,77 @@
+{% extends "internaltools/base.html" %}
+{% block title %}iplocator{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- form search users -->
+        <form id="iplocator" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border">
+                    <legend>IP Locator:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formLocateIP.ipAddress.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formLocateIP.ipAddress.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formLocateIP.ipAddress }}
+                            <small class="form-text text-danger">{{ formLocateIP.ipAddress.errors }}</small>
+                        </div>
+                        <label for="{{ formLocateIP.accessDate.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formLocateIP.accessDate.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formLocateIP.accessDate }}<small class="form-text text-danger">{{ formLocateIP.accessDate.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    class="btn btn-secondary mb-3">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+        <!-- start cableconnection PTR -->
+        {% if cableConnection %}VL MAC to IP query: {{ cableConnection }}{% endif %}
+        {% if cableMac %}
+            MAC: <a href="{% url "usersearch:index" %}?loginName={{ cableMac }}">{{ cableMac }}</a>
+        {% endif %}
+        <!-- end cableconnection PTR -->
+        <!-- start userConnection -->
+        {% if userConnection %}
+            <div class="row mb-3 border-top border-bottom border-2">
+                <div class="col-sm-2 fw-bold">User</div>
+                <div class="col-sm-3 fw-bold">Connect</div>
+                <div class="col-sm-3 fw-bold">Disconnect</div>
+                <div class="col-sm-1 fw-bold">Hours</div>
+                <div class="col-sm-2 fw-bold">Call from</div>
+                <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% for eachResult in userConnection %}
+                    <div class="col-sm-2">
+                        <a href="{% url "infouser:index" %}?loginName={{ eachResult.UserName }}">{{ eachResult.UserName }}</a>
+                    </div>
+                    <div class="col-sm-3">{{ eachResult.InDate|date:"Y-m-d H:i" }}</div>
+                    <div class="col-sm-3">{{ eachResult.OutDate|date:"Y-m-d H:i" }}</div>
+                    <div class="col-sm-1">{{ eachResult.ConnectionInHours|floatformat:"2" }}</div>
+                    <div class="col-sm-2">{{ eachResult.CallingStationId }}</div>
+                    <div class="w-100 d-none d-sm-block border-bottom"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- end userConnection -->
+    {% endblock %}
