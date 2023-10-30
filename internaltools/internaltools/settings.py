@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'payment.apps.PaymentConfig',
     'webhosting.apps.WebhostingConfig',
     'iplocator.apps.IplocatorConfig',
+    'connectlocator.apps.ConnectlocatorConfig',
 ]
 
 MIDDLEWARE = [

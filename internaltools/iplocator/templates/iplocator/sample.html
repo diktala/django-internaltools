@@ -68,7 +68,9 @@
                     <div class="col-sm-3">{{ eachResult.InDate|date:"Y-m-d H:i" }}</div>
                     <div class="col-sm-3">{{ eachResult.OutDate|date:"Y-m-d H:i" }}</div>
                     <div class="col-sm-1">{{ eachResult.ConnectionInHours|floatformat:"2" }}</div>
-                    <div class="col-sm-2">{{ eachResult.CallingStationId }}</div>
+                    <div class="col-sm-2">
+                        <a href="{% url "connectlocator:index" %}?loginName={{ eachResult.CallingStationId }}">{{ eachResult.CallingStationId }}</a>
+		    </div>
                     <div class="w-100 d-none d-sm-block border-bottom"></div>
                 {% endfor %}
             </div>

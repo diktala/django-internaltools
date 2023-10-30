@@ -113,8 +113,13 @@
                     <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.InDate|date:"Y-m-d H:i" }}</div>
                     <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.OutDate|date:"Y-m-d H:i" }}</div>
                     <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctSessionTime|floatformat:"2g" }}</div>
-                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.CallingStationId }} / {{ eachInput.NASIdentifier }}</div>
-                    <div class="col-sm-2 {{ rowcolor }}">{{ eachInput.FramedIPAddress }}</div>
+                    <div class="col-sm-2 {{ rowcolor }}">
+                        <a href="{% url "connectlocator:index" %}?loginName={{ eachInput.CallingStationId }}">{{ eachInput.CallingStationId }}</a>
+                        <a href="{% url "connectlocator:index" %}?loginName={{ eachInput.NASIdentifier }}">{{ eachInput.NASIdentifier }}</a>
+		    </div>
+                    <div class="col-sm-2 {{ rowcolor }}">
+                        <a href="{% url "connectlocator:index" %}?loginName={{ eachInput.FramedIPAddress }}">{{ eachInput.FramedIPAddress }}</a>
+		    </div>
                     <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctTerminateCause }}</div>
                     <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctOutputOctets|floatformat:"2g" }}</div>
                     <div class="col-sm-1 {{ rowcolor }}">{{ eachInput.AcctInputOctets|floatformat:"2g" }}</div>
