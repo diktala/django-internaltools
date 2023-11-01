@@ -41,6 +41,7 @@ urlpatterns = [
     path('webhosting/', include('webhosting.urls')),
     path('iplocator/', include('iplocator.urls')),
     path('connectlocator/', include('connectlocator.urls')),
+    path('billinglist/', include('billinglist.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

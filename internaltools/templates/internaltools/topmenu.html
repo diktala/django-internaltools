@@ -94,8 +94,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        <a class="nav-link p-0"
-                           href="https://internal.{{ domain }}/billinglist/?{{ urlQuery }}">Billing Reminders</a>
+                        {% url 'billinglist:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Billing Reminders</a>
                     </div>
                     <!-- nav-link -->
                 </li>

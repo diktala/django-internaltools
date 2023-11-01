@@ -68,11 +68,15 @@ class SimpleTest(TestCase):
         self.assertEqual(commons.get_loginname_from_invoice("123.1000123"), "ammina")
 
     def test_get_loginname_from_secondary_mail(self):
-        self.assertEqual(commons.get_loginname_from_secondary_mail("sec.trial"), "trial")
+        self.assertEqual(
+            commons.get_loginname_from_secondary_mail("sec.trial"), "trial"
+        )
         self.assertEqual(commons.get_loginname_from_secondary_mail("bugbugnothing"), "")
         self.assertEqual(commons.get_loginname_from_secondary_mail("trial"), "")
         self.assertEqual(commons.get_loginname_from_secondary_mail(""), "")
-        self.assertEqual(commons.get_loginname_from_secondary_mail("weirdchar\\!@#'"), "")
+        self.assertEqual(
+            commons.get_loginname_from_secondary_mail("weirdchar\\!@#'"), ""
+        )
 
     def test_get_loginname_from_database(self):
         self.assertEqual(commons.get_loginname_from_database("trial"), "trial")
@@ -88,16 +92,10 @@ class SimpleTest(TestCase):
         self.assertEqual(commons.get_loginname_from_database("sec.trial"), "trial")
         self.assertEqual(commons.get_loginname_from_database("trial2"), "trial")
 
-    """
-    def test_form_validation_valid(self):
-        formSearchLogin = FormSearchLogin( { "loginName": "sometest"} )
-        self.assertTrue( formSearchLogin.is_valid() )
+    def test_simplyCrypt(self):
+        self.assertEqual(commons.simpleCrypt("ammina"), "wx\x7f{{w")
+        self.assertEqual(commons.simpleCrypt("wx\x7f{{w"), "ammina")
+        self.assertEqual(commons.simpleCrypt("1000"), "&&&'")
+        self.assertEqual(commons.simpleCrypt("&&&'"), "1000")
 
-    def test_form_validation_invalid_capitalcase(self):
-        formSearchLogin = FormSearchLogin( { "loginName": "someBADtest"} )
-        self.assertFalse( formSearchLogin.is_valid() )
 
-    def test_form_validation_invalid_bad_characters(self):
-        formSearchLogin = FormSearchLogin( { "loginName": "some!@$%test"} )
-        self.assertFalse( formSearchLogin.is_valid() )
-    """

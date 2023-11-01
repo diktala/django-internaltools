@@ -132,3 +132,10 @@ def get_loginname_from_database(either_login_or_invoice=""):
         confirmedLoginName = loginName
     #
     return confirmedLoginName
+
+
+def simpleCrypt(varToCrypt=""):
+    simpleCrypt = ""
+    for i in range(len(varToCrypt) - 1, -1, -1):
+        simpleCrypt = simpleCrypt + chr(ord(varToCrypt[i]) ^ 22)
+    return simpleCrypt

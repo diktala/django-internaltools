@@ -148,23 +148,13 @@ def getUserPlans(loginName=""):
     return allRows
 
 
-""" simpleCrypt encrypt/decrypt with XOR """
-
-
-def simpleCrypt(varToCrypt=""):
-    simpleCrypt = ""
-    for i in range(len(varToCrypt) - 1, -1, -1):
-        simpleCrypt = simpleCrypt + chr(ord(varToCrypt[i]) ^ 22)
-    return simpleCrypt
-
-
 def insertInvoiceKeys(userInvoices):
     for eachInvoice in userInvoices:
         loginName = eachInvoice.get("LoginName")
-        loginNameCrypted = simpleCrypt(loginName)
+        loginNameCrypted = commons.simpleCrypt(loginName)
         invoiceNumber = eachInvoice.get("InvoiceNumber")
         if isinstance(invoiceNumber, int):
-            invoiceNumberCrypted = simpleCrypt(str(invoiceNumber))
+            invoiceNumberCrypted = commons.simpleCrypt(str(invoiceNumber))
             invoiceObfuscated = (
                 str((invoiceNumber**0.5) * 1000000)[0:3]
                 + "."
@@ -213,6 +203,6 @@ def index(request):
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
         "invoices": invoices,
-        "loginNameCrypted": simpleCrypt(loginName),
+        "loginNameCrypted": commons.simpleCrypt(loginName),
     }
     return render(request, "userinvoice/sample.html", context)
