@@ -49,7 +49,7 @@ class FormCallLog(forms.Form):
             )
         ],
     )
-    OPERATORS = os.environ.get("OPERATORS")
+    OPERATORS = "Other " + commons.get_operators()
     operatorNames = OPERATORS or "Other"
     operator = forms.ChoiceField(
         choices=[(op, op) for op in operatorNames.split(" ")],

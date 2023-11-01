@@ -190,7 +190,7 @@ class FormInvoice(forms.Form):
         max_digits=7,
         decimal_places=2,
     )
-    OPERATORS = os.environ.get("OPERATORS")
+    OPERATORS = "Other " + commons.get_operators()
     operatorNames = OPERATORS or "Other"
     operator = forms.ChoiceField(
         choices=[(op, op) for op in operatorNames.split(" ")],
