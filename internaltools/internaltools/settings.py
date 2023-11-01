@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'connectlocator.apps.ConnectlocatorConfig',
     'billinglist.apps.BillinglistConfig',
     'sendmail.apps.SendmailConfig',
+    'latepayment.apps.LatepaymentConfig',
 ]
 
 MIDDLEWARE = [
