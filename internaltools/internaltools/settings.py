@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'iplocator.apps.IplocatorConfig',
     'connectlocator.apps.ConnectlocatorConfig',
     'billinglist.apps.BillinglistConfig',
+    'sendmail.apps.SendmailConfig',
 ]
 
 MIDDLEWARE = [
@@ -162,3 +163,10 @@ STATIC_ROOT = '/var/www/django-static-files'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# email smtp config
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False') == 'True'

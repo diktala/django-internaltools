@@ -139,3 +139,56 @@ def simpleCrypt(varToCrypt=""):
     for i in range(len(varToCrypt) - 1, -1, -1):
         simpleCrypt = simpleCrypt + chr(ord(varToCrypt[i]) ^ 22)
     return simpleCrypt
+
+
+# hack to store operators and other messages in user rasuser
+def get_tag_from_database(tag=""):
+    # example: tag = "OPERATORS:"
+    sql_query = f"""
+        SET ROWCOUNT 1;
+        SELECT Desc1
+        FROM TransactionHistory
+        WHERE LoginName = 'rasuser' AND Desc1 like %(tag)s + '%'
+        ORDER BY TranDate DESC;
+        set ROWCOUNT 0;
+        """
+    sql_param = {
+        "tag": tag,
+    }
+    result = queryDBscalar(sql_query, sql_param)
+    # sanity check
+    output = "not-found"
+    if isinstance(result, str):
+        match = re.search(f"^{tag}(.+)$", result)
+        if match:
+            output = match[1].strip()
+    return output
+
+
+def get_operators():
+    result = get_tag_from_database("OPERATORS:")
+    # sanity check
+    output = "not-found"
+    if isinstance(result, str):
+        match = re.search(f"^[A-Za-z- ]+$", result)
+        if match:
+            output = result.strip()
+    return output
+
+
+def get_standard_email():
+    MSGFR = get_tag_from_database("MSGFR:")
+    MSGEN = get_tag_from_database("MSGEN:")
+    MSGEND = get_tag_from_database("MSGEND:")
+    MSGNAME = get_tag_from_database("MSGNAME:")
+    MSGEMAIL = get_tag_from_database("MSGEMAIL:")
+    MSGSUBJECT = get_tag_from_database("MSGSUBJECT:")
+
+    output = dict()
+    output["MSGFR"] = re.sub("#", r"\n", MSGFR)
+    output["MSGEN"] = re.sub("#", r"\n", MSGEN)
+    output["MSGEND"] = re.sub("#", r"\n", MSGEND)
+    output["MSGNAME"] = MSGNAME
+    output["MSGEMAIL"] = MSGEMAIL
+    output["MSGSUBJECT"] = MSGSUBJECT
+    return output

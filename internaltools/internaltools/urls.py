@@ -42,6 +42,7 @@ urlpatterns = [
     path('iplocator/', include('iplocator.urls')),
     path('connectlocator/', include('connectlocator.urls')),
     path('billinglist/', include('billinglist.urls')),
+    path('sendmail/', include('sendmail.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -98,4 +98,14 @@ class SimpleTest(TestCase):
         self.assertEqual(commons.simpleCrypt("1000"), "&&&'")
         self.assertEqual(commons.simpleCrypt("&&&'"), "1000")
 
+    def test_get_tag_from_database(self):
+        result = commons.get_tag_from_database("SOMETAG:")
+        self.assertTrue(len(result) > 0)
 
+    def test_get_operators(self):
+        result = commons.get_operators()
+        self.assertTrue(len(result) > 0)
+
+    def test_standard_email(self):
+        result = commons.get_standard_email()
+        self.assertTrue(isinstance(result, dict))

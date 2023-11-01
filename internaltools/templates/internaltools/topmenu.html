@@ -151,9 +151,9 @@
                 </li>
                 <li class="nav-item col p-0">
                     <div class="nav-link p-0 border">
-                        {% url 'verifypass:index' as thisurl %}
+                        {% url 'sendmail:index' as thisurl %}
                         <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
-                           href="{{ thisurl }}">Verify Password</a>
+                           href="{{ thisurl }}">Sendmail</a>
                     </div>
                     <!-- nav-link -->
                 </li>
@@ -205,7 +205,11 @@
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">
-                    <div class="nav-link p-0 border"></div>
+                    <div class="nav-link p-0 border">
+                        {% url 'verifypass:index' as thisurl %}
+                        <a class="nav-link p-0 {% if request.path == thisurl %}active{% endif %}"
+                           href="{{ thisurl }}">Verify Password</a>
+		    </div>
                     <!-- nav-link -->
                 </li>
                 <li class="nav-item col p-0">

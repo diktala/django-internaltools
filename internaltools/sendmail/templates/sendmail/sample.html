@@ -1,0 +1,83 @@
+{% extends "internaltools/base.html" %}
+{% block title %}sendmail{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %}class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"{% endif %}>
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <h1>{{ debugMessage }}</h1>
+        <!-- form search users -->
+        <form id="form_sendmail" action="" novalidate="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <fieldset class="form-group border" {{ isFrozen|yesno:"disabled," }}>
+                    <legend>Sendmail:</legend>
+                    <div class="row mb-3">
+                        <label for="{{ formSendmail.senderName.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSendmail.senderName.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.senderName }}
+                            <small class="form-text text-danger">{{ formSendmail.senderName.errors }}</small>
+                        </div>
+                        <label for="{{ formSendmail.senderEmail.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSendmail.senderEmail.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.senderEmail }}
+                            <small class="form-text text-danger">{{ formSendmail.senderEmail.errors }}</small>
+                        </div>
+                        <label for="{{ formSendmail.recipientEmail.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSendmail.recipientEmail.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.recipientEmail }}
+                            <small class="form-text text-danger">{{ formSendmail.recipientEmail.errors }}</small>
+                        </div>
+                        <label for="{{ formSendmail.invoiceLink.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ formSendmail.invoiceLink.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.invoiceLink }}
+                            <small class="form-text text-danger">{{ formSendmail.invoiceLink.errors }}</small>
+                        </div>
+                        <label for="{{ formSendmail.subject.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formSendmail.subject.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.subject }}
+                            <small class="form-text text-danger">{{ formSendmail.subject.errors }}</small>
+                        </div>
+                        <label for="{{ formSendmail.message.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">{{ formSendmail.message.label }}</label>
+                        <div class="col-sm-10">
+                            {{ formSendmail.message }}
+                            <small class="form-text text-danger">{{ formSendmail.message.errors }}</small>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <button type="submit"
+                                    name="updateItemBTN"
+                                    value="1"
+                                    accesskey="l"
+                                    title="alt-L / ctrl-alt-L"
+                                    class="btn btn-secondary">Send Mail</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <!-- end form search users -->
+    {% endblock %}
