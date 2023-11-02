@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'billinglist.apps.BillinglistConfig',
     'sendmail.apps.SendmailConfig',
     'latepayment.apps.LatepaymentConfig',
+    'reactivateuser.apps.ReactivateuserConfig',
 ]
 
 MIDDLEWARE = [

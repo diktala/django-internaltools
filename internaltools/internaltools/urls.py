@@ -44,6 +44,7 @@ urlpatterns = [
     path('billinglist/', include('billinglist.urls')),
     path('sendmail/', include('sendmail.urls')),
     path('latepayment/', include('latepayment.urls')),
+    path('reactivateuser/', include('reactivateuser.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
