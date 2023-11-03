@@ -43,6 +43,7 @@ class FormUserDetail(forms.Form):
         validators=[
             RegexValidator(
                 regex="^[a-z0-9][a-z0-9.-]*[a-z0-9]$",
+                message="invalid characters",
             )
         ],
     )
@@ -60,6 +61,7 @@ class FormUserDetail(forms.Form):
         validators=[
             RegexValidator(
                 regex="^[a-z0-9._-]+$",
+                message="invalid characters",
             )
         ],
     )
@@ -76,7 +78,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w]$",
+                regex="^[A-Z0-9][\w. &'-]*[\w]$",
                 message="invalid characters",
             )
         ],
@@ -94,7 +96,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w]$",
+                regex="^[A-Z0-9][\w. &'-]*[\w]$",
                 message="invalid characters",
             )
         ],
@@ -112,7 +114,7 @@ class FormUserDetail(forms.Form):
         max_length=25,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[A-Z0-9][\w. &'-]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -252,7 +254,7 @@ class FormUserDetail(forms.Form):
         validators=[
             RegexValidator(
                 regex="^[0-9]{1,9}$",
-                message="must be 9-digit ex. 800-555-1234 becomes 855512341",
+                message="must be 9-digits ex. 800-555-1234 becomes 855512341",
             )
         ],
     )
@@ -269,19 +271,13 @@ class FormUserDetail(forms.Form):
             }
         ),
         required=False,
-        validators=[
-            RegexValidator(
-                regex="^EN$",
-                message="Choose EN or empty",
-            )
-        ],
     )
     paymentMethod = forms.ChoiceField(
         label="Payment Method",
         choices=[
             ("VISA", "VISA"),
             ("MC", "MC"),
-            ("", "Cheque"),
+            ("", "Other"),
         ],
         initial="",
         widget=forms.Select(
@@ -290,12 +286,6 @@ class FormUserDetail(forms.Form):
             }
         ),
         required=False,
-        validators=[
-            RegexValidator(
-                regex="^VISA|MC$",
-                message="Choose VISA or MC or empty",
-            )
-        ],
     )
     creditCardNumber = forms.CharField(
         label="Credit Card Number",
@@ -364,7 +354,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[0-9 ]+$",
                 message="invalid characters",
             )
         ],
@@ -436,7 +426,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. :-]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -454,7 +444,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. -]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -472,7 +462,7 @@ class FormUserDetail(forms.Form):
         max_length=10,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. -]*$",
                 message="invalid characters",
             )
         ],
@@ -491,7 +481,7 @@ class FormUserDetail(forms.Form):
         required=False,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w.-]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -509,7 +499,7 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w. -]*[\w.]$",
                 message="invalid characters",
             )
         ],
@@ -527,7 +517,7 @@ class FormUserDetail(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
@@ -707,7 +697,7 @@ def submitToAladin(userInfoDict):
         "oneTimeCharge": "",
         "oneTimeQty": "",
         "language": userInfoDict.get("language"),
-        "debugLevel": "1",
+        "debugLevel": 1,
         "operator": userInfoDict.get("operator"),
     }
     updateAladinSQL2 = f"""
@@ -800,27 +790,18 @@ def submitToAladin(userInfoDict):
     confirmedLoginName = commons.get_loginname_from_database(loginName)
     if confirmedLoginName:
         # user update
-        # print(f"DEBUG updateAladinSQL1: {updateAladinSQL1}")
-        # print(f"DEBUG updateAladinParam1: {updateAladinParam1}")
-        # print(f"DEBUG updateAladinSQL2: {updateAladinSQL2}")
-        # print(f"DEBUG updateAladinParam2: {updateAladinParam2}")
         queryDBall(updateAladinSQL1, updateAladinParam1)
         queryDBall(updateAladinSQL2, updateAladinParam2)
     else:
         # user create
-        # print(f"DEBUG createAladinSQL1: {createAladinSQL1}")
-        # print(f"DEBUG createAladinParam1: {createAladinParam1}")
-        # print(f"DEBUG updateAladinSQL2: {updateAladinSQL2}")
-        # print(f"DEBUG updateAladinParam2: {updateAladinParam2}")
         queryDBall(createAladinSQL1, createAladinParam1)
         queryDBall(updateAladinSQL2, updateAladinParam2)
 
 
 def index(request):
+    loginName = request.GET.get("loginName")
     defaultData = {
-        "loginName": request.GET.get("loginName")
-        or request.session.get("loginName")
-        or "",
+        "loginName": loginName or request.session.get("loginName") or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
     formUserDetail = FormUserDetail()
@@ -896,7 +877,6 @@ def index(request):
             messages.add_message(
                 request, messages.SUCCESS, f"User info has been submitted"
             )
-            # freeze the form
             freezeForm = True
         else:
             messages.add_message(
@@ -914,7 +894,6 @@ def index(request):
             request.POST.dict() | initialUserDetail.cleaned_data
         )
 
-    loginName = request.GET.get("loginName")
     urlQuery = f"LoginName={loginName}"
     context = {
         "loginName": loginName,
