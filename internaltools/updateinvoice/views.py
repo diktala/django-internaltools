@@ -156,7 +156,7 @@ class FormInvoice(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
@@ -171,12 +171,6 @@ class FormInvoice(forms.Form):
             }
         ),
         required=True,
-        validators=[
-            RegexValidator(
-                regex="^(Printed)|(Reported)|(Paid)|(Canceled)$",
-                message="must be one of (Printed)|(Reported)|(Paid)|(Canceled)",
-            )
-        ],
     )
     accountBalance = forms.DecimalField(
         label="Account Balance",
@@ -204,7 +198,7 @@ class FormInvoice(forms.Form):
         required=False,
         validators=[
             RegexValidator(
-                regex="^[\w. &'-]*[\w.]$",
+                regex="^[\w.-]*$",
                 message="invalid characters",
             )
         ],
@@ -275,7 +269,7 @@ class FormInvoice(forms.Form):
         max_length=30,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
@@ -351,9 +345,9 @@ def submitToAladin(invoiceDict):
         "nextBilling": "",
         "debugLevel": 1,
     }
-    print(f"DEBUG MESSAGE: {updateAladinSQL1}")
-    print(f"DEBUG MESSAGE: {updateAladinParam1}")
-    # queryDBall(updateAladinSQL1, updateAladinParam1)
+    # print(f"DEBUG MESSAGE: {updateAladinSQL1}")
+    # print(f"DEBUG MESSAGE: {updateAladinParam1}")
+    queryDBall(updateAladinSQL1, updateAladinParam1)
 
 
 def index(request):
@@ -362,7 +356,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
-        or request.session.get('loginName')
+        or request.session.get("loginName")
         or "",
         "passe": request.POST.get("passe") or "",
     }
@@ -371,11 +365,11 @@ def index(request):
     # pre assign parameters
     loginName = defaultData.get("loginName")
     isUserExist = False
-    formInvoice = FormInvoice()
-    invoiceDetailList = list([])
+    selectedInvoice = FormInvoice()
     list_of_all_invoices = dict()
-    # list_of_items contains a form for each itemLine
-    list_of_items = dict()
+    # invoiceDetail a form for each invoice
+    invoiceDetail = dict()
+    invoiceDetailList = list()
     # Check if valid login or invoicenumber request received
     if formSearchLogin.is_valid():
         invoice_or_login = formSearchLogin.cleaned_data.get("loginName")
@@ -385,34 +379,36 @@ def index(request):
         if invoiceDict:
             # found invoice for this user
             isUserExist = True
-            formInvoice.fields["passe"].initial = password_of_form
-            formInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
-            formInvoice.fields["operator"].initial = request.session.get("operator")
-            formInvoice.fields["invoiceNumber"].initial = invoiceDict.get(
+            selectedInvoice.fields["passe"].initial = password_of_form
+            selectedInvoice.fields["loginName"].initial = invoiceDict.get("LoginName")
+            selectedInvoice.fields["operator"].initial = request.session.get("operator")
+            selectedInvoice.fields["invoiceNumber"].initial = invoiceDict.get(
                 "InvoiceNumber"
             )
-            formInvoice.fields["invoiceDate"].initial = commons.getDateFormatted(
+            selectedInvoice.fields["invoiceDate"].initial = commons.getDateFormatted(
                 invoiceDict.get("InvoiceDate")
             )
-            formInvoice.fields["dueDate"].initial = commons.getDateFormatted(
-                invoiceDict.get("DueDate")
+            selectedInvoice.fields["dueDate"].initial = commons.getDateFormatted(
+                invoiceDict.get("ShortEndDate")
             )
-            formInvoice.fields["specialNote"].initial = invoiceDict.get("SpecialNote")
-            formInvoice.fields["invoiceStatus"].initial = invoiceDict.get(
+            selectedInvoice.fields["specialNote"].initial = invoiceDict.get(
+                "SpecialNote"
+            )
+            selectedInvoice.fields["invoiceStatus"].initial = invoiceDict.get(
                 "InvoiceStatus"
             )
-            formInvoice.fields["accountBalance"].initial = commons.getNumberFormatted(
-                invoiceDict.get("AccountBalance")
-            )
+            selectedInvoice.fields[
+                "accountBalance"
+            ].initial = commons.getNumberFormatted(invoiceDict.get("AccountBalance"))
             # store loginName in session cookie
-            request.session['loginName'] = invoiceDict.get("LoginName")
+            request.session["loginName"] = invoiceDict.get("LoginName")
             # populate list of itemCodes as drop down choices
             itemDict = getItemCodes()
             itemChoices = [
                 (item.get("ItemCode"), item.get("ItemCode")) for item in itemDict
             ]
             itemChoices.insert(0, ("", ""))
-            # get detail of this invoice store it in a list of forms
+            # get detail of this invoice and store it in a list plus one empty item
             invoiceDetailList = getInvoiceDetail(invoice_or_login)
             emptyItemDict = {
                 "ItemNumber": "",
@@ -421,7 +417,7 @@ def index(request):
                 "LineNote": "",
             }
             invoiceDetailList.append(emptyItemDict)
-            # each item in invoicedetail gets its own html form
+            # each item in invoicedetail is a dict of forms
             for each_item in invoiceDetailList:
                 form = FormInvoice()
                 form.fields["passe"].initial = password_of_form
@@ -431,7 +427,7 @@ def index(request):
                     invoiceDict.get("InvoiceDate")
                 )
                 form.fields["dueDate"].initial = commons.getDateFormatted(
-                    invoiceDict.get("DueDate")
+                    invoiceDict.get("ShortEndDate")
                 )
                 form.fields["specialNote"].initial = invoiceDict.get("SpecialNote")
                 form.fields["invoiceStatus"].initial = invoiceDict.get("InvoiceStatus")
@@ -444,17 +440,17 @@ def index(request):
                 form.fields["itemCode"].initial = each_item.get("ItemCode")
                 form.fields["quantity"].initial = each_item.get("QuantitySold")
                 form.fields["lineNote"].initial = each_item.get("LineNote")
-                list_of_items[str(each_item.get("ItemNumber"))] = form
+                invoiceDetail[str(each_item.get("ItemNumber"))] = form
     """ --- """
     # update invoice button was submitted
     if request.method == "POST" and request.POST.get("updateInvoiceBTN"):
-        formInvoice = FormInvoice(request.POST.dict())
-        if formInvoice.is_valid():
+        selectedInvoice = FormInvoice(request.POST.dict())
+        if selectedInvoice.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Form is VALID")
-            submit_invoice_to_aladin = formInvoice.cleaned_data
-            submitToAladin(submit_invoice_to_aladin)
+            invoiceCleanData = selectedInvoice.cleaned_data
+            submitToAladin(invoiceCleanData)
             # store operator in cookie session
-            request.session['operator'] = formInvoice.cleaned_data.get("operator")
+            request.session["operator"] = selectedInvoice.cleaned_data.get("operator")
         else:
             messages.add_message(request, messages.WARNING, f"Form is still INVALID")
 
@@ -463,27 +459,24 @@ def index(request):
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         # update the correct form from the list
         itemLine = request.POST.get("originalItemLine")
-        list_of_items[itemLine] = FormInvoice(request.POST.dict())
-        list_of_items.get(itemLine).fields["itemCode"].choices = itemChoices
-        itemForm = list_of_items.get(itemLine)
+        invoiceDetail[itemLine] = FormInvoice(request.POST.dict())
+        invoiceDetail.get(itemLine).fields["itemCode"].choices = itemChoices
+        itemForm = invoiceDetail.get(itemLine)
         if itemForm.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Item is VALID")
-            submit_invoice_to_aladin = itemForm.cleaned_data
-            submitToAladin(submit_invoice_to_aladin)
+            invoiceCleanData = itemForm.cleaned_data
+            submitToAladin(invoiceCleanData)
         else:
             messages.add_message(request, messages.WARNING, f"Item is still INVALID")
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        # "debugMessage": debugMessage,
-        "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
-        "formInvoice": formInvoice,
-        "list_of_items": list_of_items,
-        "invoiceDetailList": invoiceDetailList,
+        "selectedInvoice": selectedInvoice,
+        "invoiceDetail": invoiceDetail,
         "list_of_all_invoices": list_of_all_invoices,
     }
     return render(request, "updateinvoice/sample.html", context)

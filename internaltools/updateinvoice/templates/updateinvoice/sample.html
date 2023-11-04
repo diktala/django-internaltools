@@ -47,9 +47,9 @@
         </form>
         <!-- end form search users -->
         <!-- form update invoice -->
-        <form id="FormInvoice" action="" novalidate="" method="POST">
+        <form id="selectedInvoice" action="" novalidate="" method="POST">
             {% csrf_token %}
-            {% for hidden in formInvoice.hidden_fields %}{{ hidden }}{% endfor %}
+            {% for hidden in selectedInvoice.hidden_fields %}{{ hidden }}{% endfor %}
             <div class="row g-3">
                 <fieldset class="form-group border" {{ isDisabled }}>
                     <legend>User Invoice</legend>
@@ -58,55 +58,61 @@
                     </button>
                     <!-- start div row -->
                     <div class="row mb-3">
-                        <label for="{{ formInvoice.invoiceNumber.id_for_label }}"
+                        <label for="{{ selectedInvoice.invoiceNumber.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.invoiceNumber.label }}
+                            {{ selectedInvoice.invoiceNumber.label }}
                         </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.invoiceNumber }}<small class="form-text text-danger">{{ formInvoice.invoiceNumber.errors }}</small>
+                            {{ selectedInvoice.invoiceNumber }}<small class="form-text text-danger">{{ selectedInvoice.invoiceNumber.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.loginName.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.loginName.label }}</label>
-                        <div class="col-sm-10">
-                            {{ formInvoice.loginName }}<small class="form-text text-danger">{{ formInvoice.loginName.errors }}</small>
-                        </div>
-                        <label for="{{ formInvoice.invoiceDate.id_for_label }}"
+                        <label for="{{ selectedInvoice.loginName.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.invoiceDate.label }}
+                            {{ selectedInvoice.loginName.label }}
                         </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.invoiceDate }}<small class="form-text text-danger">{{ formInvoice.invoiceDate.errors }}</small>
+                            {{ selectedInvoice.loginName }}<small class="form-text text-danger">{{ selectedInvoice.loginName.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.dueDate.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.dueDate.label }}</label>
-                        <div class="col-sm-10">
-                            {{ formInvoice.dueDate }}<small class="form-text text-danger">{{ formInvoice.dueDate.errors }}</small>
-                        </div>
-                        <label for="{{ formInvoice.specialNote.id_for_label }}"
+                        <label for="{{ selectedInvoice.invoiceDate.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.specialNote.label }}
+                            {{ selectedInvoice.invoiceDate.label }}
                         </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.specialNote }}<small class="form-text text-danger">{{ formInvoice.specialNote.errors }}</small>
+                            {{ selectedInvoice.invoiceDate }}<small class="form-text text-danger">{{ selectedInvoice.invoiceDate.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.invoiceStatus.id_for_label }}"
+                        <label for="{{ selectedInvoice.dueDate.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.invoiceStatus.label }}
+                            {{ selectedInvoice.dueDate.label }}
                         </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.invoiceStatus }}<small class="form-text text-danger">{{ formInvoice.invoiceStatus.errors }}</small>
+                            {{ selectedInvoice.dueDate }}<small class="form-text text-danger">{{ selectedInvoice.dueDate.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.accountBalance.id_for_label }}"
+                        <label for="{{ selectedInvoice.specialNote.id_for_label }}"
                                class="border-bottom col-sm-2 col-form-label">
-                            {{ formInvoice.accountBalance.label }}
+                            {{ selectedInvoice.specialNote.label }}
                         </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.accountBalance }}<small class="form-text text-danger">{{ formInvoice.accountBalance.errors }}</small>
+                            {{ selectedInvoice.specialNote }}<small class="form-text text-danger">{{ selectedInvoice.specialNote.errors }}</small>
                         </div>
-                        <label for="{{ formInvoice.operator.id_for_label }}"
-                               class="border-bottom col-sm-2 col-form-label">{{ formInvoice.operator.label }}</label>
+                        <label for="{{ selectedInvoice.invoiceStatus.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ selectedInvoice.invoiceStatus.label }}
+                        </label>
                         <div class="col-sm-10">
-                            {{ formInvoice.operator }}<small class="form-text text-danger">{{ formInvoice.operator.errors }}</small>
+                            {{ selectedInvoice.invoiceStatus }}<small class="form-text text-danger">{{ selectedInvoice.invoiceStatus.errors }}</small>
+                        </div>
+                        <label for="{{ selectedInvoice.accountBalance.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ selectedInvoice.accountBalance.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ selectedInvoice.accountBalance }}<small class="form-text text-danger">{{ selectedInvoice.accountBalance.errors }}</small>
+                        </div>
+                        <label for="{{ selectedInvoice.operator.id_for_label }}"
+                               class="border-bottom col-sm-2 col-form-label">
+                            {{ selectedInvoice.operator.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ selectedInvoice.operator }}<small class="form-text text-danger">{{ selectedInvoice.operator.errors }}</small>
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
@@ -124,7 +130,7 @@
         </form>
         <!-- end form update invoice -->
         <!-- form invoice items -->
-        {% for eachItem in list_of_items.values %}
+        {% for eachItem in invoiceDetail.values %}
             <form id="FormItems-{{ eachItem.itemLine.value }}"
                   action=""
                   novalidate=""
