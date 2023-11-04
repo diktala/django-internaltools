@@ -190,6 +190,10 @@ class FormPayment(forms.Form):
         cleaned_data = super().clean()
         creditCardNumber = cleaned_data.get("creditCardNumber")
         creditCardExpiry = cleaned_data.get("creditCardExpiry")
+        amount = cleaned_data.get("amount")
+        refundPassword = cleaned_data.get("refundPassword")
+        paymentType = cleaned_data.get("paymentType")
+        chequeNumber = cleaned_data.get("chequeNumber")
         if (
             creditCardNumber is not None
             and creditCardExpiry is not None
@@ -209,8 +213,7 @@ class FormPayment(forms.Form):
                 self.cleaned_data["creditCardExpiry"] = commons.getLastDay(
                     creditCardExpiry
                 )
-        amount = cleaned_data.get("amount")
-        refundPassword = cleaned_data.get("refundPassword")
+        #
         if (
             refundPassword is not None
             and amount is not None
@@ -220,6 +223,28 @@ class FormPayment(forms.Form):
             msg = "refunds needs a password"
             self.add_error("refundPassword", msg)
             self.add_error("amount", msg)
+        #
+        if paymentType is not None and paymentType == "":
+            msg = "select a payment type"
+            self.add_error("paymentType", msg)
+        #
+        if (
+            paymentType is not None
+            and chequeNumber is not None
+            and len(paymentType) > 0
+            and not "cc" in paymentType
+        ):
+            msg = "enter payment detail"
+            self.add_error("chequeNumber", msg)
+        #
+        if (
+            paymentType is not None
+            and creditCardNumber is not None
+            and len(creditCardNumber) == 0
+            and "cc" in paymentType
+        ):
+            msg = "missing credit card number"
+            self.add_error("creditCardNumber", msg)
         #
         return self.cleaned_data
 
