@@ -42,7 +42,7 @@
         <!-- end form search users -->
         <!-- display user summary -->
         <table class="table table-bordered">
-            <tr class="{{ invoices.UserInvoice.0.ActiveUser|yesno:"table-secondary,table-danger" }}">
+            <tr class="{{ invoices.UserInvoice.0.ActiveUser|yesno:"table-info,table-danger" }}">
                 <td>Outstanding balance: ${{ invoices.UserInvoice.0.OutStandingBalance|floatformat:"2" }}</td>
                 <td>Username: {{ loginName }}</td>
                 <td>Member since: {{ invoices.UserInvoice.0.DateJoined|date:"Y-m-d" }}</td>
@@ -65,20 +65,11 @@
             {% endfor %}
         </table>
         <!-- end display user summary -->
-        {% comment %}
-        <h1>Login is {{ loginName }} {{ isDisabled }}</h1>
-        <pre> {{ invoices.UserInvoice.0.InvoiceNumber }}</pre>
-        <pre> {{ invoices.InvoiceDetail.1225|first|pprint }}</pre>
-        <pre> {{ invoices.InvoiceDetail|get_item:1522266|pprint }}</pre>
-        <pre> {{ invoices.InvoiceDetail|get_item:invoices.UserInvoice.0.InvoiceNumber|pprint }}</pre>
-        <h1>loginNameCrypted: {{ loginNameCrypted|urlencode }}</h1>
-        <pre> {{ invoices.UserInvoice|first|pprint }}</pre>
-        {% endcomment %}
         <!-- display invoice details -->
         <h4>Latest transactions for user {{ loginName }}</h4>
         {% for eachInvoice in invoices.UserInvoice %}
             <table class="table table-bordered">
-                <thead class="{{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'table-dark,table-success' }}">
+                <thead class="{{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'table-secondary,table-success' }}">
                     <tr>
                         <td colspan="3">
                             {{ eachInvoice.InvoiceDate|date:"Y-m-d" }} {{ eachInvoice.InvoiceStatus|cut:'Payment'|yesno:'Invoice,Payment' }} {{ eachInvoice.PaidAmount|yesno:"$," }}{{ eachInvoice.PaidAmount|floatformat:"2"|default:"" }} {{ eachInvoice.InvoiceStatus|cut:'Payment' }}  <a href="https://tech.{{ domain }}/userinvoice/pdfinvoice.php?var1={{ eachInvoice.loginNameCrypted|urlencode }}&amp;var2={{ eachInvoice.invoiceNumberCrypted|urlencode }}">{{ eachInvoice.invoiceNumberObfuscated }}</a> <abbr title="{{ eachInvoice.SpecialNote|default:'' }}">{{ eachInvoice.InvoiceNumber|default:"" }}</abbr>

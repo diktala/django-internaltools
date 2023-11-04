@@ -196,9 +196,6 @@ def index(request):
     urlQuery = f"LoginName={loginName}"
     context = {
         "loginName": loginName,
-        "buttonStyle": "success" if isUserExist else "secondary",
-        "isValid": "isValid" if isUserExist else "is-invalid",
-        "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
         "formSearchLogin": formSearchLogin,
