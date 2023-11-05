@@ -78,8 +78,8 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[A-Z0-9][\w. &'-]*[\w]$",
-                message="invalid characters",
+                regex="^[A-Z0-9][\w. &'-]*[a-z][\w. &'-]*[\w]$",
+                message="invalid characters or format",
             )
         ],
     )
@@ -96,8 +96,8 @@ class FormUserDetail(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[A-Z0-9][\w. &'-]*[\w]$",
-                message="invalid characters",
+                regex="^[A-Z0-9][\w. &'-]*[a-z][\w. &'-]*[\w]$",
+                message="invalid characters or format",
             )
         ],
     )
