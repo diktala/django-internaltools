@@ -81,7 +81,7 @@ class FormCallLog(forms.Form):
         max_length=200,
         validators=[
             RegexValidator(
-                # regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
                 regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
@@ -160,7 +160,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
-        or request.session.get('loginName')
+        or request.session.get("loginName")
         or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
@@ -169,9 +169,9 @@ def index(request):
     # pre assign parameters
     loginName = defaultData.get("loginName")
     isUserExist = False
-    userInfo = list([])
-    userPlans = list([])
-    callLogs = list([])
+    userInfo = list()
+    userPlans = list()
+    callLogs = list()
     # Check if valid login request received
     if formSearchLogin.is_valid():
         loginName = formSearchLogin.cleaned_data.get("loginName")
@@ -185,32 +185,28 @@ def index(request):
             formCallLog.fields["loginName"].initial = confirmedLoginName
             formCallLog.fields["operator"].initial = request.session.get("operator")
             # store in cookie session
-            request.session['loginName'] = confirmedLoginName
+            request.session["loginName"] = confirmedLoginName
     """ --- """
     # item button was submitted
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formCallLog = FormCallLog(request.POST.dict())
         if formCallLog.is_valid():
-            submit_invoice_to_aladin = formCallLog.cleaned_data
-            # print(f"DEBUG MESSAGE: {formCallLog.cleaned_data}")
-            submitToAladin(submit_invoice_to_aladin)
-            messages.add_message(request, messages.SUCCESS, f"form is VALID")
+            callLogCleaned = formCallLog.cleaned_data
+            submitToAladin(callLogCleaned)
             # save operator in cookie session
-            request.session['operator'] = formCallLog.cleaned_data.get("operator")
+            request.session["operator"] = formCallLog.cleaned_data.get("operator")
             # refresh the callLogs to show the new entry
             loginName = formCallLog.cleaned_data.get("loginName")
             callLogs = get_call_logs(loginName)
             # clear the callLog form
             formCallLog = FormCallLog()
             formCallLog.fields["loginName"].initial = loginName
-            formCallLog.fields["operator"].initial = request.session.get('operator')
+            formCallLog.fields["operator"].initial = request.session.get("operator")
         else:
             messages.add_message(request, messages.WARNING, f"form is still INVALID")
-            # messages.add_message(request, messages.INFO, f"error is:  {form_being_updated.errors}")
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        # "debugMessage": debugMessage,
         "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
