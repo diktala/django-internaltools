@@ -68,3 +68,10 @@ href="{{ thisurl }}">Info User</a>
 mkdir -p ~/django-internaltools/internaltools/userplans/templates/userplans/
 
 ```
+
+- update production instance
+
+```
+docker container exec -it --user=squid internaltools bash
+cd ~/django-internaltools/; git pull; killall -HUP gunicorn
+```
