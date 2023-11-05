@@ -81,7 +81,6 @@ class FormMailAccount(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                # regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
                 regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
@@ -191,15 +190,15 @@ def submitToAladin(mailAccountDict):
         "specialNote": str(mailAccountDict.get("specialNote")),
         "setForDelete": "1" if mailAccountDict.get("setForDelete") else "",
     }
-    print(f"DEBUG MESSAGE: {updateAladinSQL1}")
-    print(f"DEBUG MESSAGE: {updateAladinParam1}")
-    # queryDBall(updateAladinSQL1, updateAladinParam1)
+    # print(f"DEBUG MESSAGE: {updateAladinSQL1}")
+    # print(f"DEBUG MESSAGE: {updateAladinParam1}")
+    queryDBall(updateAladinSQL1, updateAladinParam1)
 
 
 def create_forms_from_items(mailAccounts, defaultOperator=""):
     dict_of_forms = dict()
     defaultLoginName = ""
-    if len(mailAccounts) > 1:
+    if len(mailAccounts) > 0:
         defaultLoginName = mailAccounts[0].get("LoginName")
     for eachMailAccount in mailAccounts:
         formMailAccount = FormMailAccount()
@@ -255,9 +254,8 @@ def index(request):
         formMailAccount = FormMailAccount(request.POST.dict())
         if formMailAccount.is_valid():
             # print(f"DEBUG MESSAGE: {formMailAccount.cleaned_data}")
-            submit_invoice_to_aladin = formMailAccount.cleaned_data
-            submitToAladin(submit_invoice_to_aladin)
-            messages.add_message(request, messages.SUCCESS, f"form is VALID")
+            mailAccountCleaned = formMailAccount.cleaned_data
+            submitToAladin(mailAccountCleaned)
             # save operator in cookie session
             operator = formMailAccount.cleaned_data.get("operator")
             request.session["operator"] = operator
@@ -276,7 +274,6 @@ def index(request):
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        # "debugMessage": debugMessage,
         "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
