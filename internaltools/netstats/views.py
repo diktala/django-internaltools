@@ -111,10 +111,10 @@ def get_current_stats(formSearchLogin):
     paramSQL = {
         "loginName": loginName,
     }
-    print(f"DEBUG: querySQL: {querySQL}")
-    print(f"DEBUG: paramSQL: {paramSQL}")
+    # print(f"DEBUG: querySQL: {querySQL}")
+    # print(f"DEBUG: paramSQL: {paramSQL}")
     results = modelmysql.queryDBall(querySQL, paramSQL)
-    print(f"DEBUG: results: {results}")
+    # print(f"DEBUG: results: {results}")
     return results
 
 
@@ -161,10 +161,10 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    monthStats = list([])
-    earlierMonthStats = list([])
-    currentStats = list([])
-    allStats = list([])
+    monthStats = list()
+    earlierMonthStats = list()
+    currentStats = list()
+    allStats = list()
 
     if request.method == "POST" and (request.POST.get("updateItemBTN")):
         formSearchLogin = FormSearchLogin(request.POST.dict())
