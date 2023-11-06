@@ -53,7 +53,7 @@ def getOutstandingIssues():
     return outstandingIssues
 
 
-def setOutstandingIssue( transNum="", resolveComment="" ):
+def setOutstandingIssue(transNum="", resolveComment=""):
     aladinSQL1 = """
         EXECUTE GetOutstandingTransactions
             @TranNum = %(transNum)s
@@ -63,19 +63,17 @@ def setOutstandingIssue( transNum="", resolveComment="" ):
         "transNum": transNum,
         "resolveComment": resolveComment,
     }
-    # print(f"DEBUG MESSAGE: {aladinSQL1}")
-    # print(f"DEBUG MESSAGE: {aladinParam1}")
     queryDBall(aladinSQL1, aladinParam1)
 
 
 def index(request):
     loginName = request.session.get("loginName")
     if request.method == "POST" and request.POST.get("updateItemBTN"):
-        formResolveIssue = FormResolveIssue( request.POST.dict() )
+        formResolveIssue = FormResolveIssue(request.POST.dict())
         if formResolveIssue.is_valid():
             transNum = formResolveIssue.cleaned_data.get("transNum")
             resolveComment = formResolveIssue.cleaned_data.get("resolveComment")
-            setOutstandingIssue( transNum, resolveComment )
+            setOutstandingIssue(transNum, resolveComment)
             messages.add_message(request, messages.SUCCESS, f"Resolved")
         else:
             messages.add_message(request, messages.WARNING, f"Form is INVALID")

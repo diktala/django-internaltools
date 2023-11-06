@@ -10,55 +10,56 @@
                             class="btn-close"
                             data-bs-dismiss="alert"
                             aria-label="Close">
-                </li>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- display user summary -->
+        <h4>Outstanding Issues:</h4>
+        <div class="row mb-3 border-top border-bottom border-2">
+            <div class="col-sm-2 fw-bold border">Date</div>
+            <div class="col-sm-2 fw-bold border">Login</div>
+            <div class="col-sm-1 fw-bold border">Operator</div>
+            <div class="col-sm-5 fw-bold border">Description</div>
+            <div class="col-sm-2 fw-bold border">Resolve</div>
+            <div class="w-100 d-none d-sm-block border-bottom">
+                <!-- new row -->
+            </div>
+            {% for eachIssue in outstandingIssues %}
+                {% cycle 'bg-light' 'bg-light-subtle' as rowcolor silent %}
+                <div class="col-sm-2 border-bottom border-end {{ rowcolor }}">{{ eachIssue.TranDate|date:"Y-m-d H:i" }}</div>
+                <div class="col-sm-2 border-bottom border-end {{ rowcolor }}">
+                    <a href="{% url "infouser:index" %}?loginName={{ eachIssue.LoginName }}">{{ eachIssue.LoginName }}</a>
+                </div>
+                <div class="col-sm-1 border-bottom border-end {{ rowcolor }}">{{ eachIssue.Operator }}</div>
+                <div class="col-sm-5 border-bottom border-end {{ rowcolor }}">{{ eachIssue.Desc1 }}</div>
+                <div class="col-sm-2 border-bottom border-end {{ rowcolor }}">
+                    <form id="FormItems-{{ eachIssue.TranNum }}"
+                          action=""
+                          novalidate=""
+                          method="POST">
+                        {% csrf_token %}
+                        <input type="hidden"
+                               name="transNum"
+                               id="id_transID"
+                               value="{{ eachIssue.TranNum }}">
+                        <fieldset class="form-group border">
+                            <div class="row">
+                                <div class="col">{{ formResolveIssue.resolveComment }}</div>
+                                <div class="col">
+                                    <button type="submit"
+                                            name="updateItemBTN"
+                                            value="1"
+                                            class="btn btn-secondary">&check;</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="w-100 d-none d-sm-block border-bottom">
+                    <!-- new row -->
+                </div>
             {% endfor %}
-        </ul>
-    {% endif %}
-<!-- display user summary -->
-<h4>Outstanding Issues:</h4>
-	<div class="row mb-3 border-top border-bottom border-2">
-	    <div class="col-sm-2 fw-bold border">Date</div>
-	    <div class="col-sm-2 fw-bold border">Login</div>
-	    <div class="col-sm-1 fw-bold border">Operator</div>
-	    <div class="col-sm-5 fw-bold border">Description</div>
-	    <div class="col-sm-2 fw-bold border">Resolve</div>
-	    <div class="w-100 d-none d-sm-block border-bottom">
-		<!-- new row -->
-	    </div>
-	    {% for eachIssue in outstandingIssues %}
-		{% cycle 'bg-light' 'bg-light-subtle' as rowcolor silent %}
-		<div class="col-sm-2 border-bottom border-end {{ rowcolor }}">{{ eachIssue.TranDate|date:"Y-m-d H:i" }}</div>
-		<div class="col-sm-2 border-bottom border-end {{ rowcolor }}">
-		    <a href="{% url "infouser:index" %}?loginName={{ eachIssue.LoginName }}">{{ eachIssue.LoginName }}</a>
-		</div>
-		<div class="col-sm-1 border-bottom border-end {{ rowcolor }}">{{ eachIssue.Operator }}</div>
-		<div class="col-sm-5 border-bottom border-end {{ rowcolor }}">{{ eachIssue.Desc1 }}</div>
-		<div class="col-sm-2 border-bottom border-end {{ rowcolor }}">
-            <form id="FormItems-{{ eachIssue.TranNum }}"
-                  action=""
-                  novalidate=""
-                  method="POST">
-                {% csrf_token %}
-		<input type="hidden" name="transNum" id="id_transID" value="{{ eachIssue.TranNum }}">
-                <fieldset class="form-group border">
-			<div class="row">
-				<div class="col">
-                    {{ formResolveIssue.resolveComment }}
-				</div>
-				<div class="col">
-		    <button type="submit"
-			    name="updateItemBTN"
-			    value="1"
-			    class="btn btn-secondary">&check;</button>
-				</div>
-		</div>
-                </fieldset>
-			</form>
-		</div>
-		<div class="w-100 d-none d-sm-block border-bottom">
-		    <!-- new row -->
-		</div>
-	    {% endfor %}
-	</div>
-<!-- end display user summary -->
-{% endblock %}
+        </div>
+        <!-- end display user summary -->
+    {% endblock %}
