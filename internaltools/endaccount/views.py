@@ -63,7 +63,8 @@ class FormEndAccount(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
+                regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
         ],
@@ -106,7 +107,22 @@ class FormEndAccount(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         specifyDate = cleaned_data.get("specifyDate")
+        terminationType = cleaned_data.get("terminationType")
         """ --- """
+        if (
+            terminationType is not None
+            and specifyDate is not None
+            and terminationType == ""
+            and len(specifyDate) == 0
+        ):
+            self.add_error("specifyDate", "date is missing")
+        if (
+            terminationType is not None
+            and specifyDate is not None
+            and terminationType != ""
+            and len(specifyDate) > 0
+        ):
+            self.add_error("specifyDate", "date should be empty")
         if specifyDate is not None and len(specifyDate) > 0:
             if not commons.isDateValid(specifyDate):
                 self.add_error("specifyDate", "invalid date")
@@ -136,9 +152,9 @@ def set_user_terminated(loginName, userTerminate):
         "terminationType": userTerminate.get("terminationType"),
         "specifyDate": userTerminate.get("specifyDate"),
     }
-    print(f"DEBUG: querySQL: {querySQL}")
-    print(f"DEBUG: paramSQL: {paramSQL}")
-    # userInfo = queryDBall(querySQL, paramSQL)
+    # print(f"DEBUG: querySQL: {querySQL}")
+    # print(f"DEBUG: paramSQL: {paramSQL}")
+    userInfo = queryDBall(querySQL, paramSQL)
 
 
 def index(request):
@@ -155,7 +171,7 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInfo = list([])
+    userInfo = list()
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formEndAccount = FormEndAccount(request.POST.dict())
         if formEndAccount.is_valid():
@@ -167,7 +183,7 @@ def index(request):
                 request.session["operator"] = operator
                 set_user_terminated(loginName, formEndAccount.cleaned_data)
                 userInfo = get_user_info(loginName)
-                messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+                messages.add_message(request, messages.SUCCESS, f"Form is SUBMITTED")
             else:
                 messages.add_message(request, messages.WARNING, f"user is INVALID")
         else:

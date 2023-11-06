@@ -17,6 +17,9 @@
         <!-- form search users -->
         <form id="EndAccount" action="" novalidate="" method="POST">
             {% csrf_token %}
+            <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+            </button>
             <div class="row g-3">
                 <fieldset class="form-group border">
                     <legend>End Account:</legend>
