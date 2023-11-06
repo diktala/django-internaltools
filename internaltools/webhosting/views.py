@@ -131,7 +131,7 @@ class FormDomain(forms.Form):
         max_length=50,
         validators=[
             RegexValidator(
-                regex="^[%@a-z0-9.-]+$",
+                regex="^[a-z0-9._-]+$",
                 message="invalid characters",
             )
         ],
@@ -149,7 +149,7 @@ class FormDomain(forms.Form):
         max_length=50,
         validators=[
             RegexValidator(
-                regex="^[%@a-z0-9.-]+$",
+                regex="^[a-z0-9._-]+$",
                 message="invalid characters",
             )
         ],
@@ -167,7 +167,7 @@ class FormDomain(forms.Form):
         max_length=50,
         validators=[
             RegexValidator(
-                regex="^[%@a-z0-9.-]+$",
+                regex="^[%@a-z0-9._-]+$",
                 message="invalid characters",
             )
         ],
@@ -185,7 +185,7 @@ class FormDomain(forms.Form):
         max_length=50,
         validators=[
             RegexValidator(
-                regex="^[%@a-z0-9.-]+$",
+                regex="^[%@a-z0-9._-]+$",
                 message="invalid characters",
             )
         ],
@@ -373,12 +373,6 @@ def index(request):
         request.method == "POST"
         and confirmedLoginName
         and request.POST.get("domainSelect")
-        and formDomain.is_valid()
-        and (
-            request.POST.get("listEmailsBTN")
-            or request.POST.get("updateItemBTN")
-            or request.POST.get("deleteItemBTN")
-        )
     ):
         # create one form per email
         domainSelected = request.POST.get("domainSelect")
@@ -401,7 +395,18 @@ def index(request):
             formEmailList.append(FormDomain(formValues))
             lastForm = formEmailList[-1:][0]
             lastForm.fields["domainSelect"].choices = domainChoices
-        #
+    # email update or delete
+    if (
+        request.method == "POST"
+        and confirmedLoginName
+        and request.POST.get("domainSelect")
+        and formDomain.is_valid()
+        and (
+            request.POST.get("listEmailsBTN")
+            or request.POST.get("updateItemBTN")
+            or request.POST.get("deleteItemBTN")
+        )
+    ):
         originalSourceEmail = formDomain.cleaned_data.get("originalSourceEmail", "")
         originalDestinationEmail = formDomain.cleaned_data.get(
             "originalDestinationEmail", ""
@@ -456,7 +461,6 @@ def index(request):
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        # "debugMessage": debugMessage,
         "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "isUserExist": isUserExist,
