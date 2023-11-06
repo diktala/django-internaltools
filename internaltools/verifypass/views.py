@@ -44,7 +44,8 @@ class FormVerifyPassword(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="^[\w. +$()/=@,:*#-]*$",
+                regex="""^[\w. &'<>;+$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
@@ -92,7 +93,7 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    passwordHint = list([])
+    passwordHint = list()
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formVerifyPassword = FormVerifyPassword(request.POST.dict())
         if formVerifyPassword.is_valid():
