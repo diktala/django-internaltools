@@ -63,7 +63,8 @@ class FormRestoreUser(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
+                regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
         ],
@@ -81,7 +82,7 @@ class FormRestoreUser(forms.Form):
             }
         ),
         choices=CHOICES,
-        required=False,
+        required=True,
     )
 
 
@@ -106,9 +107,10 @@ def set_user_restored(loginName, userRestore):
         "specialNote": userRestore.get("specialNote"),
         "forceRestore": userRestore.get("forceRestore"),
     }
-    print(f"DEBUG: querySQL: {querySQL}")
-    print(f"DEBUG: paramSQL: {paramSQL}")
-    # userInfo = queryDBall(querySQL, paramSQL)
+    # print(f"DEBUG: querySQL: {querySQL}")
+    # print(f"DEBUG: paramSQL: {paramSQL}")
+    result = queryDBall(querySQL, paramSQL)
+    return result
 
 
 def index(request):
@@ -125,7 +127,8 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInfo = list([])
+    userInfo = list()
+    freezeForm = False
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formRestoreUser = FormRestoreUser(request.POST.dict())
         if formRestoreUser.is_valid():
@@ -135,9 +138,14 @@ def index(request):
             if loginName:
                 request.session["loginName"] = loginName
                 request.session["operator"] = operator
-                set_user_restored(loginName, formRestoreUser.cleaned_data)
+                result = set_user_restored(loginName, formRestoreUser.cleaned_data)
                 userInfo = get_user_info(loginName)
-                messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+                freezeForm = True
+                try:
+                    resultMsg = result[0].get("ResultInfo", "")
+                except:
+                    resultMsg = ""
+                messages.add_message(request, messages.SUCCESS, f"Result: {resultMsg}")
             else:
                 messages.add_message(request, messages.WARNING, f"user is INVALID")
         else:
@@ -148,6 +156,7 @@ def index(request):
         "loginName": loginName,
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
+        "freezeForm": freezeForm,
         "formRestoreUser": formRestoreUser,
         "userInfo": userInfo[0] if len(userInfo) > 0 else None,
     }
