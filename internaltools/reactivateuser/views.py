@@ -64,16 +64,17 @@ def set_user_active(loginName, operator):
         EXECUTE ActivateUserSAM
         @LoginName = %(loginName)s
         ,@Operator = %(operator)s
-        ,@DebugLevel = %(debugLevel)i
+        ,@DebugLevel = %(debugLevel)d
     """
     paramSQL = {
         "loginName": loginName,
         "operator": operator,
         "debugLevel": 1,
     }
-    # print(f"DEBUG: querySQL: {querySQL}")
-    # print(f"DEBUG: paramSQL: {paramSQL}")
-    userInfo = queryDBall(querySQL, paramSQL)
+    print(f"DEBUG: querySQL: {querySQL}")
+    print(f"DEBUG: paramSQL: {paramSQL}")
+    result = queryDBall(querySQL, paramSQL)
+    return result
 
 
 def index(request):
@@ -90,7 +91,7 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInfo = list([])
+    userInfo = list()
     freezeForm = False
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formReactivateUser = FormReactivateUser(request.POST.dict())
@@ -101,10 +102,14 @@ def index(request):
             if loginName:
                 request.session["loginName"] = loginName
                 request.session["operator"] = operator
-                set_user_active(loginName, operator)
+                result = set_user_active(loginName, operator)
                 userInfo = get_user_info(loginName)
                 freezeForm = True
-                messages.add_message(request, messages.SUCCESS, f"Form is VALID")
+                try:
+                    resultMsg = result[0].get("ResultInfo", "")
+                except:
+                    resultMsg = ""
+                messages.add_message(request, messages.SUCCESS, f"Result: {resultMsg}")
             else:
                 messages.add_message(request, messages.WARNING, f"user is INVALID")
         else:
