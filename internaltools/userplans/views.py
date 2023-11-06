@@ -69,12 +69,6 @@ class FormPlans(forms.Form):
             }
         ),
         required=False,
-        validators=[
-            RegexValidator(
-                regex="^[\w0-9. /-]+$",
-                message="invalid characters",
-            )
-        ],
     )
     nextBilling = forms.CharField(
         label="Next Billing",
@@ -147,7 +141,8 @@ class FormPlans(forms.Form):
         max_length=200,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
+                regex="^[\w. +/-]*$",
                 message="invalid characters",
             )
         ],
@@ -174,9 +169,7 @@ class FormPlans(forms.Form):
 
 
 def get_user_plans(loginName=""):
-    querySQL = (
-        """EXECUTE UpdateUsersPlans @LoginName = %(loginName)s"""
-    )
+    querySQL = """EXECUTE UpdateUsersPlans @LoginName = %(loginName)s"""
     paramSQL = {"loginName": str(loginName)}
     planDict = queryDBall(querySQL, paramSQL)
     return planDict
@@ -225,7 +218,7 @@ def index(request):
         "loginName": request.POST.get("loginName")
         or request.GET.get("loginName")
         or request.GET.get("LoginName")
-        or request.session.get('loginName')
+        or request.session.get("loginName")
         or "",
     }
     formSearchLogin = FormSearchLogin(defaultData)
@@ -250,7 +243,7 @@ def index(request):
             # found user plans for this user
             isUserExist = True
             # store in cookie session
-            request.session['loginName'] = loginName
+            request.session["loginName"] = loginName
             emptyUserPlan = {
                 "LoginName": loginName,
                 "ShortNextBilling": "",
@@ -297,17 +290,15 @@ def index(request):
         form_being_updated.fields["planName"].choices = itemChoices
         if form_being_updated.is_valid():
             messages.add_message(request, messages.SUCCESS, f"Item is VALID")
-            submit_invoice_to_aladin = form_being_updated.cleaned_data
-            submitToAladin(submit_invoice_to_aladin)
+            formCleaned = form_being_updated.cleaned_data
+            submitToAladin(formCleaned)
             # store in cookie session
-            request.session['operator'] = form_being_updated.cleaned_data.get("operator")
+            request.session["operator"] = formCleaned.get("operator")
         else:
             messages.add_message(request, messages.WARNING, f"Item is still INVALID")
-            # messages.add_message(request, messages.INFO, f"error is:  {form_being_updated.errors}")
     #
     urlQuery = f"LoginName={loginName}"
     context = {
-        # "debugMessage": debugMessage,
         "loginName": loginName,
         "isDisabled": "" if isUserExist else "disabled",
         "domain": os.environ.get("DOMAIN"),
