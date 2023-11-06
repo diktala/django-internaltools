@@ -78,10 +78,11 @@ class FormChangePassword(forms.Form):
         ),
         required=True,
         min_length=1,
-        max_length=20,
+        max_length=12,
         validators=[
             RegexValidator(
-                regex="^[A-Za-z0-9!@#$%^&*=+._-]+$",
+                # regex="^[A-Za-z0-9!@#$%^&*=+._-]+$",
+                regex="^[a-z0-9._-]+$",
                 message="invalid characters",
             )
         ],
@@ -102,7 +103,7 @@ def set_user_password(loginName, userPassword):
         ,@Operator = %(operator)s
         ,@Comments = %(specialNote)s
         ,@NewPassword = %(newPassword)s
-        ,@DebugLevel = %(debugLevel)s
+        ,@DebugLevel = %(debugLevel)d
     """
     paramSQL = {
         "loginName": loginName,
@@ -139,7 +140,7 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInfo = list([])
+    userInfo = list()
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formChangePassword = FormChangePassword(request.POST.dict())
         if formChangePassword.is_valid():
