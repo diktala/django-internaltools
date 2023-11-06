@@ -25,7 +25,7 @@ class FormSearchLogin(forms.Form):
         max_length=20,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
         ],
@@ -82,11 +82,7 @@ def index(request):
         extendedSearch = formSearchLogin.cleaned_data.get("extendedSearch")
         userSearch = get_search_result(loginName, extendedSearch)
         if len(userSearch) > 0:
-            # found users
             isUserExist = True
-            print ( f"DEBUG: userSearch: {userSearch}" )
-            # request.session["loginName"] = loginName
-    """ --- """
     #
     urlQuery = f"LoginName={loginName}"
     context = {
