@@ -18,7 +18,7 @@
         <form id="blockaccount" action="" novalidate="" method="POST">
             {% csrf_token %}
             <div class="row g-3">
-                <fieldset class="form-group border">
+                <fieldset class="form-group border" {{ freezeForm|yesno:"disabled," }}>
                     <legend>Block Account:</legend>
                     <div class="row mb-3">
                         <label for="{{ formBlockAccount.loginName.id_for_label }}"

@@ -128,7 +128,7 @@
                 </div>
                 <div class="col-sm-2">Account status:</div>
                 <div class="col-sm-10 {{ userInfo.ActiveUser|yesno:'bg-success-subtle,bg-warning-subtle' }}">
-                    {{ userInfo.ActiveUser|yesno:"Acive,Inactive" }} {{ userInfo.TempoDisable|yesno:"Temporary disabled," }}
+                {{ userInfo.ActiveUser|yesno:"Acive,Inactive" }} {{ userInfo.TempoDisable|yesno:"Temporary disabled," }} {{ userInfo.DelinquentAccount|yesno:"User Blocked with reminder," }}
                 </div>
                 <div class="w-100 d-none d-sm-block border-bottom">
                     <!-- new row -->

@@ -59,7 +59,8 @@ class FormBlockAccount(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                # regex="""^[\w. &'<>+$()/=@,:*#"\[\]-]*$""",
+                regex="^[\w. +$()/=@,:*#-]*$",
                 message="invalid characters",
             )
         ],
@@ -109,10 +110,10 @@ class FormBlockAccount(forms.Form):
             }
         ),
         choices=CHOICES,
-        required=False,
+        required=True,
     )
     englishPrompt = forms.CharField(
-        label="English Prompt",
+        label="Override English Prompt",
         widget=forms.TextInput(
             attrs={
                 "placeholder": "...",
@@ -124,13 +125,13 @@ class FormBlockAccount(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="""^[\w. &'<>+;$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
     )
     frenchPrompt = forms.CharField(
-        label="French Prompt",
+        label="Override French Prompt",
         widget=forms.TextInput(
             attrs={
                 "placeholder": "...",
@@ -142,7 +143,7 @@ class FormBlockAccount(forms.Form):
         max_length=250,
         validators=[
             RegexValidator(
-                regex="^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",
+                regex="""^[\w. &'<>+;$()/=@,:*#"\[\]-]*$""",
                 message="invalid characters",
             )
         ],
@@ -204,8 +205,6 @@ def submit_to_aladin(loginName, blockUser):
         "frenchPrompt": frenchPrompt,
         "unblockPossible": blockUser.get("unblockPossible"),
     }
-    print(f"DEBUG: querySQL: {querySQL}")
-    print(f"DEBUG: paramSQL: {paramSQL}")
     blockUserResult = queryDBall(querySQL, paramSQL)
     if (
         isinstance(blockUserResult, list)
@@ -232,7 +231,8 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInfo = list([])
+    userInfo = list()
+    freezeForm = False
     if request.method == "POST" and request.POST.get("updateItemBTN"):
         formBlockAccount = FormBlockAccount(request.POST.dict())
         if formBlockAccount.is_valid():
@@ -249,6 +249,7 @@ def index(request):
                     request, messages.SUCCESS, f"Result: {blockUserResult}"
                 )
                 userInfo = get_user_info(loginName)
+                freezeForm = True
             else:
                 messages.add_message(request, messages.WARNING, f"user is INVALID")
         else:
@@ -259,6 +260,7 @@ def index(request):
         "loginName": loginName,
         "domain": os.environ.get("DOMAIN"),
         "urlQuery": urlQuery,
+        "freezeForm": freezeForm,
         "formBlockAccount": formBlockAccount,
         "userInfo": userInfo[0] if len(userInfo) > 0 else None,
     }
