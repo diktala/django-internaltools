@@ -110,7 +110,6 @@ def get_user_input(listUsers):
     }
     # print(f"DEBUG: querySQL: {querySQL}")
     # print(f"DEBUG: paramSQL: {paramSQL}")
-    userInput = list([])
     userInput = queryDBall(querySQL, paramSQL)
     return userInput
 
@@ -132,8 +131,6 @@ def acknowledge_user_access(acknowledge):
         "specialNote": specialNote,
         "transactionNumber": transactionNumber,
     }
-    # print(f"DEBUG: querySQL: {querySQL}")
-    # print(f"DEBUG: paramSQL: {paramSQL}")
     queryDBall(querySQL, paramSQL)
 
 
@@ -152,7 +149,7 @@ def index(request):
     #
     # pre assign parameters
     loginName = defaultData.get("loginName")
-    userInput = list([])
+    userInput = list()
     if request.method == "POST" and request.POST.get("resetAccessBTN"):
         formAcknowledgeAccess = FormAcknowledgeAccess(request.POST.dict())
         if formAcknowledgeAccess.is_valid():
